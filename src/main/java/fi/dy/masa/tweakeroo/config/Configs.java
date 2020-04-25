@@ -163,6 +163,7 @@ public class Configs implements IConfigHandler
 
     public static class Lists
     {
+        
         public static final ConfigOptionList FAST_PLACEMENT_ITEM_LIST_TYPE      = new ConfigOptionList("fastPlacementItemListType", ListType.BLACKLIST, "The item restriction type for the Fast Block Placement tweak");
         public static final ConfigStringList FAST_PLACEMENT_ITEM_BLACKLIST      = new ConfigStringList("fastPlacementItemBlackList", ImmutableList.of("minecraft:ender_chest", "minecraft:white_shulker_box"), "The items that are NOT allowed to be used for the Fast Block Placement tweak,\nif the fastPlacementItemListType is set to Black List");
         public static final ConfigStringList FAST_PLACEMENT_ITEM_WHITELIST      = new ConfigStringList("fastPlacementItemWhiteList", ImmutableList.of(), "The items that are allowed to be used for the Fast Block Placement tweak,\nif the fastPLacementItemListType is set to White List");
@@ -172,6 +173,11 @@ public class Configs implements IConfigHandler
         public static final ConfigOptionList FAST_RIGHT_CLICK_ITEM_LIST_TYPE    = new ConfigOptionList("fastRightClickListType", ListType.NONE, "The item restriction type for the Fast Right Click tweak");
         public static final ConfigStringList FAST_RIGHT_CLICK_ITEM_BLACKLIST    = new ConfigStringList("fastRightClickBlackList", ImmutableList.of("minecraft:fireworks"), "The items that are NOT allowed to be used for the Fast Right Click tweak,\nif the fastRightClickListType is set to Black List");
         public static final ConfigStringList FAST_RIGHT_CLICK_ITEM_WHITELIST    = new ConfigStringList("fastRightClickWhiteList", ImmutableList.of("minecraft:bucket", "minecraft:water_bucket", "minecraft:lava_bucket", "minecraft:glass_bottle"), "The items that are allowed to be used for the Fast Right Click tweak,\nif the fastRightClickListType is set to White List");
+        public static final ConfigOptionList BLOCK_TYPE_BREAK_RESTRICTION_MODE  = new ConfigOptionList("blockTypeBreakRestrictionMode", ListType.NONE, "Restrict block breaking (hotkey-selectable)");
+        public static final ConfigStringList BLOCK_TYPE_BREAK_WHITELIST         = new ConfigStringList("blockTypeBreakWhiteList", ImmutableList.of(), "The blocks that can be broken with type break restriction");
+        public static final ConfigStringList BLOCK_TYPE_BREAK_BLACKLIST         = new ConfigStringList("blockTypeBreakBlackList", ImmutableList.of(), "The blocks that can NOT be broken with type break restriction");
+        
+
         public static final ConfigStringList FLAT_WORLD_PRESETS                 = new ConfigStringList("flatWorldPresets", ImmutableList.of("White Glass;1*minecraft:white_stained_glass;minecraft:plains;;minecraft:white_stained_glass", "Glass;1*minecraft:glass;minecraft:plains;;minecraft:glass"), "Custom flat world preset strings.\nThese are in the format: name;blocks_string;biome;generation_features;icon_item\nThe blocks string format is the vanilla format, such as: 62*minecraft:dirt,minecraft:grass\nThe biome can be the registry name, or the int ID\nThe icon item name format is minecraft:iron_nugget");
         public static final ConfigOptionList POTION_WARNING_LIST_TYPE           = new ConfigOptionList("potionWarningListType", ListType.NONE, "The list type for potion warning effects");
         public static final ConfigStringList POTION_WARNING_BLACKLIST           = new ConfigStringList("potionWarningBlackList", ImmutableList.of("minecraft:hunger", "minecraft:mining_fatigue", "minecraft:nausea", "minecraft:poison", "minecraft:slowness", "minecraft:weakness"), "The potion effects that will not be warned about");
@@ -190,6 +196,9 @@ public class Configs implements IConfigHandler
                 FAST_RIGHT_CLICK_BLOCK_WHITELIST,
                 FAST_RIGHT_CLICK_ITEM_BLACKLIST,
                 FAST_RIGHT_CLICK_ITEM_WHITELIST,
+                BLOCK_TYPE_BREAK_RESTRICTION_MODE,
+                BLOCK_TYPE_BREAK_WHITELIST,
+                BLOCK_TYPE_BREAK_BLACKLIST,
                 FLAT_WORLD_PRESETS,
                 POTION_WARNING_BLACKLIST,
                 POTION_WARNING_WHITELIST,
@@ -312,6 +321,11 @@ public class Configs implements IConfigHandler
         PlacementTweaks.FAST_RIGHT_CLICK_BLOCK_RESTRICTION.setListContents(
                 Lists.FAST_RIGHT_CLICK_BLOCK_BLACKLIST.getStrings(),
                 Lists.FAST_RIGHT_CLICK_BLOCK_WHITELIST.getStrings());
+
+        PlacementTweaks.BLOCK_TYPE_BREAK_RESTRICTION.setListType((ListType) Lists.BLOCK_TYPE_BREAK_RESTRICTION_MODE.getOptionListValue());
+        PlacementTweaks.BLOCK_TYPE_BREAK_RESTRICTION.setListContents(
+                Lists.BLOCK_TYPE_BREAK_BLACKLIST.getStrings(),
+                Lists.BLOCK_TYPE_BREAK_WHITELIST.getStrings());
 
         PlacementTweaks.FAST_RIGHT_CLICK_ITEM_RESTRICTION.setListType((ListType) Lists.FAST_RIGHT_CLICK_ITEM_LIST_TYPE.getOptionListValue());
         PlacementTweaks.FAST_RIGHT_CLICK_ITEM_RESTRICTION.setListContents(

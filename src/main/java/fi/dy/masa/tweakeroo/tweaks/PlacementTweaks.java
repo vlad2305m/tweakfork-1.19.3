@@ -61,6 +61,7 @@ public class PlacementTweaks
     private static ItemStack stackClickedOn = ItemStack.EMPTY;
     @Nullable private static BlockState stateClickedOn = null;
     public static final BlockRestriction FAST_RIGHT_CLICK_BLOCK_RESTRICTION = new BlockRestriction();
+    public static final BlockRestriction BLOCK_TYPE_BREAK_RESTRICTION = new BlockRestriction();
     public static final ItemRestriction FAST_RIGHT_CLICK_ITEM_RESTRICTION = new ItemRestriction();
     public static final ItemRestriction FAST_PLACEMENT_ITEM_RESTRICTION = new ItemRestriction();
 
@@ -909,7 +910,9 @@ public class PlacementTweaks
     {
         boolean restrictionEnabled = FeatureToggle.TWEAK_BREAKING_RESTRICTION.getBooleanValue();
         boolean gridEnabled = FeatureToggle.TWEAK_BREAKING_GRID.getBooleanValue();
-
+        MinecraftClient mc = MinecraftClient.getInstance();
+        Block block = mc.world.getBlockState(pos).getBlock();
+        if (!BLOCK_TYPE_BREAK_RESTRICTION.isAllowed(block)) return false;
         if (restrictionEnabled == false && gridEnabled == false)
         {
             return true;

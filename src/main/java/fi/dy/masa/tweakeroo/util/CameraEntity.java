@@ -5,7 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.MovementType;
 import net.minecraft.stat.StatHandler;
@@ -25,7 +25,7 @@ public class CameraEntity extends ClientPlayerEntity
             ClientPlayNetworkHandler nethandler, StatHandler stats,
             ClientRecipeBook recipeBook)
     {
-        super(mc, world, nethandler, stats, recipeBook);
+        super(mc, world, nethandler, stats, recipeBook, false, false);
     }
 
     @Override

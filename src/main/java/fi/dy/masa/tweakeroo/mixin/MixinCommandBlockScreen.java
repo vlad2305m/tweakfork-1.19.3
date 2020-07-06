@@ -12,6 +12,10 @@ import net.minecraft.client.gui.screen.ingame.AbstractCommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -53,11 +57,11 @@ public abstract class MixinCommandBlockScreen extends AbstractCommandBlockScreen
             this.doneButton.y = y;
             this.cancelButton.y = y;
 
-            String str = StringUtils.translate("tweakeroo.gui.button.misc.command_block.set_name");
-            int widthBtn = this.font.getStringWidth(str) + 10;
+            Text str = new TranslatableText("tweakeroo.gui.button.misc.command_block.set_name");
+            int widthBtn = this.textRenderer.getWidth(str) + 10;
 
             y = 181;
-            this.textFieldName = new TextFieldWidget(this.font, x1, y, width, 20, "");
+            this.textFieldName = new TextFieldWidget(this.textRenderer, x1, y, width, 20, new LiteralText(""));
             this.textFieldName.setText(this.blockEntity.getCommandExecutor().getCustomName().getString());
             this.children.add(this.textFieldName);
             final TextFieldWidget tf = this.textFieldName;
@@ -67,26 +71,26 @@ public abstract class MixinCommandBlockScreen extends AbstractCommandBlockScreen
             {
                 String name = tf.getText();
                 name = String.format("{\"CustomName\":\"{\\\"text\\\":\\\"%s\\\"}\"}", name);
-                this.minecraft.player.sendChatMessage(String.format("/data merge block %d %d %d %s", pos.getX(), pos.getY(), pos.getZ(), name));
+                this.client.player.sendChatMessage(String.format("/data merge block %d %d %d %s", pos.getX(), pos.getY(), pos.getZ(), name));
             }));
 
             this.updateExecValue = MiscUtils.getUpdateExec(this.blockEntity);
 
             str = getDisplayStringForCurrentStatus(this.updateExecValue);
-            width = this.font.getStringWidth(str) + 10;
+            width = this.textRenderer.getWidth(str) + 10;
 
             this.buttonUpdateExec = new ButtonWidget(x2 + widthBtn + 4, y, width, 20, str, (button) ->
             {
                 this.updateExecValue = ! this.updateExecValue;
                 MiscUtils.setUpdateExec(this.blockEntity, this.updateExecValue);
 
-                String strBtn = getDisplayStringForCurrentStatus(this.updateExecValue);
+                Text strBtn = getDisplayStringForCurrentStatus(this.updateExecValue);
                 button.setMessage(strBtn);
-                button.setWidth(this.font.getStringWidth(strBtn) + 10);
+                button.setWidth(this.textRenderer.getWidth(strBtn) + 10);
 
                 String cmd = String.format("/data merge block %d %d %d {\"UpdateLastExecution\":%s}",
                         pos.getX(), pos.getY(), pos.getZ(), this.updateExecValue ? "1b" : "0b");
-                this.minecraft.player.sendChatMessage(cmd);
+                this.client.player.sendChatMessage(cmd);
             });
 
             this.addButton(this.buttonUpdateExec);
@@ -117,35 +121,35 @@ public abstract class MixinCommandBlockScreen extends AbstractCommandBlockScreen
             if (this.updateExecValue != updateExec)
             {
                 this.updateExecValue = updateExec;
-                String str = getDisplayStringForCurrentStatus(this.updateExecValue);
+                Text str = getDisplayStringForCurrentStatus(this.updateExecValue);
                 this.buttonUpdateExec.setMessage(str);
-                this.buttonUpdateExec.setWidth(this.font.getStringWidth(str) + 10);
+                this.buttonUpdateExec.setWidth(this.textRenderer.getWidth(str) + 10);
             }
         }
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks)
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        super.render(mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (this.textFieldName != null)
         {
-            this.textFieldName.render(mouseX, mouseY, partialTicks);
+            this.textFieldName.render(matrixStack, mouseX, mouseY, partialTicks);
         }
 
         if (this.buttonUpdateExec != null && this.buttonUpdateExec.isHovered())
         {
             String hover = "tweakeroo.gui.button.misc.command_block.hover.update_execution";
-            RenderUtils.drawHoverText(mouseX, mouseY, Arrays.asList(StringUtils.translate(hover)));
+            RenderUtils.drawHoverText(mouseX, mouseY, Arrays.asList(StringUtils.translate(hover)), matrixStack);
         }
     }
 
-    private static String getDisplayStringForCurrentStatus(boolean updateExecValue)
+    private static Text getDisplayStringForCurrentStatus(boolean updateExecValue)
     {
         String translationKey = "tweakeroo.gui.button.misc.command_block.update_execution";
         boolean isCurrentlyOn = ! updateExecValue;
         String strStatus = "malilib.gui.label_colored." + (isCurrentlyOn ? "on" : "off");
-        return StringUtils.translate(translationKey, StringUtils.translate(strStatus));
+        return new TranslatableText(translationKey, StringUtils.translate(strStatus));
     }
 }

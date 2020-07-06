@@ -10,8 +10,8 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Matrix4f;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
@@ -19,7 +19,7 @@ import fi.dy.masa.tweakeroo.util.MiscUtils;
 @Mixin(value = WorldRenderer.class, priority = 1001)
 public abstract class MixinWorldRenderer
 {
-    @Inject(method = "method_22713", at = @At("HEAD"), cancellable = true) // renderRain
+    @Inject(method = "tickRainSplashing", at = @At("HEAD"), cancellable = true) // renderRain
     private void cancelRainRender(Camera camera, CallbackInfo ci)
     {
         if (Configs.Disable.DISABLE_RAIN_EFFECTS.getBooleanValue())

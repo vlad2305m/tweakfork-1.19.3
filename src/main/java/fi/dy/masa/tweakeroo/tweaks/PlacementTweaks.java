@@ -27,8 +27,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import fi.dy.masa.malilib.hotkeys.IKeybind;
+import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.util.BlockUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.PositionUtils;
 import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 import fi.dy.masa.malilib.util.restrictions.BlockRestriction;
@@ -55,6 +58,14 @@ public class PlacementTweaks
     private static ItemStack[] stackBeforeUse = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY };
     private static boolean isFirstClick;
     private static boolean isEmulatedClick;
+    private static Direction tempDirection = null;
+    private static BlockPos offsetPos = null;
+
+    private static Direction directionHold = null;
+    private static BlockPos offsetHold = null;
+    private static boolean reverseHold = false;
+    private static boolean intoHold = false;
+
     private static boolean firstWasRotation;
     private static boolean firstWasOffset;
     private static int placementCount;
@@ -65,9 +76,52 @@ public class PlacementTweaks
     public static final ItemRestriction FAST_RIGHT_CLICK_ITEM_RESTRICTION = new ItemRestriction();
     public static final ItemRestriction FAST_PLACEMENT_ITEM_RESTRICTION = new ItemRestriction();
 
+
+    public static void holdSettings() {
+
+        int count = 0;
+        int reset = 0;
+
+        if (tempDirection != null)
+            count++;
+        else if (directionHold != null)
+            reset++;
+        directionHold = tempDirection;
+
+        if (offsetPos != null)
+            count++;
+        else if (offsetHold != null)
+            reset++;
+        offsetHold = offsetPos;
+
+        boolean reverse = Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
+        if (reverse)
+            count++;
+        else if (reverseHold)
+            reset++;
+        reverseHold = reverse;
+
+        boolean into = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld();
+        if (into)
+            count++;
+        else if (intoHold)
+            reset++;
+        intoHold = into;
+
+        InfoUtils.printActionbarMessage("Holding " + count + " settings." + (reset > 0 ? (" Reset " + reset) : ""));
+        
+    }
     public static void onTick()
     {
         MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (!Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld() &&
+        !Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_OFFSET.getKeybind().isKeybindHeld() &&
+        !Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ADJACENT.getKeybind().isKeybindHeld() &&
+        !Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().isKeybindHeld()) {
+            tempDirection = null;
+            offsetPos = null;
+        }
 
         if (GuiUtils.getCurrentScreen() == null)
         {
@@ -104,6 +158,7 @@ public class PlacementTweaks
         {
             clearClickedBlockInfoAttack();
         }
+        
     }
 
     public static boolean onProcessRightClickPre(PlayerEntity player, Hand hand)
@@ -376,33 +431,68 @@ public class PlacementTweaks
         {
             BlockHitResult hitResult = new BlockHitResult(hitVec, sideIn, posIn, false);
             ItemPlacementContext ctx = new ItemPlacementContext(new ItemUsageContext(player, hand, hitResult));
-            posNew = isFirstClick && (rotation || offset || adjacent) ? getPlacementPositionForTargetedPosition(world, posIn, sideIn, ctx) : posIn;
+            posNew = isFirstClick && (rotation || offset || adjacent || offsetHold != null || directionHold != null) ? getPlacementPositionForTargetedPosition(world, posIn, sideIn, ctx) : posIn;
+            offsetPos = new BlockPos(0,0,0);
 
+            if ((rotationHeld && (offsetHeld || adjacent)) && tempDirection == null) {
+                tempDirection = sideRotatedIn;
+                InfoUtils.printActionbarMessage(tempDirection.asString() + " rotation set");
+                return ActionResult.PASS;
+            }
+
+           
             // Place the block into the adjacent position
             if (adjacent && hitPart != null && hitPart != HitPart.CENTER)
             {
-                posNew = posNew.offset(sideRotatedIn.getOpposite()).offset(sideIn.getOpposite());
+                offsetPos = offsetPos.offset(sideRotatedIn.getOpposite());
                 handleFlexible = true;
             }
 
             // Place the block facing/against the adjacent block (= just rotated from normal)
-            if (rotation)
+            if (rotation && !offset && !adjacent)
             {
                 side = sideRotatedIn;
                 handleFlexible = true;
+                tempDirection = sideRotatedIn;
             }
             else
             {
-                // Don't rotate the player facing in handleFlexibleBlockPlacement()
-                hitPart = null;
+                if (tempDirection != null || directionHold != null) {
+                    side = (tempDirection != null) ? tempDirection : directionHold;
+                    handleFlexible = true;
+                    rotation = true;
+                    System.out.println(side.asString());
+                } else {
+                    // Don't rotate the player facing in handleFlexibleBlockPlacement()
+                    hitPart = null;
+                }
             }
 
             // Place the block into the diagonal position
             if (offset)
             {
-                posNew = posNew.offset(sideRotatedIn.getOpposite());
+                offsetPos = offsetPos.offset(sideRotatedIn.getOpposite()).offset(sideIn);
                 handleFlexible = true;
             }
+
+            if (offsetPos.getX() != 0 || offsetPos.getY() != 0 || offsetPos.getZ() != 0) {
+                posNew = posNew.add(offsetPos).offset(sideIn.getOpposite());
+            } else if (offsetHold != null) {
+                posNew = posNew.add(offsetHold).offset(sideIn.getOpposite());
+                offsetPos = offsetHold;
+                handleFlexible = true;
+            } else {
+                offsetPos = null;
+            }
+            
+        }
+
+        if (Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().isKeybindHeld()) {
+            if (handleFlexible) {
+                InfoUtils.printActionbarMessage("Flexible set");   
+            }
+
+            return ActionResult.PASS;
         }
 
         boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
@@ -410,6 +500,8 @@ public class PlacementTweaks
         boolean accurateReverse = Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
         boolean afterClicker = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue();
 
+        if (!accurateIn) accurateIn = intoHold;
+        if (!accurateReverse) accurateReverse = reverseHold;
         if (accurate && (accurateIn || accurateReverse || afterClicker))
         {
             Direction facing = side;
@@ -700,7 +792,7 @@ public class PlacementTweaks
         boolean flexible = FeatureToggle.TWEAK_FLEXIBLE_BLOCK_PLACEMENT.getBooleanValue();
         boolean rotationHeld = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld();
         boolean rememberFlexible = FeatureToggle.REMEMBER_FLEXIBLE.getBooleanValue();
-        boolean rotation = rotationHeld || (rememberFlexible && firstWasRotation);
+        boolean rotation = rotationHeld || (rememberFlexible && firstWasRotation) || directionHold != null || tempDirection != null;
         boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
         boolean keys = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld() || Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
         accurate = accurate && keys;
@@ -813,6 +905,7 @@ public class PlacementTweaks
             Hand hand,
             @Nullable HitPart hitPart)
     {
+        /*
         Direction facing = Direction.fromHorizontal(MathHelper.floor((playerYaw * 4.0F / 360.0F) + 0.5D) & 3);
         float yawOrig = player.yaw;
 
@@ -833,10 +926,12 @@ public class PlacementTweaks
         player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(player.yaw, player.pitch, player.isOnGround()));
 
         //System.out.printf("handleFlexibleBlockPlacement() pos: %s, side: %s, facing orig: %s facing new: %s\n", pos, side, facingOrig, facing);
+        
+        player.yaw = yawOrig;
+        */
         ActionResult result = processRightClickBlockWrapper(controller, player, world, pos, side, hitVec, hand);
 
-        player.yaw = yawOrig;
-        player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(player.yaw, player.pitch, player.isOnGround()));
+       // player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(player.yaw, player.pitch, player.isOnGround()));
 
         return result;
     }

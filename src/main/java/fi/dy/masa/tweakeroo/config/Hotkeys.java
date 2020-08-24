@@ -20,6 +20,7 @@ public class Hotkeys
     public static final ConfigHotkey FLEXIBLE_BLOCK_PLACEMENT_ADJACENT  = new ConfigHotkey("flexibleBlockPlacementAdjacent",    "",     KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the flexible block placement\nmode/overlay for placing the block in an adjacent position");
     public static final ConfigHotkey FLEXIBLE_BLOCK_PLACEMENT_OFFSET    = new ConfigHotkey("flexibleBlockPlacementOffset",      "LEFT_CONTROL", KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the flexible block placement\nmode/overlay for placing the block in a\noffset or diagonal position");
     public static final ConfigHotkey FLEXIBLE_BLOCK_PLACEMENT_ROTATION  = new ConfigHotkey("flexibleBlockPlacementRotation",    "LEFT_ALT", KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the flexible block placement\nmode/overlay for placing the block with\na rotation/facing");
+    public static final ConfigHotkey FLEXIBLE_BLOCK_PLACEMENT_HOLD      = new ConfigHotkey("flexibleBlockPlacementHold",        "", KeybindSettings.RELEASE, "Hold flexible block placement offset & rotation");
     public static final ConfigHotkey FLY_PRESET_1                       = new ConfigHotkey("flyPreset1",                        "",     "Switch to fly preset 1");
     public static final ConfigHotkey FLY_PRESET_2                       = new ConfigHotkey("flyPreset2",                        "",     "Switch to fly preset 2");
     public static final ConfigHotkey FLY_PRESET_3                       = new ConfigHotkey("flyPreset3",                        "",     "Switch to fly preset 3");
@@ -58,6 +59,7 @@ public class Hotkeys
             FLEXIBLE_BLOCK_PLACEMENT_ADJACENT,
             FLEXIBLE_BLOCK_PLACEMENT_OFFSET,
             FLEXIBLE_BLOCK_PLACEMENT_ROTATION,
+            FLEXIBLE_BLOCK_PLACEMENT_HOLD,
             FLY_PRESET_1,
             FLY_PRESET_2,
             FLY_PRESET_3,

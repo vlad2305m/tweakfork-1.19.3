@@ -55,8 +55,9 @@ public class Configs implements IConfigHandler
         public static final ConfigDouble        FLY_SPEED_PRESET_4                  = new ConfigDouble      ("flySpeedPreset4", 0.32, 0, 4, "The fly speed for preset 4");
         public static final ConfigBoolean       FREE_CAMERA_PLAYER_INPUTS           = new ConfigBoolean     ("freeCameraPlayerInputs", false, "When enabled, the attacks and use actions\n(ie. left and right clicks) in Free Camera mode are\nlet through to the actual player.");
         public static final ConfigBoolean       FREE_CAMERA_PLAYER_MOVEMENT         = new ConfigBoolean     ("freeCameraPlayerMovement", false, "When enabled, the movement inputs in the Free Camera mode\nwill move the actual client player instead of the camera");
-        public static final ConfigInteger       GAMMA_OVERRIDE_VALUE                = new ConfigInteger     ("gammaOverrideValue", 16, 0, 1000, "The gamma value to use when the override option is enabled");
+        public static final ConfigDouble        GAMMA_OVERRIDE_VALUE                = new ConfigDouble      ("gammaOverrideValue", 16, 0, 32, "The gamma value to use when the override option is enabled");
         public static final ConfigBoolean       HAND_RESTOCK_PRE                    = new ConfigBoolean     ("handRestockPre", true, "If enabled, then hand restocking happens\nbefore the stack runs out");
+        public static final ConfigBoolean       HANGABLE_ENTITY_BYPASS_INVERSE      = new ConfigBoolean     ("hangableEntityBypassInverse", false, "If the hangableEntityTargetingBypass tweak is enabled,\nthen this controls whether the player must be or must not be\nsneaking to be able to target the hangable entity (Item Frame or Painting).\n > true - Sneaking = ignore/bypass the entity\n > false - Sneaking = target the entity");
         public static final ConfigInteger       HOTBAR_SLOT_CYCLE_MAX               = new ConfigInteger     ("hotbarSlotCycleMax", 2, 1, 9, "This is the last hotbar slot to use/cycle through\nif the hotbar slot cycle tweak is enabled.\nBasically the cycle will jump back to the first slot\nwhen going over the maximum slot number set here.");
         public static final ConfigInteger       HOTBAR_SLOT_RANDOMIZER_MAX          = new ConfigInteger     ("hotbarSlotRandomizerMax", 5, 1, 9, "This is the last hotbar slot to use if the hotbar slot randomizer\ntweak is enabled. Basically the selected hotbar slot will be randomly\npicked from 1 to this maximum slot after an item use.");
         public static final ConfigOptionList    HOTBAR_SWAP_OVERLAY_ALIGNMENT       = new ConfigOptionList  ("hotbarSwapOverlayAlignment", HudAlignment.BOTTOM_RIGHT, "The positioning of the hotbar swap overlay");
@@ -100,6 +101,7 @@ public class Configs implements IConfigHandler
                 FREE_CAMERA_PLAYER_MOVEMENT,
                 LAVA_VISIBILITY_OPTIFINE,
                 HAND_RESTOCK_PRE,
+                HANGABLE_ENTITY_BYPASS_INVERSE,
                 PERMANENT_SNEAK_ALLOW_IN_GUIS,
                 PLACEMENT_RESTRICTION_TIED_TO_FAST,
                 POTION_WARNING_BENEFICIAL_ONLY,
@@ -226,6 +228,7 @@ public class Configs implements IConfigHandler
 
     public static class Disable
     {
+        public static final ConfigBooleanHotkeyed       DISABLE_ARMOR_STAND_RENDERING   = new ConfigBooleanHotkeyed("disableArmorStandRendering",           false, "", "Disabled all Armor Stand entity rendering");
         public static final ConfigBooleanHotkeyed       DISABLE_BLOCK_BREAK_PARTICLES   = new ConfigBooleanHotkeyed("disableBlockBreakingParticles",        false, "", "Removes the block breaking particles.\n(This is originally from usefulmod by nessie.)");
         public static final ConfigBooleanHotkeyed       DISABLE_DOUBLE_TAP_SPRINT       = new ConfigBooleanHotkeyed("disableDoubleTapSprint",               false, "", "Disables the double-tap-forward-key sprinting");
         public static final ConfigBooleanHotkeyed       DISABLE_BOSS_FOG                = new ConfigBooleanHotkeyed("disableBossFog",                       false, "", "Removes the fog that boss mobs cause");
@@ -253,6 +256,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBooleanHotkeyed       DISABLE_WALL_UNSPRINT           = new ConfigBooleanHotkeyed("disableWallUnsprint",                  false, "", "Touching a wall doesn't drop you out from sprint mode");
 
         public static final ImmutableList<IHotkeyTogglable> OPTIONS = ImmutableList.of(
+                DISABLE_ARMOR_STAND_RENDERING,
                 DISABLE_BLOCK_BREAK_PARTICLES,
                 DISABLE_DOUBLE_TAP_SPRINT,
                 DISABLE_BOSS_FOG,

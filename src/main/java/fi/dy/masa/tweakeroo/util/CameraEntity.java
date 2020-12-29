@@ -7,6 +7,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.util.math.MathHelper;
@@ -16,10 +17,13 @@ import fi.dy.masa.tweakeroo.config.FeatureToggle;
 
 public class CameraEntity extends ClientPlayerEntity
 {
+    @Nullable private static Entity originalCameraEntity;
     @Nullable private static CameraEntity camera;
+    private static boolean cullChunksOriginal;
     private static float forwardRamped;
     private static float strafeRamped;
     private static float verticalRamped;
+    private static boolean sprinting;
 
     public CameraEntity(MinecraftClient mc, ClientWorld world,
             ClientPlayNetworkHandler nethandler, StatHandler stats,
@@ -38,10 +42,11 @@ public class CameraEntity extends ClientPlayerEntity
     {
         CameraEntity camera = getCamera();
 
-        if (camera != null && FeatureToggle.TWEAK_FREE_CAMERA_MOTION.getBooleanValue())
+        if (camera != null && Configs.Generic.FREE_CAMERA_PLAYER_MOVEMENT.getBooleanValue() == false)
         {
             MinecraftClient mc = MinecraftClient.getInstance();
-            ClientPlayerEntity player = mc.player;
+
+            camera.updateLastTickPosition();
 
             float forward = 0;
             float vertical = 0;
@@ -54,6 +59,15 @@ public class CameraEntity extends ClientPlayerEntity
             if (options.keyRight.isPressed())   { strafe--;   }
             if (options.keyJump.isPressed())    { vertical++; }
             if (options.keySneak.isPressed())   { vertical--; }
+
+            if (options.keySprint.isPressed())
+            {
+                sprinting = true;
+            }
+            else if (forward == 0)
+            {
+                sprinting = false;
+            }
 
             float rampAmount = 0.15f;
             float speed = strafe * strafe + forward * forward;
@@ -71,9 +85,8 @@ public class CameraEntity extends ClientPlayerEntity
             verticalRamped = getRampedMotion(verticalRamped, vertical, rampAmount);
             strafeRamped   = getRampedMotion(strafeRamped  , strafe  , rampAmount) / speed;
 
-            forward = player.isSprinting() ? forwardRamped * 2 : forwardRamped;
+            forward = sprinting ? forwardRamped * 3 : forwardRamped;
 
-            camera.updateLastTickPosition();
             camera.handleMotion(forward, verticalRamped, strafeRamped);
         }
     }
@@ -112,7 +125,7 @@ public class CameraEntity extends ClientPlayerEntity
             base = Configs.getActiveFlySpeedConfig().getDoubleValue();
         }
 
-        return base * 6;
+        return base * 10;
     }
 
     private void handleMotion(float forward, float up, float strafe)
@@ -149,7 +162,7 @@ public class CameraEntity extends ClientPlayerEntity
         this.prevHeadYaw = this.headYaw;
     }
 
-    public void setRotations(float yaw, float pitch)
+    public void setCameraRotations(float yaw, float pitch)
     {
         this.yaw = yaw;
         this.pitch = pitch;
@@ -163,25 +176,24 @@ public class CameraEntity extends ClientPlayerEntity
         //this.setRenderYawOffset(this.rotationYaw);
     }
 
-    private static CameraEntity create(MinecraftClient mc)
+    public void updateCameraRotations(float yawChange, float pitchChange)
     {
-        CameraEntity camera = new CameraEntity(mc, mc.world, mc.player.networkHandler, mc.player.getStatHandler(), mc.player.getRecipeBook());
-        camera.noClip = true;
+        this.yaw += yawChange * 0.15F;
+        this.pitch = MathHelper.clamp(this.pitch + pitchChange * 0.15F, -90F, 90F);
 
-        ClientPlayerEntity player = mc.player;
-
-        if (player != null)
-        {
-            camera.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
-            camera.setRotations(player.yaw, player.pitch);
-        }
-
-        return camera;
+        this.setCameraRotations(this.yaw, this.pitch);
     }
 
-    public static void createCamera(MinecraftClient mc)
+    private static CameraEntity createCameraEntity(MinecraftClient mc)
     {
-        camera = create(mc);
+        ClientPlayerEntity player = mc.player;
+        CameraEntity camera = new CameraEntity(mc, mc.world, player.networkHandler, player.getStatHandler(), player.getRecipeBook());
+        camera.noClip = true;
+
+        camera.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
+        camera.setRotation(player.yaw, player.pitch);
+
+        return camera;
     }
 
     @Nullable
@@ -190,8 +202,46 @@ public class CameraEntity extends ClientPlayerEntity
         return camera;
     }
 
-    public static void removeCamera()
+    public static void setCameraState(boolean enabled)
     {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.world != null && mc.player != null)
+        {
+            if (enabled)
+            {
+                createAndSetCamera(mc);
+            }
+            else
+            {
+                removeCamera(mc);
+            }
+        }
+    }
+
+    private static void createAndSetCamera(MinecraftClient mc)
+    {
+        camera = createCameraEntity(mc);
+        originalCameraEntity = mc.getCameraEntity();
+        cullChunksOriginal = mc.chunkCullingEnabled;
+
+        mc.setCameraEntity(camera);
+        mc.chunkCullingEnabled = false; // Disable chunk culling
+
+        // Disable the motion option when entering camera mode
+        Configs.Generic.FREE_CAMERA_PLAYER_MOVEMENT.setBooleanValue(false);
+    }
+
+    private static void removeCamera(MinecraftClient mc)
+    {
+        if (mc.world != null && camera != null)
+        {
+            mc.setCameraEntity(originalCameraEntity);
+            mc.chunkCullingEnabled = cullChunksOriginal;
+            CameraUtils.markChunksForRebuildOnDeactivation(camera.chunkX, camera.chunkZ);
+        }
+
+        originalCameraEntity = null;
         camera = null;
     }
 }

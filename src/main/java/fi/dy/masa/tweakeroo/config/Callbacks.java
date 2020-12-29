@@ -4,6 +4,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -22,6 +24,7 @@ import fi.dy.masa.tweakeroo.gui.GuiConfigs;
 import fi.dy.masa.tweakeroo.mixin.IMixinAbstractBlock;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.util.CameraEntity;
+import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
@@ -36,11 +39,16 @@ public class Callbacks
         FeatureToggle.TWEAK_GAMMA_OVERRIDE.setValueChangeCallback(new FeatureCallbackGamma(FeatureToggle.TWEAK_GAMMA_OVERRIDE, mc));
         Configs.Disable.DISABLE_SLIME_BLOCK_SLOWDOWN.setValueChangeCallback(new FeatureCallbackSlime(Configs.Disable.DISABLE_SLIME_BLOCK_SLOWDOWN));
 
-        FeatureCallbackSpecial featureCallback = new FeatureCallbackSpecial();
         FeatureToggle.TWEAK_FAST_BLOCK_PLACEMENT.getKeybind().setCallback(new KeyCallbackToggleFastMode(FeatureToggle.TWEAK_FAST_BLOCK_PLACEMENT));
-        FeatureToggle.TWEAK_FAST_BLOCK_PLACEMENT.setValueChangeCallback(featureCallback);
-        FeatureToggle.TWEAK_FREE_CAMERA.setValueChangeCallback(featureCallback);
-        FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.setValueChangeCallback(featureCallback);
+        FeatureToggle.TWEAK_FAST_BLOCK_PLACEMENT.setValueChangeCallback((cfg) -> {
+            if (Configs.Generic.PLACEMENT_RESTRICTION_TIED_TO_FAST.getBooleanValue())
+            {
+                FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.setBooleanValue(cfg.getBooleanValue());
+            }
+        });
+        FeatureToggle.TWEAK_FREE_CAMERA.setValueChangeCallback((cfg) -> CameraEntity.setCameraState(cfg.getBooleanValue()));
+        FeatureToggle.TWEAK_HOLD_ATTACK.setValueChangeCallback(new FeatureCallbackHold(mc.options.keyAttack));
+        FeatureToggle.TWEAK_HOLD_USE.setValueChangeCallback(new FeatureCallbackHold(mc.options.keyUse));
 
         IHotkeyCallback callbackGeneric = new KeyCallbackHotkeysGeneric(mc);
         IHotkeyCallback callbackMessage = new KeyCallbackHotkeyWithMessage(mc);
@@ -56,6 +64,18 @@ public class Callbacks
         Hotkeys.FLY_PRESET_2.getKeybind().setCallback(callbackGeneric);
         Hotkeys.FLY_PRESET_3.getKeybind().setCallback(callbackGeneric);
         Hotkeys.FLY_PRESET_4.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.FREE_CAMERA_PLAYER_INPUTS.getKeybind().setCallback((action, key) -> {
+            IConfigBoolean config = Configs.Generic.FREE_CAMERA_PLAYER_INPUTS;
+            config.toggleBooleanValue();
+            InfoUtils.printBooleanConfigToggleMessage(config.getPrettyName(), config.getBooleanValue());
+            return true;
+        });
+        Hotkeys.FREE_CAMERA_PLAYER_MOVEMENT.getKeybind().setCallback((action, key) -> {
+            IConfigBoolean config = Configs.Generic.FREE_CAMERA_PLAYER_MOVEMENT;
+            config.toggleBooleanValue();
+            InfoUtils.printBooleanConfigToggleMessage(config.getPrettyName(), config.getBooleanValue());
+            return true;
+        });
         Hotkeys.HOTBAR_SWAP_1.getKeybind().setCallback(callbackGeneric);
         Hotkeys.HOTBAR_SWAP_2.getKeybind().setCallback(callbackGeneric);
         Hotkeys.HOTBAR_SWAP_3.getKeybind().setCallback(callbackGeneric);
@@ -67,11 +87,17 @@ public class Callbacks
         Hotkeys.PLACEMENT_RESTRICTION_MODE_LAYER.getKeybind().setCallback(callbackGeneric);
         Hotkeys.PLACEMENT_RESTRICTION_MODE_LINE.getKeybind().setCallback(callbackGeneric);
         Hotkeys.PLACEMENT_RESTRICTION_MODE_PLANE.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.SWAP_ELYTRA_CHESTPLATE.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.TOGGLE_GRAB_CURSOR.getKeybind().setCallback(callbackGeneric);
         Hotkeys.TOOL_PICK.getKeybind().setCallback(callbackGeneric);
         Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().setCallback(callbackGeneric);
-       
+          
+        Hotkeys.ZOOM_ACTIVATE.getKeybind().setCallback(callbackGeneric);
+
         Hotkeys.SKIP_ALL_RENDERING.getKeybind().setCallback(callbackMessage);
         Hotkeys.SKIP_WORLD_RENDERING.getKeybind().setCallback(callbackMessage);
+
+        Configs.Lists.CREATIVE_EXTRA_ITEMS.setValueChangeCallback((cfg) -> CreativeExtraItems.setCreativeExtraItems(cfg.getStrings()));
 
         FeatureToggle.TWEAK_AFTER_CLICKER.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_AFTER_CLICKER));
         FeatureToggle.TWEAK_BREAKING_GRID.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_BREAKING_GRID));
@@ -82,6 +108,30 @@ public class Callbacks
         FeatureToggle.TWEAK_PLACEMENT_LIMIT.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_PLACEMENT_LIMIT));
         FeatureToggle.TWEAK_SNAP_AIM.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_SNAP_AIM));
         FeatureToggle.TWEAK_ZOOM.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_ZOOM));
+    }
+
+    public static class FeatureCallbackHold implements IValueChangeCallback<IConfigBoolean>
+    {
+        private final KeyBinding keyBind;
+
+        public FeatureCallbackHold(KeyBinding keyBind)
+        {
+            this.keyBind = keyBind;
+        }
+
+        @Override
+        public void onValueChanged(IConfigBoolean config)
+        {
+            if (config.getBooleanValue())
+            {
+                KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.keyBind.getBoundKeyTranslationKey()), true);
+                KeyBinding.onKeyPressed(InputUtil.fromTranslationKey(this.keyBind.getBoundKeyTranslationKey()));
+            }
+            else
+            {
+                KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.keyBind.getBoundKeyTranslationKey()), false);
+            }
+        }
     }
 
     public static class FeatureCallbackGamma implements IValueChangeCallback<IConfigBoolean>
@@ -100,7 +150,7 @@ public class Callbacks
             // If the feature is enabled on game launch, apply it here
             if (feature.getBooleanValue())
             {
-                this.mc.options.gamma = Configs.Generic.GAMMA_OVERRIDE_VALUE.getIntegerValue();
+                this.mc.options.gamma = Configs.Generic.GAMMA_OVERRIDE_VALUE.getDoubleValue();
             }
         }
 
@@ -110,7 +160,7 @@ public class Callbacks
             if (config.getBooleanValue())
             {
                 Configs.Internal.GAMMA_VALUE_ORIGINAL.setDoubleValue(this.mc.options.gamma);
-                this.mc.options.gamma = Configs.Generic.GAMMA_OVERRIDE_VALUE.getIntegerValue();
+                this.mc.options.gamma = Configs.Generic.GAMMA_OVERRIDE_VALUE.getDoubleValue();
             }
             else
             {
@@ -142,39 +192,6 @@ public class Callbacks
             else
             {
                 ((IMixinAbstractBlock) Blocks.SLIME_BLOCK).setFriction((float) Configs.Internal.SLIME_BLOCK_SLIPPERINESS_ORIGINAL.getDoubleValue());
-            }
-        }
-    }
-
-    public static class FeatureCallbackSpecial implements IValueChangeCallback<IConfigBoolean>
-    {
-        public FeatureCallbackSpecial()
-        {
-        }
-
-        @Override
-        public void onValueChanged(IConfigBoolean config)
-        {
-            if (config == FeatureToggle.TWEAK_FAST_BLOCK_PLACEMENT &&
-                Configs.Generic.PLACEMENT_RESTRICTION_TIED_TO_FAST.getBooleanValue())
-            {
-                FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.setBooleanValue(config.getBooleanValue());
-            }
-            else if (config == FeatureToggle.TWEAK_FREE_CAMERA)
-            {
-                if (config.getBooleanValue())
-                {
-                    CameraEntity.createCamera(MinecraftClient.getInstance());
-                }
-                else
-                {
-                    CameraEntity.removeCamera();
-                }
-
-                if (Configs.Generic.FREE_CAMERA_MOTION_TOGGLE.getBooleanValue())
-                {
-                    FeatureToggle.TWEAK_FREE_CAMERA_MOTION.setBooleanValue(config.getBooleanValue());
-                }
             }
         }
     }
@@ -372,6 +389,38 @@ public class Callbacks
             } else if (key == Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind()) {
                 PlacementTweaks.holdSettings();
                 return true;
+            }
+            else if (key == Hotkeys.SWAP_ELYTRA_CHESTPLATE.getKeybind())
+            {
+                InventoryUtils.swapElytraWithChestPlate(this.mc.player);
+                return true;
+            }
+            else if (key == Hotkeys.TOGGLE_GRAB_CURSOR.getKeybind())
+            {
+                if (this.mc.isWindowFocused())
+                {
+                    if (this.mc.mouse.isCursorLocked())
+                    {
+                        this.mc.mouse.unlockCursor();
+                        InfoUtils.printActionbarMessage("tweakeroo.message.unfocusing_game");
+                    }
+                    else
+                    {
+                        this.mc.mouse.lockCursor();
+                        InfoUtils.printActionbarMessage("tweakeroo.message.focusing_game");
+                    }
+                }
+            }
+            else if (key == Hotkeys.ZOOM_ACTIVATE.getKeybind())
+            {
+                if (action == KeyAction.PRESS)
+                {
+                    MiscUtils.onZoomActivated();
+                }
+                else
+                {
+                    MiscUtils.onZoomDeactivated();
+                }
             }
 
             return false;

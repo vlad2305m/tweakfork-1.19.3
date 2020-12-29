@@ -39,6 +39,7 @@ import fi.dy.masa.malilib.util.restrictions.ItemRestriction;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
+import fi.dy.masa.tweakeroo.util.CameraUtils;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
@@ -261,7 +262,7 @@ public class PlacementTweaks
             final double reach = mc.interactionManager.getReachDistance();
             final int maxCount = Configs.Generic.FAST_BLOCK_PLACEMENT_COUNT.getIntegerValue();
 
-            mc.crosshairTarget = player.rayTrace(reach, mc.getTickDelta(), false);
+            mc.crosshairTarget = player.raycast(reach, mc.getTickDelta(), false);
 
             for (int i = 0; i < maxCount; ++i)
             {
@@ -309,7 +310,7 @@ public class PlacementTweaks
                     if (result == ActionResult.SUCCESS)
                     {
                         posLast = posNew;
-                        mc.crosshairTarget = player.rayTrace(reach, mc.getTickDelta(), false);
+                        mc.crosshairTarget = player.raycast(reach, mc.getTickDelta(), false);
                     }
                     else
                     {
@@ -347,6 +348,11 @@ public class PlacementTweaks
             Hand hand,
             BlockHitResult hitResult)
     {
+        if (CameraUtils.shouldPreventPlayerInputs())
+        {
+            return ActionResult.PASS;
+        }
+
         boolean restricted = FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.getBooleanValue() || FeatureToggle.TWEAK_PLACEMENT_GRID.getBooleanValue();
         ItemStack stackPre = player.getStackInHand(hand).copy();
         Direction sideIn = hitResult.getSide();
@@ -495,6 +501,18 @@ public class PlacementTweaks
             return ActionResult.PASS;
         }
 
+        boolean simpleOffset = false;
+
+        if (handleFlexible == false &&
+            FeatureToggle.TWEAK_FAKE_SNEAK_PLACEMENT.getBooleanValue() &&
+            stack.isEmpty() == false)
+        {
+            BlockHitResult hitResult = new BlockHitResult(hitVec, sideIn, posIn, false);
+            ItemPlacementContext ctx = new ItemPlacementContext(new ItemUsageContext(player, hand, hitResult));
+            posNew = getPlacementPositionForTargetedPosition(world, posIn, sideIn, ctx);
+            simpleOffset = true;
+        }
+
         boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
         boolean accurateIn = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld();
         boolean accurateReverse = Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
@@ -631,7 +649,7 @@ public class PlacementTweaks
             return handleFlexibleBlockPlacement(controller, player, world, posIn, sideIn, playerYaw, hitVec, hand, null);
         }
 
-        return processRightClickBlockWrapper(controller, player, world, posIn, sideIn, hitVec, hand);
+        return processRightClickBlockWrapper(controller, player, world, simpleOffset ? posNew : posIn, sideIn, hitVec, hand);
     }
 
     private static boolean canPlaceBlockAgainst(World world, BlockPos pos, PlayerEntity player, Hand hand)
@@ -699,7 +717,7 @@ public class PlacementTweaks
             return false;
         }
 
-        HitResult trace = player.rayTrace(6, 0f, false);
+        HitResult trace = player.raycast(6, 0f, false);
 
         if (trace == null || trace.getType() != HitResult.Type.BLOCK)
         {
@@ -1228,11 +1246,16 @@ public class PlacementTweaks
             container != null && container == player.playerScreenHandler &&
             (slotNumber == 45 || (slotNumber - 36) == player.inventory.selectedSlot))
         {
-            boolean featRight = FeatureToggle.TWEAK_FAST_RIGHT_CLICK.getBooleanValue();
-            boolean featLeft = FeatureToggle.TWEAK_FAST_LEFT_CLICK.getBooleanValue();
+            if (mc.options.keyUse.isPressed() &&
+                (Configs.Generic.SLOT_SYNC_WORKAROUND_ALWAYS.getBooleanValue() ||
+                 FeatureToggle.TWEAK_FAST_BLOCK_PLACEMENT.getBooleanValue() ||
+                 FeatureToggle.TWEAK_FAST_RIGHT_CLICK.getBooleanValue()))
+            {
+                return true;
+            }
 
-            if ((featRight && mc.options.keyUse.isPressed()) ||
-                (featLeft && mc.options.keyAttack.isPressed()))
+            if (mc.options.keyAttack.isPressed() &&
+                FeatureToggle.TWEAK_FAST_LEFT_CLICK.getBooleanValue())
             {
                 return true;
             }

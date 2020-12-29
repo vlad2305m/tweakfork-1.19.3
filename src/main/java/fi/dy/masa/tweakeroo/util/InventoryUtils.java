@@ -3,6 +3,7 @@ package fi.dy.masa.tweakeroo.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -10,6 +11,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,6 +31,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
@@ -102,8 +106,6 @@ public class InventoryUtils
     /**
      * Returns the equipment type for the given slot number,
      * assuming that the slot number is for the player's main inventory container
-     * @param slotNum
-     * @return
      */
     @Nullable
     private static EquipmentSlot getEquipmentTypeForSlot(int slotNum, PlayerEntity player)
@@ -129,8 +131,6 @@ public class InventoryUtils
     /**
      * Returns the slot number for the given equipment type
      * in the player's inventory container
-     * @param type
-     * @return
      */
     private static int getSlotNumberForEquipmentType(EquipmentSlot type, @Nullable PlayerEntity player)
     {
@@ -162,7 +162,7 @@ public class InventoryUtils
 
     public static void restockNewStackToHand(PlayerEntity player, Hand hand, ItemStack stackReference, boolean allowHotbar)
     {
-        int slotWithItem = -1;
+        int slotWithItem;
 
         if (stackReference.getItem().isDamageable())
         {
@@ -221,10 +221,11 @@ public class InventoryUtils
 
     public static void trySwapCurrentToolIfNearlyBroken()
     {
-        if (FeatureToggle.TWEAK_SWAP_ALMOST_BROKEN_TOOLS.getBooleanValue())
+        MinecraftClient mc = MinecraftClient.getInstance();
+        PlayerEntity player = mc.player;
+
+        if (FeatureToggle.TWEAK_SWAP_ALMOST_BROKEN_TOOLS.getBooleanValue() && player != null)
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            PlayerEntity player = mc.player;
 
             for (Hand hand : Hand.values())
             {
@@ -245,10 +246,11 @@ public class InventoryUtils
 
     public static void trySwitchToEffectiveTool(BlockPos pos)
     {
-        if (FeatureToggle.TWEAK_TOOL_SWITCH.getBooleanValue())
+        MinecraftClient mc = MinecraftClient.getInstance();
+        PlayerEntity player = mc.player;
+
+        if (FeatureToggle.TWEAK_TOOL_SWITCH.getBooleanValue() && player != null && mc.world != null)
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            PlayerEntity player = mc.player;
             BlockState state = mc.world.getBlockState(pos);
             ItemStack stack = player.getMainHandStack();
 
@@ -361,7 +363,7 @@ public class InventoryUtils
 
             if (slotRepairableItem != -1)
             {
-                swapItemToEqupmentSlot(player, type, slotRepairableItem);
+                swapItemToEquipmentSlot(player, type, slotRepairableItem);
                 InfoUtils.printActionbarMessage("tweakeroo.message.repair_mode.swapped_repairable_item_to_slot", type.getName());
             }
         }
@@ -388,13 +390,46 @@ public class InventoryUtils
         return -1;
     }
 
+    public static void swapElytraWithChestPlate(@Nullable PlayerEntity player)
+    {
+        if (player == null || GuiUtils.getCurrentScreen() != null)
+        {
+            return;
+        }
+
+        ScreenHandler containerPlayer = player.currentScreenHandler;
+        ItemStack currentStack = player.getEquippedStack(EquipmentSlot.CHEST);
+
+        Predicate<ItemStack> stackFilterChestPlate = (s) -> s.getItem() instanceof ArmorItem && ((ArmorItem) s.getItem()).getSlotType() == EquipmentSlot.CHEST;
+        Predicate<ItemStack> stackFilterElytra = (s) -> s.getItem() instanceof ElytraItem && ElytraItem.isUsable(s);
+        Predicate<ItemStack> stackFilter = currentStack.isEmpty() || stackFilterChestPlate.test(currentStack) ? stackFilterElytra : stackFilterChestPlate;
+
+        List<Slot> targetSlots = new ArrayList<>();
+
+        for (Slot slot : containerPlayer.slots)
+        {
+            ItemStack stack = slot.getStack();
+
+            if (stack.isEmpty() == false &&
+                stackFilter.test(stack) &&
+                stack.getDamage() < stack.getMaxDamage() - 10)
+            {
+                targetSlots.add(slot);
+            }
+        }
+
+        if (targetSlots.isEmpty() == false)
+        {
+            //targetSlots.sort();
+            swapItemToEquipmentSlot(player, EquipmentSlot.CHEST, targetSlots.get(0).id);
+        }
+    }
+
     /**
+     * 
      * Finds a slot with an identical item than <b>stackReference</b>, ignoring the durability
      * of damageable items. Does not allow crafting or armor slots or the offhand slot
      * in the ContainerPlayer container.
-     * @param container
-     * @param stackReference
-     * @param reverse
      * @return the slot number, or -1 if none were found
      */
     public static int findSlotWithItem(ScreenHandler container, ItemStack stackReference, boolean allowHotbar, boolean reverse)
@@ -461,7 +496,7 @@ public class InventoryUtils
         }
     }
 
-    private static void swapItemToEqupmentSlot(PlayerEntity player, EquipmentSlot type, int sourceSlotNumber)
+    private static void swapItemToEquipmentSlot(PlayerEntity player, EquipmentSlot type, int sourceSlotNumber)
     {
         if (sourceSlotNumber != -1 && player.currentScreenHandler == player.playerScreenHandler)
         {
@@ -477,7 +512,7 @@ public class InventoryUtils
             {
                 // Use a hotbar slot that isn't the current slot
                 int tempSlot = (player.inventory.selectedSlot + 1) % 9;
-                // Swap the requested slot to the current hotbar slot
+                // Swap the requested slot to the temp slot
                 mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, tempSlot, SlotActionType.SWAP, mc.player);
 
                 // Swap the requested item from the hotbar slot to the offhand
@@ -490,12 +525,13 @@ public class InventoryUtils
             else
             {
                 int armorSlot = getSlotNumberForEquipmentType(type, player);
-                // Pick up the new item
-                mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, 0, SlotActionType.PICKUP, mc.player);
-                // Swap it to the armor slot
-                mc.interactionManager.clickSlot(container.syncId, armorSlot, 0, SlotActionType.PICKUP, mc.player);
-                // Place down the old armor item
-                mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, 0, SlotActionType.PICKUP, mc.player);
+                int tempSlot = (player.inventory.selectedSlot + 1) % 9;
+                // Swap the requested slot's item with the temp hotbar slot
+                mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, tempSlot, SlotActionType.SWAP, mc.player);
+                // Swap the temp hotbar slot with the armor slot
+                mc.interactionManager.clickSlot(container.syncId, armorSlot, tempSlot, SlotActionType.SWAP, mc.player);
+                // Swap the original item back to the temp hotbar slot
+                mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, tempSlot, SlotActionType.SWAP, mc.player);
             }
         }
     }
@@ -661,9 +697,15 @@ public class InventoryUtils
         MinecraftClient mc  = MinecraftClient.getInstance();
         PlayerEntity player = mc.player;
         World world = mc.world;
+
+        if (player == null || world == null)
+        {
+            return;
+        }
+
         double reach = mc.interactionManager.getReachDistance();
         boolean isCreative = player.abilities.creativeMode;
-        HitResult trace = player.rayTrace(reach, mc.getTickDelta(), false);
+        HitResult trace = player.raycast(reach, mc.getTickDelta(), false);
 
         if (trace != null && trace.getType() == HitResult.Type.BLOCK)
         {

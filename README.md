@@ -5,6 +5,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 2. Block break whitelist/blacklist restriction -> can prevent you from accidentally mining the wrong block and flooding your redstone
 3. Toggleable flexible block placement -> may save you from arthritis
 4. Stacking flexible block placement -> apply rotation to adjacent/offset placements
+5. Piston info tweak to show piston update order & counts -> Easier slimestone. Improving on the [PistOrder mod](https://github.com/Fallen-Breath/pistorder) by Fallen Breath. (you can now have multiple toggled & have hotkeys)
 
 
 Tweakeroo

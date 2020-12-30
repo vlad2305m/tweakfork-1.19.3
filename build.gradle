@@ -25,6 +25,9 @@ repositories {
     maven {
         url 'https://masa.dy.fi/maven'
     }
+    maven {
+		url 'https://maven.skyrising.xyz'
+	}
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -59,6 +62,10 @@ dependencies {
     //modCompile "net.fabricmc.fabric-api:fabric-api:" + config.fabric_version
 
     modCompileOnly "io.github.prospector:modmenu:" + config.mod_menu_version
+
+    modCompile "carpet:fabric-carpet:${config.fabric_carpet_version}"
+	modCompileOnly "quickcarpet:quickcarpet:${config.quick_carpet_version}"
+
 }
 
 minecraft {

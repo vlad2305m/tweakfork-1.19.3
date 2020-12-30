@@ -36,6 +36,9 @@ public class Hotkeys
     public static final ConfigHotkey HOTBAR_SWAP_3                      = new ConfigHotkey("hotbarSwap3",                       "",     "Swap the hotbar with the bottom-most inventory row");
     public static final ConfigHotkey INVENTORY_PREVIEW                  = new ConfigHotkey("inventoryPreview",                  "LEFT_ALT", KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the inventory preview feature");
     public static final ConfigHotkey OPEN_CONFIG_GUI                    = new ConfigHotkey("openConfigGui",                     "X,C",  "The key open the in-game config GUI");
+    public static final ConfigHotkey PISTON_INFO_PUSH                   = new ConfigHotkey("pistonInfoPush",                    "", KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the piston info mode for piston pushing");
+    public static final ConfigHotkey PISTON_INFO_PULL                   = new ConfigHotkey("pistonInfoPull",                    "", KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the piston info mode for piston pulling");
+    public static final ConfigHotkey PISTON_INFO_CLEAR                  = new ConfigHotkey("pistonInfoClear",                   "", "The key to clear all piston info overlays");
     public static final ConfigHotkey PLACEMENT_Y_MIRROR                 = new ConfigHotkey("placementYMirror",                  "",     KeybindSettings.PRESS_ALLOWEXTRA, "The key to mirror the targeted y-position within the block");
     public static final ConfigHotkey PLAYER_INVENTORY_PEEK              = new ConfigHotkey("playerInventoryPeek",               "",     KeybindSettings.PRESS_ALLOWEXTRA, "The key to activate the player inventory peek/preview feature");
     public static final ConfigHotkey PLACEMENT_RESTRICTION_MODE_COLUMN  = new ConfigHotkey("placementRestrictionModeColumn",    "Z,3",  "Switch the Placement Restriction mode to the Column mode");
@@ -79,6 +82,9 @@ public class Hotkeys
             HOTBAR_SWAP_3,
             INVENTORY_PREVIEW,
             OPEN_CONFIG_GUI,
+            PISTON_INFO_PUSH,
+            PISTON_INFO_PULL,
+            PISTON_INFO_CLEAR,
             PLACEMENT_Y_MIRROR,
             PLAYER_INVENTORY_PEEK,
             PLACEMENT_RESTRICTION_MODE_COLUMN,

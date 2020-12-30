@@ -6,6 +6,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -21,7 +22,9 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.mixin.IMixinHorseBaseEntity;
@@ -435,5 +438,22 @@ public class RenderUtils
         //textRenderer.drawString(strUp, x - textRenderer.getStringWidth(strUp) - 4, y - 4, 0xFFFFFFFF);
         textRenderer.draw(matrixStack, strUp, x + width + 4, y - 4, 0xFFFFFFFF);
         textRenderer.draw(matrixStack, strDown, x + width + 4, y + height - 4, 0xFFFFFFFF);
+    }
+       public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color,
+            double expand, BufferBuilder buffer, MinecraftClient mc)
+    {
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+
+        double minX = pos.getX() - dx - expand;
+        double minY = pos.getY() - dy - expand;
+        double minZ = pos.getZ() - dz - expand;
+        double maxX = pos.getX() - dx + expand + 1;
+        double maxY = pos.getY() - dy + expand + 1;
+        double maxZ = pos.getZ() - dz + expand + 1;
+
+        fi.dy.masa.malilib.render.RenderUtils.drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
 }

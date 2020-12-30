@@ -3,6 +3,7 @@
     "package": "fi.dy.masa.tweakeroo.mixin",
     "minVersion": "0.7",
     "compatibilityLevel": "JAVA_8",
+    "plugin": "fi.dy.masa.tweakeroo.mixin.MixinTweakarooPlugin",
     "client": [
         "IMixinAbstractBlock",
         "IMixinCommandBlockExecutor",
@@ -41,6 +42,8 @@
         "MixinMobSpawnerLogic",
         "MixinObserverBlock",
         "MixinParticleManager",
+        "MixinPistonHandler",
+        "MixinPistonBlock",
         "MixinPlayerAbilities",
         "MixinPlayerEntity",
         "MixinPresetsScreen",

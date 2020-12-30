@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PistonBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -17,6 +18,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -42,8 +44,9 @@ import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.util.CameraUtils;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
+import fi.dy.masa.tweakeroo.util.PistonUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
-
+import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 public class PlacementTweaks
 {
     private static BlockPos posFirst = null;
@@ -58,6 +61,7 @@ public class PlacementTweaks
     private static float playerYawFirst;
     private static ItemStack[] stackBeforeUse = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY };
     private static boolean isFirstClick;
+    private static long lastClick = 0;
     private static boolean isEmulatedClick;
     private static Direction tempDirection = null;
     private static BlockPos offsetPos = null;
@@ -353,6 +357,8 @@ public class PlacementTweaks
             return ActionResult.PASS;
         }
 
+      
+
         boolean restricted = FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.getBooleanValue() || FeatureToggle.TWEAK_PLACEMENT_GRID.getBooleanValue();
         ItemStack stackPre = player.getStackInHand(hand).copy();
         Direction sideIn = hitResult.getSide();
@@ -361,6 +367,50 @@ public class PlacementTweaks
         Direction playerFacingH = player.getHorizontalFacing();
         HitPart hitPart = PositionUtils.getHitPart(sideIn, playerFacingH, posIn, hitVec);
         Direction sideRotated = getRotatedFacing(sideIn, playerFacingH, hitPart);
+
+        long now = System.currentTimeMillis();
+        if (now - lastClick >= 200) {
+            lastClick = now;
+        if ( Hotkeys.PISTON_INFO_PULL.getKeybind().isKeybindHeld() ||
+        Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld()) {
+
+            BlockPos np = posIn.offset(sideRotated.getOpposite(),Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld() ? 1 : 2);
+
+           // System.out.println(np);
+           // System.out.println(sideRotated);
+            PistonUtils.toggleAtPos(world,np,sideRotated, Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld());
+            
+            
+            return ActionResult.PASS;
+        }
+
+        
+
+		// click with empty main hand, not sneaking
+		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
+		{
+		
+			BlockState blockState = world.getBlockState(posIn);
+			Block block = blockState.getBlock();
+			if (block instanceof PistonBlock)
+			{
+                Direction dir = blockState.get(Properties.FACING);
+                boolean extended = blockState.get(PistonBlock.EXTENDED);
+                boolean sticky = ((MixinPistonBlock)block).getSticky();
+				if (!extended || sticky)
+				{
+
+                    boolean isAir = world.getBlockState(posIn.offset(dir)).isAir();
+
+
+                    PistonUtils.toggleAtPos(world, posIn,dir, !extended && (!sticky || !isAir));
+           
+					return ActionResult.PASS;
+				}
+			}
+        }
+    }
+        
 
         cacheStackInHand(hand);
 

@@ -369,7 +369,7 @@ public class PlacementTweaks
         Direction sideRotated = getRotatedFacing(sideIn, playerFacingH, hitPart);
 
         long now = System.currentTimeMillis();
-        if (now - lastClick >= 200) {
+        if (FeatureToggle.TWEAK_PISTON_INFO.getBooleanValue() && now - lastClick >= 200) {
             lastClick = now;
         if ( Hotkeys.PISTON_INFO_PULL.getKeybind().isKeybindHeld() ||
         Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld()) {

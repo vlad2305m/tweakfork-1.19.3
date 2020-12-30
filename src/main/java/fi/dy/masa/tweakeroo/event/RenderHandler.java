@@ -145,6 +145,7 @@ public class RenderHandler implements IRenderer
             RenderSystem.depthMask(true);
         }
 
-        PistonUtils.renderOverlay();
+        if (FeatureToggle.TWEAK_PISTON_INFO.getBooleanValue())
+            PistonUtils.renderOverlay();
     }
 }

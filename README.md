@@ -3,9 +3,10 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 
 1. Multi-layer block break restriction -> can prevent you from making potholes in the ground when speedmining
 2. Block break whitelist/blacklist restriction -> can prevent you from accidentally mining the wrong block and flooding your redstone
-3. Toggleable flexible block placement -> may save you from arthritis
-4. Stacking flexible block placement -> apply rotation to adjacent/offset placements
-5. Piston info tweak to show piston update order & counts -> Easier slimestone. Improving on the [PistOrder mod](https://github.com/Fallen-Breath/pistorder) by Fallen Breath. (you can now have multiple toggled & have hotkeys)
+3. Block based right click whitelist/blacklist restriction -> can prevent you from accidentally placing water outside of cauldrons and flooding your redstone
+4. Toggleable flexible block placement -> may save you from arthritis
+5. Stacking flexible block placement -> apply rotation to adjacent/offset placements
+6. Piston info tweak to show piston update order & counts -> Easier slimestone. Improving on the [PistOrder mod](https://github.com/Fallen-Breath/pistorder) by Fallen Breath. (you can now have multiple toggled & have hotkeys)
 
 
 Tweakeroo

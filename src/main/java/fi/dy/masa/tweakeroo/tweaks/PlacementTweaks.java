@@ -78,6 +78,7 @@ public class PlacementTweaks
     @Nullable private static BlockState stateClickedOn = null;
     public static final BlockRestriction FAST_RIGHT_CLICK_BLOCK_RESTRICTION = new BlockRestriction();
     public static final BlockRestriction BLOCK_TYPE_BREAK_RESTRICTION = new BlockRestriction();
+    public static final BlockRestriction BLOCK_TYPE_RCLICK_RESTRICTION = new BlockRestriction();
     public static final ItemRestriction FAST_RIGHT_CLICK_ITEM_RESTRICTION = new ItemRestriction();
     public static final ItemRestriction FAST_PLACEMENT_ITEM_RESTRICTION = new ItemRestriction();
 
@@ -368,19 +369,18 @@ public class PlacementTweaks
         HitPart hitPart = PositionUtils.getHitPart(sideIn, playerFacingH, posIn, hitVec);
         Direction sideRotated = getRotatedFacing(sideIn, playerFacingH, hitPart);
 
+        if (!BLOCK_TYPE_RCLICK_RESTRICTION.isAllowed(world.getBlockState(posIn).getBlock())) return ActionResult.PASS;
+
         long now = System.currentTimeMillis();
         if (FeatureToggle.TWEAK_PISTON_INFO.getBooleanValue() && now - lastClick >= 200) {
             lastClick = now;
-        if ( Hotkeys.PISTON_INFO_PULL.getKeybind().isKeybindHeld() ||
-        Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld()) {
+        if (Hotkeys.PISTON_INFO_PULL.getKeybind().isKeybindHeld() || Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld()) {
 
             BlockPos np = posIn.offset(sideRotated.getOpposite(),Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld() ? 1 : 2);
 
            // System.out.println(np);
            // System.out.println(sideRotated);
             PistonUtils.toggleAtPos(world,np,sideRotated, Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld());
-            
-            
             return ActionResult.PASS;
         }
 

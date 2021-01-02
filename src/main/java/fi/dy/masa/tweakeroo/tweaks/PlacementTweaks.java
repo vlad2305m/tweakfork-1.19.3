@@ -492,8 +492,10 @@ public class PlacementTweaks
 
             if ((rotationHeld && (offsetHeld || adjacent)) && tempDirection == null) {
                 tempDirection = sideRotatedIn;
-                InfoUtils.printActionbarMessage(tempDirection.asString() + " rotation set");
-                return ActionResult.PASS;
+                if (FeatureToggle.STACK_FLEXIBLE.getBooleanValue()) {
+                    InfoUtils.printActionbarMessage(tempDirection.asString() + " rotation set");
+                    return ActionResult.PASS;
+                }
             }
 
            

@@ -81,19 +81,27 @@ public class PistonUtils {
         return !FabricLoader.getInstance().isModLoaded("carpet") && !FabricLoader.getInstance().isModLoaded("quickcarpet");
     }
 
+    public static int pushLimitCarpet(int value) {
+        if (value > 0) CarpetSettings.pushLimit = value;
+        return CarpetSettings.pushLimit;
+    }
+    public static int pushLimitQuickCarpet(int value) {
+        if (value > 0) Settings.pushLimit = value;
+        return Settings.pushLimit;
+    }
     public static int getPushLimit() {
 
         
         // carpet
         try {
-            return CarpetSettings.pushLimit;
+            return pushLimitCarpet(-1);
         } catch (Exception e) {
 
         }
 
         // quickcarpet
         try {
-            return Settings.pushLimit;
+            return pushLimitQuickCarpet(-1);
         } catch (Exception e) {
 
         }
@@ -106,14 +114,14 @@ public class PistonUtils {
        
         // carpet
         try {
-           return CarpetSettings.pushLimit = value;
+           return pushLimitCarpet(value);
         } catch (Exception e) {
 
         }
 
         // quickcarpet
         try {
-            return Settings.pushLimit = value;
+            return pushLimitQuickCarpet(value);
         } catch (Exception e) {
 
         }

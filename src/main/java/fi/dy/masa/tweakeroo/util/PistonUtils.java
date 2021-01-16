@@ -13,7 +13,6 @@
 
 */
 
-
 package fi.dy.masa.tweakeroo.util;
 
 import java.util.Collections;
@@ -25,8 +24,10 @@ import fi.dy.masa.tweakeroo.renderer.OverlayRenderer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PistonBlock;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -58,7 +59,7 @@ public class PistonUtils {
         PistonSource source = sources.get(key);
 
         if (source == null) {
-            PistonSource newSource = new PistonSource(world, pos, direction, isPush);
+            PistonSource newSource = new PistonSource(world, pos, direction, isPush, world.getBlockState(pos));
             sources.put(key,newSource);
             newSource.calculatePush();
             return true;
@@ -68,7 +69,7 @@ public class PistonUtils {
                 recalculate_flag = true;
                 return false;
             } else {
-                PistonSource newSource = new PistonSource(world, pos, direction, isPush);
+                PistonSource newSource = new PistonSource(world, pos, direction, isPush, world.getBlockState(pos));
                 sources.put(key,newSource);
                 recalculate_flag = true;
                 return true;
@@ -125,7 +126,8 @@ public class PistonUtils {
         if (recalculate_flag) {
             recalculate();
             recalculate_flag = false;
-        }
+        } else
+            recalculate_flag = true;
 
         MinecraftClient mc = MinecraftClient.getInstance();
         
@@ -152,6 +154,7 @@ public class PistonUtils {
     
     }
 
+    @Deprecated
     public static void updateBlock(BlockPos pos) {
 
         long key = pos.asLong();
@@ -179,7 +182,11 @@ public class PistonUtils {
     public static void recalculate() {
         hotBlocks.clear();
         for (PistonSource temp : sources.values()) {
-            temp.calculatePush();
+
+            if (!temp.checkValid()) {
+                sources.remove(temp.pos.asLong());
+            } else
+                temp.calculatePush();
         }
         recalculate_flag = false;
     }
@@ -195,16 +202,35 @@ public class PistonUtils {
 
         private PistonHandler pistonHandler;
         private World world;
+
+        public BlockState current;
         
 
 
-        PistonSource(World world, BlockPos pos, Direction pushDirection,boolean isPush) {
+        PistonSource(World world, BlockPos pos, Direction pushDirection,boolean isPush, BlockState current) {
             this.pos = pos;
             this.pushDirection = pushDirection;
             this.isPush = isPush;
             this.world = world;
             this.pistonHandler = new PistonHandler(world, pos, pushDirection, isPush);
             this.id = lastId++;
+            this.current = current;
+        }
+        public boolean checkValid() {
+            BlockState blockState = this.world.getBlockState(pos);
+            if (blockState != current) {
+                if (blockState.getBlock() instanceof PistonBlock) {
+                    Direction dir = blockState.get(Properties.FACING);
+                    boolean extended = blockState.get(PistonBlock.EXTENDED);
+
+                    if (dir != this.pushDirection) return false;
+
+                    this.isPush = !extended;
+                    return true;
+                }
+                return false;
+            }
+            return true;
         }
         public void calculatePush() {
             BlockState[] states = new BlockState[2];

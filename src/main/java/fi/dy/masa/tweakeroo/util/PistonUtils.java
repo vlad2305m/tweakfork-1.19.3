@@ -92,16 +92,19 @@ public class PistonUtils {
     public static int getPushLimit() {
 
         
+
         // carpet
         try {
-            return pushLimitCarpet(-1);
+            if (FabricLoader.getInstance().isModLoaded("carpet"))
+                return pushLimitCarpet(-1);
         } catch (Exception e) {
 
         }
 
         // quickcarpet
         try {
-            return pushLimitQuickCarpet(-1);
+            if (FabricLoader.getInstance().isModLoaded("quickcarpet"))
+                return pushLimitQuickCarpet(-1);
         } catch (Exception e) {
 
         }
@@ -114,14 +117,16 @@ public class PistonUtils {
        
         // carpet
         try {
-           return pushLimitCarpet(value);
+            if (FabricLoader.getInstance().isModLoaded("carpet"))
+                return pushLimitCarpet(value);
         } catch (Exception e) {
 
         }
 
         // quickcarpet
         try {
-            return pushLimitQuickCarpet(value);
+            if (FabricLoader.getInstance().isModLoaded("quickcarpet"))
+                return pushLimitQuickCarpet(value);
         } catch (Exception e) {
 
         }

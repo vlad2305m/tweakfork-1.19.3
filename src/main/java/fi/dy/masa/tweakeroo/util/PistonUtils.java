@@ -239,6 +239,8 @@ public class PistonUtils {
                     if (dir != this.pushDirection) return false;
 
                     this.isPush = !extended;
+                    this.pistonHandler = new PistonHandler(world, pos, pushDirection, isPush);
+            
                     return true;
                 }
                 return false;

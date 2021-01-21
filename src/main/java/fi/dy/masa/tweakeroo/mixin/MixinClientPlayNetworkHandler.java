@@ -5,8 +5,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.tweakeroo.Tweakeroo;
+import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
+import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 
 @Mixin(net.minecraft.client.network.ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler
@@ -38,6 +40,13 @@ public abstract class MixinClientPlayNetworkHandler
             message.formatted(net.minecraft.util.Formatting.UNDERLINE);
             net.minecraft.client.MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message);
             Tweakeroo.logger.info(str);
+        }
+    }
+
+    @Inject(method = "onBlockEvent", at = @At("HEAD"), cancellable = true)
+    private void overrideBlockEvent(BlockEventS2CPacket packet, CallbackInfo ci) {
+        if (Configs.Disable.DISABLE_BLOCK_EVENT_RENDERING.getBooleanValue()) {
+            ci.cancel();
         }
     }
 }

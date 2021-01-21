@@ -45,7 +45,7 @@ public abstract class MixinClientPlayNetworkHandler
 
     @Inject(method = "onBlockEvent", at = @At("HEAD"), cancellable = true)
     private void overrideBlockEvent(BlockEventS2CPacket packet, CallbackInfo ci) {
-        if (Configs.Disable.DISABLE_BLOCK_EVENT_RENDERING.getBooleanValue()) {
+        if (Configs.Disable.DISABLE_CLIENT_BLOCK_EVENTS.getBooleanValue()) {
             ci.cancel();
         }
     }

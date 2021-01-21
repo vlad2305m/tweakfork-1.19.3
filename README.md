@@ -8,6 +8,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 5. Stacking flexible block placement -> apply rotation to adjacent/offset placements
 6. Piston info tweak to show piston update order & counts -> Easier slimestone. Improving on the [PistOrder mod](https://github.com/Fallen-Breath/pistorder) by Fallen Breath. (you can now have multiple toggled & have hotkeys)
 7. tweakHideScoreboard -> may save your sanity when servers turn on sidebar scoreboards during big digs
+8. disableClientBlockEvents -> stops client side piston lag
 
 Tweakeroo
 ==============

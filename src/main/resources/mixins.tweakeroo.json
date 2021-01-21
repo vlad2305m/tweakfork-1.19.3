@@ -8,6 +8,7 @@
         "IMixinAbstractBlock",
         "IMixinCommandBlockExecutor",
         "IMixinHorseBaseEntity",
+        "MixinAbstractClientPlayerEntity",
         "MixinAbstractInventoryScreen",
         "MixinBackgroundRenderer",
         "MixinBlockEntityRenderDispatcher",

@@ -4,7 +4,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.PistonBlock;
+import net.minecraft.block.RepeaterBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -82,6 +84,11 @@ public class PlacementTweaks
     public static final ItemRestriction FAST_RIGHT_CLICK_ITEM_RESTRICTION = new ItemRestriction();
     public static final ItemRestriction FAST_PLACEMENT_ITEM_RESTRICTION = new ItemRestriction();
 
+    private static final Class<? extends Block>[] ACCURATE_AFTERCLICKER_BLOCKS = (Class<? extends Block>[]) new Class[] {
+            RepeaterBlock.class, ComparatorBlock.class
+    };
+    
+    private static final int ACCURATE_RADIX = 16 * 2; // Multiplied by 2
 
     public static void holdSettings() {
 
@@ -482,7 +489,7 @@ public class PlacementTweaks
         boolean rotation = rotationHeld || (rememberFlexible && firstWasRotation);
         boolean offset = offsetHeld || (rememberFlexible && firstWasOffset);
         ItemStack stack = player.getStackInHand(hand);
-
+       
         if (flexible)
         {
             BlockHitResult hitResult = new BlockHitResult(hitVec, sideIn, posIn, false);
@@ -568,11 +575,13 @@ public class PlacementTweaks
         boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
         boolean accurateIn = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld();
         boolean accurateReverse = Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
-        boolean afterClicker = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue();
+        //boolean afterClicker = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue();
+        boolean shouldUseAccurateAfterClick = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue() && canUseCarpetProtocolForAfterclicker(stack);
 
+       
         if (!accurateIn) accurateIn = intoHold;
         if (!accurateReverse) accurateReverse = reverseHold;
-        if (accurate && (accurateIn || accurateReverse || afterClicker))
+        if (accurate && (accurateIn || accurateReverse || shouldUseAccurateAfterClick))
         {
             Direction facing = side;
             boolean handleAccurate = false;
@@ -653,7 +662,7 @@ public class PlacementTweaks
                 handleAccurate = true;
             }
 
-            if ((handleAccurate || afterClicker) && FeatureToggle.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue())
+            if ((handleAccurate || shouldUseAccurateAfterClick) && FeatureToggle.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue())
             {
                 // Carpet-Extra mod accurate block placement protocol support
                 double relX = hitVec.x - posNew.getX();
@@ -665,9 +674,9 @@ public class PlacementTweaks
                     x = posNew.getX() + relX + 2 + (facing.getId() * 2);
                 }
 
-                if (afterClicker)
+                if (shouldUseAccurateAfterClick)
                 {
-                    x += afterClickerClickCount * 16;
+                    x += afterClickerClickCount * ACCURATE_RADIX;
                 }
 
                 //System.out.printf("accurate - pre hitVec: %s\n", hitVec);
@@ -762,6 +771,24 @@ public class PlacementTweaks
         return true;
     }
 
+    private static boolean canUseCarpetProtocolForAfterclicker(ItemStack stack) {
+        Item item = stack.getItem();
+
+        if (stack.isEmpty() || !(item instanceof BlockItem)) {
+            return false;
+        }
+
+        Block block = ((BlockItem) item).getBlock();
+        
+        for (Class<? extends Block> c : ACCURATE_AFTERCLICKER_BLOCKS)
+        {
+            if (c.isInstance(block))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     private static boolean canUseFastRightClick(PlayerEntity player)
     {
         if (canUseItemWithRestriction(FAST_RIGHT_CLICK_ITEM_RESTRICTION, player) == false)
@@ -867,6 +894,8 @@ public class PlacementTweaks
         boolean keys = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld() || Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
         accurate = accurate && keys;
 
+        boolean shouldUseAccurateAfterClick = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue() && canUseCarpetProtocolForAfterclicker(stackOriginal);
+
         // Carpet-Extra mod accurate block placement protocol support
         if (flexible && rotation && accurate == false &&
             FeatureToggle.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue() &&
@@ -877,9 +906,9 @@ public class PlacementTweaks
             //double x = posIn.getX() + relX + 2 + (facing.getId() * 2);
             double x = posIn.getX() + 2 + (facing.getId() * 2);
 
-            if (FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue())
+            if (shouldUseAccurateAfterClick)
             {
-                x += afterClickerClickCount * 16;
+                x += afterClickerClickCount * ACCURATE_RADIX;
             }
 
             //System.out.printf("processRightClickBlockWrapper req facing: %s, x: %.3f, pos: %s, sideIn: %s\n", facing, x, posIn, sideIn);
@@ -930,7 +959,7 @@ public class PlacementTweaks
         tryRestockHand(player, hand, stackOriginal);
 
         if (FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue() &&
-            FeatureToggle.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue() == false &&
+            !shouldUseAccurateAfterClick &&
             world.getBlockState(posPlacement) != stateBefore)
         {
             for (int i = 0; i < afterClickerClickCount; i++)

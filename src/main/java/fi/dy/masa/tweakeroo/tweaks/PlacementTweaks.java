@@ -672,6 +672,8 @@ public class PlacementTweaks
                 if (handleAccurate && isFacingValidFor(facing, stack))
                 {
                     x = posNew.getX() + relX + 2 + (facing.getId() * 2);
+                } else if (shouldUseAccurateAfterClick) {
+                    x = posNew.getX() + relX + 2;
                 }
 
                 if (shouldUseAccurateAfterClick)

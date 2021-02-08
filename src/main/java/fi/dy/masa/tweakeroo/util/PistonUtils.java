@@ -17,7 +17,9 @@ package fi.dy.masa.tweakeroo.util;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import carpet.CarpetSettings;
 import fi.dy.masa.tweakeroo.renderer.OverlayRenderer;
@@ -35,16 +37,15 @@ import net.minecraft.world.World;
 import quickcarpet.settings.Settings;
 
 public class PistonUtils {
- 
+
     private static final int MAX_PUSH_LIMIT_FOR_CALC = 128;
-   
+
     public static HashMap<Long, PistonSource> sources = new HashMap<Long, PistonSource>();
     public static HashMap<Long, PistonInfo> hotBlocks = new HashMap<Long, PistonInfo>();
     public static boolean overridePushLimit = false;
     public static int lastId = 0;
 
     private static int VanillaPushLimit = 12;
-
 
     public static boolean recalculate_flag = false;
 
@@ -53,14 +54,14 @@ public class PistonUtils {
         hotBlocks.clear();
         overridePushLimit = false;
     }
-    public static boolean toggleAtPos(World world, BlockPos pos, Direction direction, boolean isPush)
-	{
+
+    public static boolean toggleAtPos(World world, BlockPos pos, Direction direction, boolean isPush) {
         long key = pos.asLong();
         PistonSource source = sources.get(key);
 
         if (source == null) {
             PistonSource newSource = new PistonSource(world, pos, direction, isPush, world.getBlockState(pos));
-            sources.put(key,newSource);
+            sources.put(key, newSource);
             newSource.calculatePush();
             return true;
         } else {
@@ -70,28 +71,32 @@ public class PistonUtils {
                 return false;
             } else {
                 PistonSource newSource = new PistonSource(world, pos, direction, isPush, world.getBlockState(pos));
-                sources.put(key,newSource);
+                sources.put(key, newSource);
                 recalculate_flag = true;
                 return true;
             }
 
         }
     }
+
     public static boolean loadVanilla() {
-        return !FabricLoader.getInstance().isModLoaded("carpet") && !FabricLoader.getInstance().isModLoaded("quickcarpet");
+        return !FabricLoader.getInstance().isModLoaded("carpet")
+                && !FabricLoader.getInstance().isModLoaded("quickcarpet");
     }
 
     public static int pushLimitCarpet(int value) {
-        if (value > 0) CarpetSettings.pushLimit = value;
+        if (value > 0)
+            CarpetSettings.pushLimit = value;
         return CarpetSettings.pushLimit;
     }
+
     public static int pushLimitQuickCarpet(int value) {
-        if (value > 0) Settings.pushLimit = value;
+        if (value > 0)
+            Settings.pushLimit = value;
         return Settings.pushLimit;
     }
-    public static int getPushLimit() {
 
-        
+    public static int getPushLimit() {
 
         // carpet
         try {
@@ -108,13 +113,13 @@ public class PistonUtils {
         } catch (Exception e) {
 
         }
-        
+
         return VanillaPushLimit;
 
     }
+
     public static int setPushLimit(int value) {
 
-       
         // carpet
         try {
             if (FabricLoader.getInstance().isModLoaded("carpet"))
@@ -130,7 +135,7 @@ public class PistonUtils {
         } catch (Exception e) {
 
         }
-        
+
         return VanillaPushLimit = value;
 
     }
@@ -143,28 +148,32 @@ public class PistonUtils {
             recalculate_flag = true;
 
         MinecraftClient mc = MinecraftClient.getInstance();
-        
-       
-        for (PistonInfo info : hotBlocks.values()) {
-            
-            switch (info.type) {
-                case 0:  // piston source
-                    String actionResult = info.source.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
-                    OverlayRenderer.drawString(String.format("%s %s", info.source.isPush ? "Push" : "Pull", actionResult), info.pos, Formatting.GOLD.getColorValue(), -0.5F);
-                    OverlayRenderer.drawString(info.source.blockCount + " blocks", info.pos, Formatting.GOLD.getColorValue(), 0.5F);
 
-                break;
+        for (PistonInfo info : hotBlocks.values()) {
+
+            switch (info.type) {
+                case 0: // piston source
+                    String actionResult = info.source.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
+                    OverlayRenderer.drawString(
+                            String.format("%s %s", info.source.isPush ? "Push" : "Pull", actionResult), info.pos,
+                            Formatting.GOLD.getColorValue(), -0.5F);
+                    OverlayRenderer.drawString(info.source.blockCount + " blocks", info.pos,
+                            Formatting.GOLD.getColorValue(), 0.5F);
+
+                    break;
                 case 1: // moving
-                     OverlayRenderer.drawString(String.valueOf(info.order), info.pos, Formatting.WHITE.getColorValue(), 0);
-     
-                break;
+                    OverlayRenderer.drawString(String.valueOf(info.order), info.pos, Formatting.WHITE.getColorValue(),
+                            0);
+
+                    break;
                 case 2: // breaking
-                     OverlayRenderer.drawString(String.valueOf(info.order), info.pos, Formatting.RED.getColorValue() | (0xFF << 24), 0);
-                break;
+                    OverlayRenderer.drawString(String.valueOf(info.order), info.pos,
+                            Formatting.RED.getColorValue() | (0xFF << 24), 0);
+                    break;
             }
         }
         OverlayRenderer.renderPistonGroups(mc, hotBlocks);
-    
+
     }
 
     @Deprecated
@@ -180,24 +189,23 @@ public class PistonUtils {
             recalculate_flag = true;
             return;
         }
-        if (
-            hotBlocks.containsKey(pos.offset(Direction.UP).asLong()) || 
-            hotBlocks.containsKey(pos.offset(Direction.DOWN).asLong()) ||
-            hotBlocks.containsKey(pos.offset(Direction.EAST).asLong()) ||
-            hotBlocks.containsKey(pos.offset(Direction.WEST).asLong()) ||
-            hotBlocks.containsKey(pos.offset(Direction.NORTH).asLong()) ||
-            hotBlocks.containsKey(pos.offset(Direction.SOUTH).asLong())
-        ) {
+        if (hotBlocks.containsKey(pos.offset(Direction.UP).asLong())
+                || hotBlocks.containsKey(pos.offset(Direction.DOWN).asLong())
+                || hotBlocks.containsKey(pos.offset(Direction.EAST).asLong())
+                || hotBlocks.containsKey(pos.offset(Direction.WEST).asLong())
+                || hotBlocks.containsKey(pos.offset(Direction.NORTH).asLong())
+                || hotBlocks.containsKey(pos.offset(Direction.SOUTH).asLong())) {
             recalculate_flag = true;
             return;
         }
     }
+
     public static void recalculate() {
         hotBlocks.clear();
-        for (PistonSource temp : sources.values()) {
-
+        for (Iterator<Entry<Long, PistonSource>> iterator = sources.entrySet().iterator(); iterator.hasNext();) {
+            PistonSource temp = iterator.next().getValue();
             if (!temp.checkValid()) {
-                sources.remove(temp.pos.asLong());
+                iterator.remove();
             } else
                 temp.calculatePush();
         }

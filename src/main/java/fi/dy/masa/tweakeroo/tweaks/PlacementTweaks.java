@@ -76,6 +76,7 @@ public class PlacementTweaks
     private static boolean firstWasRotation;
     private static boolean firstWasOffset;
     private static int placementCount;
+    private static int hotbarSlot = -1;
     private static ItemStack stackClickedOn = ItemStack.EMPTY;
     @Nullable private static BlockState stateClickedOn = null;
     public static final BlockRestriction FAST_RIGHT_CLICK_BLOCK_RESTRICTION = new BlockRestriction();
@@ -232,6 +233,7 @@ public class PlacementTweaks
         if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() && stackOriginal.isEmpty() == false)
         {
             stackBeforeUse[hand.ordinal()] = stackOriginal.copy();
+            hotbarSlot = player.inventory.selectedSlot;
         }
     }
 
@@ -816,7 +818,7 @@ public class PlacementTweaks
         {
             ItemStack stackCurrent = player.getStackInHand(hand);
 
-            if (stackOriginal.isEmpty() == false &&
+            if (stackOriginal.isEmpty() == false && player.inventory.selectedSlot == hotbarSlot &&
                 (stackCurrent.isEmpty() || stackCurrent.isItemEqualIgnoreDamage(stackOriginal) == false))
             {
                 // Don't allow taking stacks from elsewhere in the hotbar, if the cycle tweak is on

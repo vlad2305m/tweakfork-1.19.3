@@ -97,7 +97,7 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_TOOL_SWITCH               ("tweakToolSwitch",                     false, "",    "Enables automatically switching to an effective tool for the targeted block"),
     TWEAK_Y_MIRROR                  ("tweakYMirror",                        false, "",    "Mirrors the targeted y-position within the block bounds.\nThis is basically for placing slabs or stairs\nin the opposite top/bottom state from normal,\nif you have to place them against another slab for example."),
     TWEAK_ZOOM                      ("tweakZoom",                           false, "",    KeybindSettings.INGAME_BOTH, "Enables using the zoom hotkey to, well, zoom in"),
-    TWEAK_SELECTIVE_BLOCKS          ("tweakSelectiveBlocks",                false, "",    "Enables selectively visible blocks");
+    // TWEAK_SELECTIVE_BLOCKS          ("tweakSelectiveBlocks",                false, "",    "Enables selectively visible blocks");
 
 
     private final String name;

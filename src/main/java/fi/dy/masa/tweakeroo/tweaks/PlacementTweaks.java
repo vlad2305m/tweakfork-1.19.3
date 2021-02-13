@@ -528,7 +528,7 @@ public class PlacementTweaks
                     side = (tempDirection != null) ? tempDirection : directionHold;
                     handleFlexible = true;
                     rotation = true;
-                    System.out.println(side.asString());
+                    // System.out.println(side.asString());
                 } else {
                     // Don't rotate the player facing in handleFlexibleBlockPlacement()
                     hitPart = null;

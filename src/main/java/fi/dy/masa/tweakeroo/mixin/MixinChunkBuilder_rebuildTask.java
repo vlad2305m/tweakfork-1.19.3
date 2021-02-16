@@ -22,7 +22,7 @@ public abstract class MixinChunkBuilder_rebuildTask
     target = "Lnet/minecraft/util/math/BlockPos;iterate(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;)Ljava/lang/Iterable;", ordinal = 0))
     private Iterable<BlockPos> iterateProxy(BlockPos start, BlockPos end) {
 
-        if (FeatureToggle.TWEAK_SELECTIVE_BLOCKS.getBooleanValue()) {
+        if (FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue()) {
 
             Iterator<BlockPos> iterator = BlockPos.iterate(start, end).iterator();
 

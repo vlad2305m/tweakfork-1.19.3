@@ -265,7 +265,7 @@ public class RenderTweaks
 
 	public static void onPistonEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 
-        if (!Configs.Generic.SELECTIVE_BLOCKS_TRACK_PISTONS.getBooleanValue() || !FeatureToggle.TWEAK_SELECTIVE_BLOCKS.getBooleanValue())
+        if (!Configs.Generic.SELECTIVE_BLOCKS_TRACK_PISTONS.getBooleanValue() || !FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue())
             return;
 
             if (type == 2) return;
@@ -373,7 +373,7 @@ public class RenderTweaks
         return isPositionValidForRendering(pos.asLong());
 	}
     public static boolean isPositionValidForRendering(long key) {
-        if (!FeatureToggle.TWEAK_SELECTIVE_BLOCKS.getBooleanValue()) {
+        if (!FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue()) {
             return true;
         }
 

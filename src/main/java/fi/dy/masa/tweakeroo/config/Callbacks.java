@@ -117,7 +117,7 @@ public class Callbacks
         Configs.Lists.SELECTIVE_BLOCKS_BLACKLIST.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
         Configs.Lists.SELECTIVE_BLOCKS_WHITELIST.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
         Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
-        FeatureToggle.TWEAK_SELECTIVE_BLOCKS.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
+        FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
     }
 
     public static class FeatureCallbackHold implements IValueChangeCallback<IConfigBoolean>

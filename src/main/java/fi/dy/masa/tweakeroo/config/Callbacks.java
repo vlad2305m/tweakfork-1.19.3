@@ -23,6 +23,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.tweakeroo.gui.GuiConfigs;
 import fi.dy.masa.tweakeroo.mixin.IMixinAbstractBlock;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import fi.dy.masa.tweakeroo.util.CameraEntity;
 import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
@@ -94,9 +95,12 @@ public class Callbacks
         Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().setCallback(callbackGeneric);
         Hotkeys.PISTON_INFO_CLEAR.getKeybind().setCallback(callbackGeneric);
         Hotkeys.ZOOM_ACTIVATE.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.AREA_SELECTION_ADD_TO_LIST.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.AREA_SELECTION_REMOVE_FROM_LIST.getKeybind().setCallback(callbackGeneric);
 
         Hotkeys.SKIP_ALL_RENDERING.getKeybind().setCallback(callbackMessage);
         Hotkeys.SKIP_WORLD_RENDERING.getKeybind().setCallback(callbackMessage);
+        
 
         Configs.Lists.CREATIVE_EXTRA_ITEMS.setValueChangeCallback((cfg) -> CreativeExtraItems.setCreativeExtraItems(cfg.getStrings()));
 
@@ -109,6 +113,11 @@ public class Callbacks
         FeatureToggle.TWEAK_PLACEMENT_LIMIT.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_PLACEMENT_LIMIT));
         FeatureToggle.TWEAK_SNAP_AIM.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_SNAP_AIM));
         FeatureToggle.TWEAK_ZOOM.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_ZOOM));
+    
+        Configs.Lists.SELECTIVE_BLOCKS_BLACKLIST.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
+        Configs.Lists.SELECTIVE_BLOCKS_WHITELIST.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
+        Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
+        FeatureToggle.TWEAK_SELECTIVE_BLOCKS.setValueChangeCallback((cfg) -> RenderTweaks.rebuildLists());
     }
 
     public static class FeatureCallbackHold implements IValueChangeCallback<IConfigBoolean>
@@ -245,6 +254,13 @@ public class Callbacks
         @Override
         public boolean onKeyAction(KeyAction action, IKeybind key)
         {
+            if (key == Hotkeys.AREA_SELECTION_ADD_TO_LIST.getKeybind()) {
+                RenderTweaks.addSelectionToList();
+                return true;
+            } else if (key == Hotkeys.AREA_SELECTION_REMOVE_FROM_LIST.getKeybind()) {
+                RenderTweaks.removeSelectionFromList();
+                return true;
+            } else
             if (key == Hotkeys.PISTON_INFO_CLEAR.getKeybind()) {
                 PistonUtils.clearAll();
                 return true;

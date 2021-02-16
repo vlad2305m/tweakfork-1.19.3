@@ -137,7 +137,7 @@ public class PlacementTweaks
             offsetPos = null;
         }
 
-        if (GuiUtils.getCurrentScreen() == null)
+        if (GuiUtils.getCurrentScreen() == null && !FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue())
         {
             if (mc.options.keyUse.isPressed())
             {

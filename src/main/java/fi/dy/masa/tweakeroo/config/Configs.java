@@ -24,6 +24,7 @@ import fi.dy.masa.malilib.util.restrictions.UsageRestriction.ListType;
 import fi.dy.masa.tweakeroo.Reference;
 import fi.dy.masa.tweakeroo.tweaks.MiscTweaks;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
@@ -95,8 +96,10 @@ public class Configs implements IConfigHandler
         public static final ConfigInteger       STRUCTURE_BLOCK_MAX_SIZE            = new ConfigInteger     ("structureBlockMaxSize", 128, 1, 256, "The maximum dimensions for a Structure Block's saved area");
         public static final ConfigBoolean       ZOOM_ADJUST_MOUSE_SENSITIVITY       = new ConfigBoolean     ("zoomAdjustMouseSensitivity", true, "If enabled, then the mouse sensitivity is reduced\nwhile the zoom feature is enabled and the zoom key is active");
         public static final ConfigDouble        ZOOM_FOV                            = new ConfigDouble      ("zoomFov", 30, 0.01, 359.99, "The FOV value used for the zoom feature");
-       // public static final ConfigString        SELECTIVE_VISIBLE_BLOCKS_BLACKLIST  = new ConfigString      ("selectiveVisibleBlocksBlacklist", "comma separated", "blah im too lazy.");
-       
+        public static final ConfigBoolean       AREA_SELECTION_USE_ALL              = new ConfigBoolean     ("areaSelectionUseAll", false, "Whether or not to include air in selection");
+        public static final ConfigBoolean       SELECTIVE_BLOCKS_TRACK_PISTONS      = new ConfigBoolean     ("selectiveBlocksTrackPistons", true, "Whether or not to track piston movements for selective block rendering");
+        
+
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CLIENT_PLACEMENT_ROTATION,
@@ -121,7 +124,7 @@ public class Configs implements IConfigHandler
                 ELYTRA_CAMERA_INDICATOR,
                 PLACEMENT_RESTRICTION_MODE,
                 HOTBAR_SWAP_OVERLAY_ALIGNMENT,
-             //   SELECTIVE_VISIBLE_BLOCKS_BLACKLIST,
+                SELECTIVE_BLOCKS_TRACK_PISTONS,
                 SNAP_AIM_MODE,
 
                 CHAT_TIME_FORMAT,
@@ -208,6 +211,9 @@ public class Configs implements IConfigHandler
         public static final ConfigStringList POTION_WARNING_WHITELIST           = new ConfigStringList("potionWarningWhiteList", ImmutableList.of("minecraft:fire_resistance", "minecraft:invisibility", "minecraft:water_breathing"), "The only potion effects that will be warned about");
         public static final ConfigStringList REPAIR_MODE_SLOTS                  = new ConfigStringList("repairModeSlots", ImmutableList.of("mainhand", "offhand"), "The slots the repair mode should use\nValid values: mainhand, offhand, head, chest, legs, feet");
         public static final ConfigStringList UNSTACKING_ITEMS                   = new ConfigStringList("unstackingItems", ImmutableList.of("minecraft:bucket", "minecraft:glass_bottle"), "The items that should be considered for the\n'tweakItemUnstackingProtection' tweak");
+        public static final ConfigOptionList SELECTIVE_BLOCKS_LIST_TYPE         = new ConfigOptionList("selectiveBlocksListType", ListType.NONE, "The list type for selective blocks tweak");
+        public static final ConfigString SELECTIVE_BLOCKS_WHITELIST             = new ConfigString("selectiveBlocksWhitelist", "0,0,0|0,0,1", "The block positions you want to whitelist");
+        public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "0,0,0|0,0,1", "The block positions you want to blacklist");
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CREATIVE_EXTRA_ITEMS,
@@ -231,7 +237,10 @@ public class Configs implements IConfigHandler
                 POTION_WARNING_BLACKLIST,
                 POTION_WARNING_WHITELIST,
                 REPAIR_MODE_SLOTS,
-                UNSTACKING_ITEMS
+                UNSTACKING_ITEMS,
+                SELECTIVE_BLOCKS_LIST_TYPE,
+                SELECTIVE_BLOCKS_WHITELIST,
+                SELECTIVE_BLOCKS_BLACKLIST
         );
     }
 
@@ -382,6 +391,7 @@ public class Configs implements IConfigHandler
         MiscTweaks.POTION_RESTRICTION.setListContents(
                 Lists.POTION_WARNING_BLACKLIST.getStrings(),
                 Lists.POTION_WARNING_WHITELIST.getStrings());
+        RenderTweaks.rebuildLists();
     }
 
     public static void saveToFile()

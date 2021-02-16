@@ -16,6 +16,7 @@ import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.renderer.RenderUtils;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import fi.dy.masa.tweakeroo.util.PistonUtils;
 
 public class RenderHandler implements IRenderer
@@ -63,6 +64,7 @@ public class RenderHandler implements IRenderer
                 RenderUtils.renderPitchLockIndicator(mc, matrixStack);
             }
         }
+        
     }
 
     @Override
@@ -93,6 +95,7 @@ public class RenderHandler implements IRenderer
 
         if (mc.player != null)
         {
+            RenderTweaks.render(matrixStack, partialTicks);
             this.renderOverlays(matrixStack, mc);
         }
     }

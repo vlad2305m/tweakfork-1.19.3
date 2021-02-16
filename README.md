@@ -10,6 +10,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 7. tweakHideScoreboard -> may save your sanity when servers turn on sidebar scoreboards during big digs
 8. disableClientBlockEvents -> stops client side piston lag
 9. Fixed afterClicker with accurate placement protocol -> so placing repeaters isn't pain
+10. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts
 
 Tweakeroo
 ==============

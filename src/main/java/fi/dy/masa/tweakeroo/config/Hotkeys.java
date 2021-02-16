@@ -53,7 +53,10 @@ public class Hotkeys
     public static final ConfigHotkey TOGGLE_GRAB_CURSOR                 = new ConfigHotkey("toggleGrabCursor",                  "",     "Grabs or ungrabs the mouse cursor, depending on the current state");
     public static final ConfigHotkey TOOL_PICK                          = new ConfigHotkey("toolPick",                          "",     "Switches to the effective tool for the targeted block");
     public static final ConfigHotkey ZOOM_ACTIVATE                      = new ConfigHotkey("zoomActivate",                      "",     KeybindSettings.create(Context.INGAME, KeyAction.BOTH, true, false, false, false, false), "Zoom activation hotkey");
-
+    public static final ConfigHotkey AREA_SELECTION_OFFSET              = new ConfigHotkey("areaSelectionOffset",     "LEFT_SHIFT",     KeybindSettings.PRESS_ALLOWEXTRA, "The key to offset selection pos");
+    public static final ConfigHotkey AREA_SELECTION_ADD_TO_LIST         = new ConfigHotkey("areaSelectionAddToList",            "",     KeybindSettings.PRESS_ALLOWEXTRA, "Add selected blocks to list");
+    public static final ConfigHotkey AREA_SELECTION_REMOVE_FROM_LIST    = new ConfigHotkey("areaSelectionRemoveFromList",       "",     KeybindSettings.PRESS_ALLOWEXTRA, "remove selected blocks from list");
+   
     public static final List<ConfigHotkey> HOTKEY_LIST = ImmutableList.of(
             ACCURATE_BLOCK_PLACEMENT_IN,
             ACCURATE_BLOCK_PLACEMENT_REVERSE,
@@ -98,6 +101,10 @@ public class Hotkeys
             SWAP_ELYTRA_CHESTPLATE,
             TOGGLE_GRAB_CURSOR,
             TOOL_PICK,
-            ZOOM_ACTIVATE
+            ZOOM_ACTIVATE,
+            AREA_SELECTION_OFFSET,
+            AREA_SELECTION_ADD_TO_LIST,
+            AREA_SELECTION_REMOVE_FROM_LIST
+
     );
 }

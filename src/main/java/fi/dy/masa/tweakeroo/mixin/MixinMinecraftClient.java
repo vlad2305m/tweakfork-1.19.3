@@ -23,6 +23,7 @@ import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.tweaks.MiscTweaks;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 
 @Mixin(MinecraftClient.class)
@@ -62,6 +63,26 @@ public abstract class MixinMinecraftClient implements IMinecraftClientInvoker
     private void onGameLoop(boolean renderWorld, CallbackInfo ci)
     {
         MiscTweaks.onGameLoop();
+    }
+    
+    @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
+    private void onLeftClickMouse(CallbackInfo ci)
+    {
+        if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue()) {
+            RenderTweaks.select(false);
+            ci.cancel();
+            return;
+        }
+    }
+
+    @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
+    private void onRightClickMouse(CallbackInfo ci)
+    {
+        if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue()) {
+            RenderTweaks.select(true);
+            ci.cancel();
+            return;
+        }
     }
 
     @Inject(method = "doAttack", at = {

@@ -43,7 +43,7 @@ public class RenderTweaks
     private static Color4f colorX = new Color4f(   1f, 0.25f, 0.25f);
     private static Color4f colorY = new Color4f(0.25f,    1f, 0.25f);
     private static Color4f colorZ = new Color4f(0.25f, 0.25f,    1f);
-    private static Color4f colorLooking = new Color4f(0.25f, 0.25f, 0.25f, 0.6f);
+    private static Color4f colorLooking = new Color4f(1.0f, 1.0f, 1.0f, 0.6f);
     private static Color4f colorWhitelist = new Color4f(0.1f, 0.7f, 0.1f, 0.25f);
     private static Color4f colorBlacklist = new Color4f(0.7f, 0.1f, 0.1f, 0.25f);
 

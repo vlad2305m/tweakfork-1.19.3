@@ -124,6 +124,7 @@ public class MiscTweaks
     public static void onGameLoop()
     {
         PlacementTweaks.onTick();
+        RenderTweaks.onTick();
 
         // Reset the counters after rendering each frame
         Tweakeroo.renderCountItems = 0;

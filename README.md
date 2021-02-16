@@ -12,6 +12,8 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 9. Fixed afterClicker with accurate placement protocol -> so placing repeaters isn't pain
 10. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts
 
+<img width="1280" alt="Screen Shot 2021-02-16 at 2 01 08 PM" src="https://user-images.githubusercontent.com/13282284/108109105-7742c280-705f-11eb-81cf-b5341ca740c3.png">
+
 Tweakeroo
 ==============
 Tweakeroo is a client-side-only Minecraft mod using LiteLoader.

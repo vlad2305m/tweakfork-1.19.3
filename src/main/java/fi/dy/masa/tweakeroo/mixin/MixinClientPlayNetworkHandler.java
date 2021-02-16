@@ -8,7 +8,10 @@ import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
+import net.minecraft.util.math.ChunkPos;
 
 @Mixin(net.minecraft.client.network.ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler
@@ -48,5 +51,12 @@ public abstract class MixinClientPlayNetworkHandler
         if (Configs.Disable.DISABLE_CLIENT_BLOCK_EVENTS.getBooleanValue()) {
             ci.cancel();
         }
+    }
+
+    @Inject(method = "onLightUpdate", at = @At("RETURN"))
+    private void onLightUpdateEvent(LightUpdateS2CPacket packet, CallbackInfo ci) {
+        int i = packet.getChunkX();
+        int j = packet.getChunkZ();
+        RenderTweaks.onLightUpdateEvent(new ChunkPos(i,j));
     }
 }

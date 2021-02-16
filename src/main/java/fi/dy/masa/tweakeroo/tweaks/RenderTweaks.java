@@ -53,7 +53,7 @@ public class RenderTweaks
 
     public static BlockPos posLookingAt = null;
 
-    public static void onTick(MinecraftClient minecraftClient
+    public static void onTick(MinecraftClient minecraftClient)
     {
         // Dumb rendundancy due to replaymod
         if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue()) {

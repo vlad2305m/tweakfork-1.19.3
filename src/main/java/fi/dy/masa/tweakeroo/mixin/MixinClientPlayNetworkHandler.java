@@ -11,7 +11,6 @@ import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
-import net.minecraft.util.math.ChunkPos;
 
 @Mixin(net.minecraft.client.network.ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler
@@ -53,10 +52,10 @@ public abstract class MixinClientPlayNetworkHandler
         }
     }
 
-    @Inject(method = "onLightUpdate", at = @At("RETURN"))
+    @Inject(method = "onLightUpdate", at = @At("HEAD"), cancellable = true)
     private void onLightUpdateEvent(LightUpdateS2CPacket packet, CallbackInfo ci) {
         int i = packet.getChunkX();
         int j = packet.getChunkZ();
-        RenderTweaks.onLightUpdateEvent(new ChunkPos(i,j));
+        RenderTweaks.onLightUpdateEvent(i,j, ci);
     }
 }

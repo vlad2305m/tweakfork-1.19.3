@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -25,6 +26,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -258,7 +260,8 @@ public class RenderTweaks {
     public static void onPistonEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 
         if (!Configs.Generic.SELECTIVE_BLOCKS_TRACK_PISTONS.getBooleanValue()
-                || !FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue())
+                || (!FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue() && !FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDER_OUTLINE.getBooleanValue())
+                || (SELECTIVE_WHITELIST.size() == 0 && SELECTIVE_BLACKLIST.size() == 0))
             return;
 
         if (type == 2)
@@ -405,26 +408,40 @@ public class RenderTweaks {
         }
     }
 
-    public static void onLightUpdateEvent(ChunkPos chunkPos) {
-        ListType type = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
+    public static void onLightUpdateEvent(int chunkX, int chunkZ, CallbackInfo ci) {
+          
 
-        if (type == ListType.NONE) {
+        ListType listtype = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
+
+        if (listtype == ListType.NONE) {
             return;
         }
         MinecraftClient mc = MinecraftClient.getInstance();
+        boolean found = false;
         if (mc != null && mc.world != null && mc.world.getLightingProvider() != null) {
 
-            ConcurrentHashMap<Long, ListMapEntry> list = (type == ListType.WHITELIST) ? SELECTIVE_WHITELIST
+            ConcurrentHashMap<Long, ListMapEntry> list = (listtype == ListType.WHITELIST) ? SELECTIVE_WHITELIST
                     : SELECTIVE_BLACKLIST;
 
-            for (ListMapEntry entry : list.values()) {
-                ChunkPos pos2 = new ChunkPos(entry.currentPosition);
+            int minX = chunkX * 16 - 1;
+            int minZ = chunkZ * 16 - 1;
+            int maxX = chunkX * 16 + 16;
+            int maxZ = chunkZ * 16 + 16;
 
-                if (chunkPos.equals(pos2)) {
-                    mc.world.getLightingProvider().checkBlock(entry.currentPosition);
+            for (ListMapEntry entry : list.values()) {
+               
+                int x = entry.currentPosition.getX();
+                int z = entry.currentPosition.getZ();
+                if (x >= minX && z >= minZ && x <= maxX && z <= maxZ) {
+                    found = true;
+                    break;
                 }
             }
         }
+        if (found) {
+             ci.cancel();
+        }
+        
     }
 
     public static void rebuildStrings() {

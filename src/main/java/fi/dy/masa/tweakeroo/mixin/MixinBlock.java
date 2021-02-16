@@ -27,9 +27,6 @@ public class MixinBlock {
 
     @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
     private static void shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> ci) {
-      if (!FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue()) {
-         return;
-      }
       if (!RenderTweaks.isPositionValidForRendering(pos.offset(facing))) {
            ci.setReturnValue(true);
            ci.cancel();

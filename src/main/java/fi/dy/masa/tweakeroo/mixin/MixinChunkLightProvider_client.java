@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
@@ -15,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ChunkLightProvider.class)
 public class MixinChunkLightProvider_client {
-    
+    @Environment(EnvType.CLIENT)
     @Inject(method = "getStateForLighting", at = @At("HEAD"), cancellable = true)
     private void getStateForLightingInject(long pos, @Nullable MutableInt mutableInt, CallbackInfoReturnable<BlockState> ci) {
 

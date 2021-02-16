@@ -19,6 +19,7 @@ import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 import fi.dy.masa.tweakeroo.renderer.RenderUtils;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonHandler;
@@ -26,8 +27,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkNibbleArray;
+import net.minecraft.world.chunk.light.LightingProvider;
 
 public class RenderTweaks
 {
@@ -398,7 +405,17 @@ public class RenderTweaks
 
 
         MinecraftClient mc = MinecraftClient.getInstance();
-        if (mc != null && mc.worldRenderer != null) mc.worldRenderer.reload();
+        if (mc != null && mc.world != null && mc.worldRenderer != null) {
+            if (mc.world.getLightingProvider() != null ) {
+            for (ListMapEntry entry : SELECTIVE_BLACKLIST.values()) {
+                mc.world.getLightingProvider().checkBlock(entry.currentPosition);
+            }
+            for (ListMapEntry entry : SELECTIVE_WHITELIST.values()) {
+                mc.world.getLightingProvider().checkBlock(entry.currentPosition);
+            }
+            }
+            mc.worldRenderer.reload();
+        }
 	}
 
     public static void rebuildStrings() {
@@ -408,7 +425,6 @@ public class RenderTweaks
         Configs.Lists.SELECTIVE_BLOCKS_WHITELIST.setValueFromString(whitelist);
         Configs.Lists.SELECTIVE_BLOCKS_BLACKLIST.setValueFromString(blacklist);
     }
-
     public static void putMapFromString(ConcurrentHashMap<Long, ListMapEntry> map, String str) {
         
         String[] parts = str.split("\\|");

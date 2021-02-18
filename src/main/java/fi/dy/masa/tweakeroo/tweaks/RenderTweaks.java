@@ -23,6 +23,7 @@ import fi.dy.masa.tweakeroo.renderer.RenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PistonBlock;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
@@ -289,6 +290,7 @@ public class RenderTweaks {
             world.setBlockState(pos.offset(pushDirection), state2, 18);
         }
 
+        
         boolean attatchedWhitelist = SELECTIVE_WHITELIST
                 .containsKey(pos.offset(pushDirection, (type == 0) ? 1 : 2).asLong());
         boolean attatchedBlacklist = SELECTIVE_BLACKLIST
@@ -467,7 +469,7 @@ public class RenderTweaks {
                 int z = Integer.parseInt(nums[2]);
                 // System.out.println(x + "," + y + "," + z);
                 BlockPos pos = new BlockPos(x, y, z);
-                map.put(pos.asLong(), new ListMapEntry(pos));
+                map.put(pos.asLong(), new ListMapEntry(pos, true));
             } catch (NumberFormatException e) {
 
                 Tweakeroo.logger.warn("Error while parsing int: " + e.toString());
@@ -497,6 +499,10 @@ public class RenderTweaks {
         ListMapEntry(BlockPos pos) {
             originalPosition = pos;
             currentPosition = pos;
+        }
+        ListMapEntry(BlockPos pos, boolean preserve) {
+            this(pos);
+            this.preserve = preserve;
         }
     }
 

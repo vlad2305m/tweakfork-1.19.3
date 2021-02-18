@@ -296,18 +296,25 @@ public class RenderTweaks {
         boolean attatchedBlacklist = SELECTIVE_BLACKLIST
                 .containsKey(pos.offset(pushDirection, (type == 0) ? 1 : 2).asLong());
 
+        boolean whitelisted = SELECTIVE_WHITELIST.containsKey(pos.asLong());
+        boolean blacklisted = SELECTIVE_BLACKLIST.containsKey(pos.asLong());
+
         if (type == 0) { // extending
+            if (whitelisted) {
             if (attatchedWhitelist) {
                 SELECTIVE_WHITELIST.get(pos.offset(pushDirection).asLong()).preserve = true;
-            } else if (SELECTIVE_WHITELIST.containsKey(pos.offset(pushDirection, 2).asLong())) {
+            } else {
                 SELECTIVE_WHITELIST.put(pos.offset(pushDirection, 1).asLong(),
                         new ListMapEntry(pos.offset(pushDirection, 1)));
             }
+            }
+            if (blacklisted) {
             if (attatchedBlacklist) {
                 SELECTIVE_BLACKLIST.get(pos.offset(pushDirection).asLong()).preserve = true;
-            } else if (SELECTIVE_BLACKLIST.containsKey(pos.offset(pushDirection, 2).asLong())) {
+            } else {
                 SELECTIVE_BLACKLIST.put(pos.offset(pushDirection, 1).asLong(),
                         new ListMapEntry(pos.offset(pushDirection, 1)));
+            }
             }
         }
         if (moveSuccess) {

@@ -119,6 +119,7 @@ public class Configs implements IConfigHandler
                 SNAP_AIM_PITCH_OVERSHOOT,
                 ZOOM_ADJUST_MOUSE_SENSITIVITY,
 
+                AREA_SELECTION_USE_ALL,
                 RESTRICTION_LAYER_HEIGHT,
                 BREAKING_RESTRICTION_MODE,
                 ELYTRA_CAMERA_INDICATOR,

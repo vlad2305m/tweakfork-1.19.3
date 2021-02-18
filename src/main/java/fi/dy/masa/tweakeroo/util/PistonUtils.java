@@ -34,7 +34,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import quickcarpet.settings.Settings;
 
 public class PistonUtils {
 
@@ -80,8 +79,7 @@ public class PistonUtils {
     }
 
     public static boolean loadVanilla() {
-        return !FabricLoader.getInstance().isModLoaded("carpet")
-                && !FabricLoader.getInstance().isModLoaded("quickcarpet");
+        return !FabricLoader.getInstance().isModLoaded("carpet");
     }
 
     public static int pushLimitCarpet(int value) {
@@ -90,11 +88,6 @@ public class PistonUtils {
         return CarpetSettings.pushLimit;
     }
 
-    public static int pushLimitQuickCarpet(int value) {
-        if (value > 0)
-            Settings.pushLimit = value;
-        return Settings.pushLimit;
-    }
 
     public static int getPushLimit() {
 
@@ -106,13 +99,6 @@ public class PistonUtils {
 
         }
 
-        // quickcarpet
-        try {
-            if (FabricLoader.getInstance().isModLoaded("quickcarpet"))
-                return pushLimitQuickCarpet(-1);
-        } catch (Exception e) {
-
-        }
 
         return VanillaPushLimit;
 
@@ -124,14 +110,6 @@ public class PistonUtils {
         try {
             if (FabricLoader.getInstance().isModLoaded("carpet"))
                 return pushLimitCarpet(value);
-        } catch (Exception e) {
-
-        }
-
-        // quickcarpet
-        try {
-            if (FabricLoader.getInstance().isModLoaded("quickcarpet"))
-                return pushLimitQuickCarpet(value);
         } catch (Exception e) {
 
         }

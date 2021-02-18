@@ -5,9 +5,15 @@ buildscript {
             name = "Fabric"
             url = "https://maven.fabricmc.net/"
         }
-    }
-    dependencies {
-        classpath 'net.fabricmc:fabric-loom:0.5-SNAPSHOT'
+        maven { 
+			name = "Jitpack"
+			url = "https://jitpack.io/"
+		}
+	}
+
+	dependencies {
+		//Sin² Edition Loom
+		classpath 'com.github.Chocohead.Fabric-Loom:fabric-loom:c290f8f'
     }
 }
 
@@ -25,9 +31,6 @@ repositories {
     maven {
         url 'https://masa.dy.fi/maven'
     }
-    maven {
-		url 'https://maven.skyrising.xyz'
-	}
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -64,8 +67,15 @@ dependencies {
     modCompileOnly "io.github.prospector:modmenu:" + config.mod_menu_version
 
     modCompile "carpet:fabric-carpet:${config.fabric_carpet_version}"
-	modCompileOnly "quickcarpet:quickcarpet:${config.quick_carpet_version}"
 
+}
+
+compileJava {
+    mappings {
+        from = 'named'
+		to = 'intermediary'
+        method 'net/optifine/BlockPosM', '(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;)Ljava/lang/Iterable;', 'getAllInBoxMutable', 'getAllInBoxMutable'
+    }
 }
 
 minecraft {
@@ -92,6 +102,8 @@ processResources
     exclude '**/*.xcf'
     exclude '**/xcf'
 
+    //
+
     // this will ensure that this task is redone when the versions change.
     //inputs.property "mod_version", project.minecraft.mod_version
     //inputs.property "minecraft_version", project.config.minecraft_version
@@ -106,6 +118,10 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude "fabric.mod.json"
     }
+}
+
+jar {
+    exclude('net/optifine/**')   
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is

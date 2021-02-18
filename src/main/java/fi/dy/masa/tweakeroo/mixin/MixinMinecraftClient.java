@@ -163,5 +163,5 @@ public abstract class MixinMinecraftClient implements IMinecraftClientInvoker
     {
         // ProfileResultImpl switched to using '\u001e', which looks horrible when printed, so return back to the old dot
         return Configs.Fixes.PROFILER_CHART_FIX.getBooleanValue() ? timing.name.replace('\u001e', '.') : timing.name;
-    }
+    }   
 }

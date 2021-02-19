@@ -13,12 +13,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
+import fi.dy.masa.tweakeroo.util.IDecorationEntity;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class MixinEntityRenderDispatcher
@@ -70,7 +70,7 @@ public abstract class MixinEntityRenderDispatcher
         }
 
         if (entityIn instanceof AbstractDecorationEntity) {
-            if (!RenderTweaks.isPositionValidForRendering(((IMixinAbstractDecorationEntity) entityIn).getAttatched()))
+            if (!RenderTweaks.isPositionValidForRendering(((IDecorationEntity) entityIn).getAttatched()))
                 cir.setReturnValue(false);
         }
     }

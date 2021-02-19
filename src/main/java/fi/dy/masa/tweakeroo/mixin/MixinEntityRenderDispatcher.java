@@ -11,11 +11,14 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class MixinEntityRenderDispatcher
@@ -64,6 +67,11 @@ public abstract class MixinEntityRenderDispatcher
                  entityIn instanceof LivingEntity && ((LivingEntity) entityIn).getHealth() <= 0f)
         {
             cir.setReturnValue(false);
+        }
+
+        if (entityIn instanceof AbstractDecorationEntity) {
+            if (!RenderTweaks.isPositionValidForRendering(((IMixinAbstractDecorationEntity) entityIn).getAttatched()))
+                cir.setReturnValue(false);
         }
     }
 }

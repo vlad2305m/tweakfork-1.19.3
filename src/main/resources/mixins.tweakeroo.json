@@ -64,7 +64,8 @@
         "MixinUpdateStructureBlockC2SPacket",
         "MixinWorld",
         "MixinWorldRenderer",
-        "MixinWidgetConfigOptionBase"
+        "MixinWidgetConfigOptionBase",
+        "MixinAbstractDecorationEntity"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -65,7 +65,8 @@
         "MixinWorld",
         "MixinWorldRenderer",
         "MixinWidgetConfigOptionBase",
-        "MixinAbstractDecorationEntity"
+        "MixinAbstractDecorationEntity",
+        "MixinClientWorldProperties"
     ],
     "injectors": {
         "defaultRequire": 1

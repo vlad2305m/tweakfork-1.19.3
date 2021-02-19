@@ -98,7 +98,8 @@ public class Configs implements IConfigHandler
         public static final ConfigDouble        ZOOM_FOV                            = new ConfigDouble      ("zoomFov", 30, 0.01, 359.99, "The FOV value used for the zoom feature");
         public static final ConfigBoolean       AREA_SELECTION_USE_ALL              = new ConfigBoolean     ("areaSelectionUseAll", false, "Whether or not to include air in selection");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_TRACK_PISTONS      = new ConfigBoolean     ("selectiveBlocksTrackPistons", true, "Whether or not to track piston movements for selective block rendering");
-        
+        public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
+       
 
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -166,7 +167,8 @@ public class Configs implements IConfigHandler
                 SNAP_AIM_PITCH_STEP,
                 SNAP_AIM_YAW_STEP,
                 STRUCTURE_BLOCK_MAX_SIZE,
-                ZOOM_FOV
+                ZOOM_FOV,
+                DAY_CYCLE_OVERRIDE_TIME
         );
     }
 

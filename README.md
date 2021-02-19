@@ -10,7 +10,8 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 7. tweakHideScoreboard -> may save your sanity when servers turn on sidebar scoreboards during big digs
 8. disableClientBlockEvents -> stops client side piston lag
 9. Fixed afterClicker with accurate placement protocol -> so placing repeaters isn't pain
-10. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (works with Optifucked)
+10. tweakDayCycleOverride -> Overrides the time of day client-side
+11. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (works with Optifucked)
 
 <img width="1280" alt="Screen Shot 2021-02-16 at 2 01 08 PM" src="https://user-images.githubusercontent.com/13282284/108109105-7742c280-705f-11eb-81cf-b5341ca740c3.png">
 

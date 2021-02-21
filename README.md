@@ -11,7 +11,13 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 8. disableClientBlockEvents -> stops client side piston lag
 9. Fixed afterClicker with accurate placement protocol -> so placing repeaters isn't pain
 10. tweakDayCycleOverride -> Overrides the time of day client-side
-11. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (works with Optifucked)
+11. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (works with Optifucked). Selectively renders blocks depending on position based white/blacklists.
+  - Lists.selectiveBlocksWhitelist and Lists.selectiveBlocksBlacklist -> strings encoding the white/blacklists. Format: `x,y,z|x2,y2,z2|...`
+  - tweakAreaSelector -> allows you to add/remove selection from list easily with areaSelectionAddToList and areaSelectionRemoveFromList hotkeys. works in replay editor. Use areaSelectionOffset hotkey to offset selection box.
+  - tweakSelectiveBlocksRendering -> Turns on selective block rendering with the lists. Turn on before you render replay.
+  - tweakSelectiveBlocksRenderOutline -> Renders an outline over the listed positions. Allows you to see whats in the white/blacklists.
+  - Generic.selectiveBlocksTrackPistons -> When enabled, the mod will track piston movements and update the position lists accordingly.
+  - Generic.areaSelectionUseAll -> When enabled, the area selector will include air blocks.
 
 <img width="1280" alt="Screen Shot 2021-02-16 at 2 01 08 PM" src="https://user-images.githubusercontent.com/13282284/108109105-7742c280-705f-11eb-81cf-b5341ca740c3.png">
 

@@ -13,7 +13,7 @@ public class ClientTickHandler implements IClientTickHandler
         if (mc.world != null && mc.player != null)
         {
             MiscTweaks.onTick(mc);
-            RenderTweaks.onTick(mc);
+            RenderTweaks.onTick();
         }
     }
 }

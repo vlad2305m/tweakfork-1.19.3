@@ -59,8 +59,9 @@ public class RenderTweaks {
 
     public static BlockPos posLookingAt = null;
 
-    public static void onTick(MinecraftClient mc) {
+    public static void onTick() {
         // Dumb rendundancy due to replaymod
+        MinecraftClient mc = MinecraftClient.getInstance();
         if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue()) {
             if (mc.options.keyAttack.isPressed()) {
                 select(false);

@@ -32,7 +32,9 @@ public abstract class MixinChunkBuilder_rebuildTask_optifine
                      return (BlockPosM) this.endOfData();
                   } else {
                      BlockPos pos = iterator.next();
-                     while (!RenderTweaks.isPositionValidForRendering(pos) && iterator.hasNext()) {
+                     while (!RenderTweaks.isPositionValidForRendering(pos)) {
+                        if (!iterator.hasNext())
+                           return (BlockPosM) this.endOfData();
                         pos = iterator.next();
                      }
                      

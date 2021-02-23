@@ -98,6 +98,7 @@ public class Configs implements IConfigHandler
         public static final ConfigDouble        ZOOM_FOV                            = new ConfigDouble      ("zoomFov", 30, 0.01, 359.99, "The FOV value used for the zoom feature");
         public static final ConfigBoolean       AREA_SELECTION_USE_ALL              = new ConfigBoolean     ("areaSelectionUseAll", false, "Whether or not to include air in selection");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_TRACK_PISTONS      = new ConfigBoolean     ("selectiveBlocksTrackPistons", true, "Whether or not to track piston movements for selective block rendering");
+        public static final ConfigBoolean       SELECTIVE_BLOCKS_HIDE_PARTICLES     = new ConfigBoolean     ("selectiveBlocksHideParticles", true, "Whether or not to hide particles for selective block rendering");
         public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
        
 
@@ -127,6 +128,7 @@ public class Configs implements IConfigHandler
                 PLACEMENT_RESTRICTION_MODE,
                 HOTBAR_SWAP_OVERLAY_ALIGNMENT,
                 SELECTIVE_BLOCKS_TRACK_PISTONS,
+                SELECTIVE_BLOCKS_HIDE_PARTICLES,
                 SNAP_AIM_MODE,
 
                 CHAT_TIME_FORMAT,

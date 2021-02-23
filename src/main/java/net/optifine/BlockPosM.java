@@ -8,5 +8,8 @@ public class BlockPosM extends BlockPos {
         super(i, j, k);
         // TODO Auto-generated constructor stub
     }
+
+	public void setXyz(int x, int y, int z) {
+	}
     
 }

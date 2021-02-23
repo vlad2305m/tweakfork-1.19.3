@@ -24,7 +24,7 @@ public abstract class MixinChunkBuilder_rebuildTask_optifine
     target = "Lnet/optifine/BlockPosM;getAllInBoxMutable(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;)Ljava/lang/Iterable;", ordinal = 0))
     private Iterable<BlockPosM> iterateProxy(BlockPos start, BlockPos end) {
          Iterator<BlockPos> iterator = BlockPos.iterate(start, end).iterator();
-
+         BlockPosM blockPosM = new BlockPosM(0,0,0);
          return () -> {
             return new AbstractIterator<BlockPosM>() {
                protected BlockPosM computeNext() {
@@ -32,9 +32,12 @@ public abstract class MixinChunkBuilder_rebuildTask_optifine
                      return (BlockPosM) this.endOfData();
                   } else {
                      BlockPos pos = iterator.next();
-                     if (!RenderTweaks.isPositionValidForRendering(pos))
-                           return this.computeNext();
-                     return new BlockPosM(pos.getX(),pos.getY(),pos.getZ());
+                     while (!RenderTweaks.isPositionValidForRendering(pos) && iterator.hasNext()) {
+                        pos = iterator.next();
+                     }
+                     
+                     blockPosM.setXyz(pos.getX(), pos.getY(), pos.getZ());
+                     return blockPosM;
                   }
                }
             };

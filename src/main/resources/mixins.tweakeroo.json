@@ -6,6 +6,7 @@
     "plugin": "fi.dy.masa.tweakeroo.mixin.MixinTweakarooPlugin",
     "client": [
         "IMixinAbstractBlock",
+        "IMixinAxeItem",
         "IMixinCommandBlockExecutor",
         "IMixinHorseBaseEntity",
         "MixinAbstractBlockState",
@@ -44,6 +45,7 @@
         "MixinMinecraftClient",
         "MixinMobSpawnerBlockEntityRenderer",
         "MixinMobSpawnerLogic",
+        "MixinMouse",
         "MixinObserverBlock",
         "MixinParticleManager",
         "MixinPistonHandler",
@@ -54,6 +56,7 @@
         "MixinPlayerEntity",
         "MixinPresetsScreen",
         "MixinRavagerEntity",
+        "MixinScaffoldingBlock",
         "MixinSignBlockEntity",
         "MixinSignEditScreen",
         "MixinSkyProperties_Nether",
@@ -68,7 +71,8 @@
         "MixinAbstractDecorationEntity",
         "MixinClientWorldProperties"
     ],
+    "mixinPriority": 990,
     "injectors": {
-        "defaultRequire": 1
+        "defaultRequire": 0
     }
 }

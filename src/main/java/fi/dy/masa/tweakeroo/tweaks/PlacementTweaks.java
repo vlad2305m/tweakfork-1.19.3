@@ -12,6 +12,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -47,6 +48,7 @@ import fi.dy.masa.tweakeroo.util.CameraUtils;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.PistonUtils;
+import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 public class PlacementTweaks
@@ -367,10 +369,17 @@ public class PlacementTweaks
             return ActionResult.PASS;
         }
 
-      
+        ItemStack stackPre = player.getStackInHand(hand);
 
+        if (Configs.Disable.DISABLE_AXE_STRIPPING.getBooleanValue() &&
+            stackPre.getItem() instanceof AxeItem &&
+            MiscUtils.isStrippableLog(world, hitResult.getBlockPos()))
+        {
+            return ActionResult.PASS;
+        }
+
+        stackPre = stackPre.copy();
         boolean restricted = FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.getBooleanValue() || FeatureToggle.TWEAK_PLACEMENT_GRID.getBooleanValue();
-        ItemStack stackPre = player.getStackInHand(hand).copy();
         Direction sideIn = hitResult.getSide();
         BlockPos posIn = hitResult.getBlockPos();
         Vec3d hitVec = hitResult.getPos();

@@ -41,6 +41,14 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         super(worldIn, playerProfile);
     }
 
+    @Inject(method = "shouldSlowDown", at = @At(value = "HEAD"), cancellable = true)
+    private void shouldSlowDown(CallbackInfoReturnable<Boolean> ci) {
+        if (FeatureToggle.TWEAK_NO_SLOWDOWN.getBooleanValue()) {
+            ci.setReturnValue(false);
+            ci.cancel();
+        }
+    }
+
     @Redirect(method = "updateNausea()V",
               at = @At(value = "INVOKE",
                        target = "Lnet/minecraft/client/gui/screen/Screen;isPauseScreen()Z"))

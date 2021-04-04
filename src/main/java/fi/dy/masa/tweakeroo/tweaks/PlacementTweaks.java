@@ -294,12 +294,18 @@ public class PlacementTweaks
                 Direction side = blockHitResult.getSide();
                 BlockPos pos = blockHitResult.getBlockPos();
                 Vec3d hitVec = blockHitResult.getPos();
+                if (FeatureToggle.TWEAK_SCAFFOLD_PLACE.getBooleanValue()) {
+                    side = getScaffoldPlaceDirection(side, hitPartFirst, player);
+                    ItemStack stack = player.getStackInHand(hand);
+                    pos = getScaffoldPlacePosition(pos, side, world, stack, player);
+                    if (pos == null) return;
+                    pos = pos.offset(side.getOpposite());
+                }
                 BlockHitResult hitResult = new BlockHitResult(hitVec, side, pos, false);
                 ItemPlacementContext ctx = new ItemPlacementContext(new ItemUsageContext(player, hand, hitResult));
                 BlockPos posNew = getPlacementPositionForTargetedPosition(world, pos, side, ctx);
                 hitResult = new BlockHitResult(hitVec, side, posNew, false);
                 ctx = new ItemPlacementContext(new ItemUsageContext(player, hand, hitResult));
-
                 if (hand != null &&
                     posNew.equals(posLast) == false &&
                     canPlaceBlockIntoPosition(world, posNew, ctx) &&
@@ -443,6 +449,28 @@ public class PlacementTweaks
         {
             return ActionResult.PASS;
         }
+        boolean flexible = FeatureToggle.TWEAK_FLEXIBLE_BLOCK_PLACEMENT.getBooleanValue();
+        boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
+        boolean rotation = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld();
+        boolean offset = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_OFFSET.getKeybind().isKeybindHeld();
+        boolean adjacent = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ADJACENT.getKeybind().isKeybindHeld();
+        boolean hold = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().isKeybindHeld();
+        boolean accurateIn = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld();
+        boolean accurateReverse = Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
+
+        if (FeatureToggle.TWEAK_SCAFFOLD_PLACE.getBooleanValue() && (!flexible || (!rotation && !offset && !adjacent && !hold))) {
+            ItemStack stack = player.getStackInHand(hand);
+            Direction extendDirection = getScaffoldPlaceDirection(sideIn, hitPart, player);
+            BlockPos newPos = getScaffoldPlacePosition(posIn, extendDirection, world, stack, player);
+            if (newPos == null) {
+                return ActionResult.PASS;
+            }
+
+            newPos = newPos.offset(extendDirection.getOpposite());
+            sideIn = extendDirection;
+            hitVec = hitVec.subtract(posIn.getX(), posIn.getY(), posIn.getZ()).add(newPos.getX(),newPos.getY(),newPos.getZ());
+            posIn = newPos;
+        }
 
         //System.out.printf("onProcessRightClickBlock() pos: %s, side: %s, part: %s, hitVec: %s\n", posIn, sideIn, hitPart, hitVec);
         ActionResult result = tryPlaceBlock(controller, player, world, posIn, sideIn, sideRotated, player.yaw, hitVec, hand, hitPart, true);
@@ -450,13 +478,7 @@ public class PlacementTweaks
         // Store the initial click data for the fast placement mode
         if (posFirst == null && result == ActionResult.SUCCESS && restricted)
         {
-            boolean flexible = FeatureToggle.TWEAK_FLEXIBLE_BLOCK_PLACEMENT.getBooleanValue();
-            boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
-            boolean rotation = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld();
-            boolean offset = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_OFFSET.getKeybind().isKeybindHeld();
-            boolean accurateIn = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld();
-            boolean accurateReverse = Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
-
+           
             firstWasRotation = (flexible && rotation) || (accurate && (accurateIn || accurateReverse));
             firstWasOffset = flexible && offset;
             BlockHitResult hitResultTmp = new BlockHitResult(hitVec, sideIn, posIn, false);
@@ -474,6 +496,51 @@ public class PlacementTweaks
         }
 
         return result;
+    }
+
+    private static Direction getScaffoldPlaceDirection(Direction side, HitPart hitPart, PlayerEntity player) {
+            Direction offsetIn = getRotatedFacing(side, player.getHorizontalFacing(), hitPart).getOpposite();
+          
+            Direction extendDirection = null;
+            if (side == Direction.UP || side == Direction.DOWN) {
+                extendDirection = hitPart == HitPart.CENTER ? player.getHorizontalFacing() : offsetIn;
+            } else {
+                extendDirection = hitPart == HitPart.CENTER ? Direction.UP : offsetIn;
+            }
+	
+            return extendDirection;
+    }
+    private static BlockPos getScaffoldPlacePosition(BlockPos pos, Direction extendDirection, World world, ItemStack stack, PlayerEntity player) {
+
+        if (!(stack.getItem() instanceof BlockItem) || extendDirection == null) {
+            return null;
+        }
+
+        Block itemBlock = ((BlockItem)stack.getItem()).getBlock();
+        
+        BlockPos playerPos = player.getBlockPos();
+        BlockPos.Mutable tempPos = new BlockPos.Mutable(pos.getX(),pos.getY(),pos.getZ());
+        for (int i = 0; i < 20; i++) {
+            tempPos.move(extendDirection);
+
+            int dx = tempPos.getX() - playerPos.getX();
+            int dy = tempPos.getY() - playerPos.getY();
+            int dz = tempPos.getZ() - playerPos.getZ();
+
+            if (dx*dx + dy*dy + dz*dz > 8*8) {
+                return null;
+            }
+
+            BlockState state = world.getBlockState(tempPos);
+            if (state.isAir()) {
+                return tempPos.toImmutable();
+            }
+            if (state.getBlock() != itemBlock) {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     private static ActionResult tryPlaceBlock(
@@ -501,6 +568,8 @@ public class PlacementTweaks
         boolean offset = offsetHeld || (rememberFlexible && firstWasOffset);
         ItemStack stack = player.getStackInHand(hand);
        
+    
+
         if (flexible)
         {
             BlockHitResult hitResult = new BlockHitResult(hitVec, sideIn, posIn, false);
@@ -1238,8 +1307,17 @@ public class PlacementTweaks
 
     private static boolean isNewPositionValidForLayerMode(BlockPos posNew, BlockPos posFirst, Direction sideFirst)
     {
-        int diff = posNew.getY() - posFirst.getY() + 1;
-        return diff > 0 && diff <= Configs.Generic.RESTRICTION_LAYER_HEIGHT.getIntegerValue();
+        int height = Configs.Generic.RESTRICTION_LAYER_HEIGHT.getIntegerValue();
+        if (height > 0) {
+            int diff = posNew.getY() - posFirst.getY() + 1;
+        
+            return diff > 0 && diff <= height;
+        } else if (height < 0) {
+            int diff = posFirst.getY() - posNew.getY() + 1;
+        
+            return diff > 0 && diff <= -height;
+        }
+        return true;
     }
 
     private static boolean isNewPositionValidForLineMode(BlockPos posNew, BlockPos posFirst, Direction sideFirst)

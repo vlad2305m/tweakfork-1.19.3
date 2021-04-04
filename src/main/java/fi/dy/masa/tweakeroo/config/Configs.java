@@ -102,7 +102,8 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       SELECTIVE_BLOCKS_NO_HIT             = new ConfigBoolean     ("selectiveBlocksNoHit", true, "Whether or not to disable targeting hidden blocks");
         public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
         public static final ConfigInteger       SCAFFOLD_PLACE_DISTANCE             = new ConfigInteger     ("scaffoldPlaceDistance", 20, 1, 20, "Scaffold place max distance");
-       
+        public static final ConfigBoolean       SCAFFOLD_PLACE_VANILLA              = new ConfigBoolean     ("scaffoldPlaceVanilla", false, "When enabled, extend direction is only set by player direction");
+        
 
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -174,7 +175,8 @@ public class Configs implements IConfigHandler
                 STRUCTURE_BLOCK_MAX_SIZE,
                 ZOOM_FOV,
                 DAY_CYCLE_OVERRIDE_TIME,
-                SCAFFOLD_PLACE_DISTANCE
+                SCAFFOLD_PLACE_DISTANCE,
+                SCAFFOLD_PLACE_VANILLA
         );
     }
 

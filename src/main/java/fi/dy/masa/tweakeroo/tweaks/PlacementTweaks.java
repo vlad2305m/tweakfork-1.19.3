@@ -503,9 +503,9 @@ public class PlacementTweaks
           
             Direction extendDirection = null;
             if (side == Direction.UP || side == Direction.DOWN) {
-                extendDirection = hitPart == HitPart.CENTER ? player.getHorizontalFacing() : offsetIn;
+                extendDirection = (hitPart == HitPart.CENTER || Configs.Generic.SCAFFOLD_PLACE_VANILLA.getBooleanValue()) ? player.getHorizontalFacing() : offsetIn;
             } else {
-                extendDirection = hitPart == HitPart.CENTER ? Direction.UP : offsetIn;
+                extendDirection = (hitPart == HitPart.CENTER || Configs.Generic.SCAFFOLD_PLACE_VANILLA.getBooleanValue()) ? Direction.UP : offsetIn;
             }
 	
             return extendDirection;

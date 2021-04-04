@@ -520,7 +520,7 @@ public class PlacementTweaks
         
         BlockPos playerPos = player.getBlockPos();
         BlockPos.Mutable tempPos = new BlockPos.Mutable(pos.getX(),pos.getY(),pos.getZ());
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < Configs.Generic.SCAFFOLD_PLACE_DISTANCE.getIntegerValue(); i++) {
             tempPos.move(extendDirection);
 
             int dx = tempPos.getX() - playerPos.getX();

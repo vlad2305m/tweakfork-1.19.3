@@ -101,6 +101,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       SELECTIVE_BLOCKS_HIDE_PARTICLES     = new ConfigBoolean     ("selectiveBlocksHideParticles", true, "Whether or not to hide particles for selective block rendering");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_NO_HIT             = new ConfigBoolean     ("selectiveBlocksNoHit", true, "Whether or not to disable targeting hidden blocks");
         public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
+        public static final ConfigInteger       SCAFFOLD_PLACE_DISTANCE             = new ConfigInteger     ("scaffoldPlaceDistance", 20, 1, 20, "Scaffold place max distance");
        
 
 
@@ -172,7 +173,8 @@ public class Configs implements IConfigHandler
                 SNAP_AIM_YAW_STEP,
                 STRUCTURE_BLOCK_MAX_SIZE,
                 ZOOM_FOV,
-                DAY_CYCLE_OVERRIDE_TIME
+                DAY_CYCLE_OVERRIDE_TIME,
+                SCAFFOLD_PLACE_DISTANCE
         );
     }
 

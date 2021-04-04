@@ -20,6 +20,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
     * tweakSelectiveBlocksRenderOutline -> Renders an outline over the listed positions. Allows you to see whats in the white/blacklists.
     * Generic.selectiveBlocksTrackPistons -> When enabled, the mod will track piston movements and update the position lists accordingly.
     * Generic.areaSelectionUseAll -> When enabled, the area selector will include air blocks.
+    * Generic.selectiveBlocksNoHit -> When enabled, disables trace-hitting hidden blocks. (hint: can also use to build stuff in hard to reach places in survival mode)
 
 *Using Selectively Visible Blocks for the [brewer](https://www.youtube.com/watch?v=1_jSkyq-WOs) video*
 <img width="1280" alt="Screen Shot 2021-02-16 at 2 01 08 PM" src="https://user-images.githubusercontent.com/13282284/108109105-7742c280-705f-11eb-81cf-b5341ca740c3.png">

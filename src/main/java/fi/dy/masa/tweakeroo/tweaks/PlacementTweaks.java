@@ -532,10 +532,11 @@ public class PlacementTweaks
             }
 
             BlockState state = world.getBlockState(tempPos);
-            if (state.isAir()) {
-                return tempPos.toImmutable();
-            }
             if (state.getBlock() != itemBlock) {
+                if (state.isAir() || state.getMaterial().isReplaceable()) {
+                    return tempPos.toImmutable();
+                }
+           
                 return null;
             }
         }

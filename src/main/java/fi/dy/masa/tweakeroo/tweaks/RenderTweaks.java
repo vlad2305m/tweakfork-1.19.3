@@ -112,7 +112,7 @@ public class RenderTweaks {
                 entry.status = 3;
             }
         }
-        int reach = (int) mc.interactionManager.getReachDistance();
+        int reach = Math.min((int) mc.interactionManager.getReachDistance(),6);
         BlockPos.Mutable tempPos = new BlockPos.Mutable();
         BlockPos playerPos = MiscUtils.getPlayerHeadPos(mc.player);
         CURRENT_CONTAINER = 0;
@@ -123,7 +123,7 @@ public class RenderTweaks {
                 for (int oz = -reach; oz < reach; oz++) {
                     tempPos.set(playerPos.getX() + ox, playerPos.getY() + oy, playerPos.getZ() + oz);
 
-                    if (!MiscUtils.isInReach(tempPos, mc.player, mc.interactionManager.getReachDistance())
+                    if (!MiscUtils.isInReach(tempPos, mc.player, reach)
                             || !CONTAINERCACHE.containsKey(tempPos.asLong()))
                         continue;
                     ContainerEntry entry = CONTAINERCACHE.get(tempPos.asLong());

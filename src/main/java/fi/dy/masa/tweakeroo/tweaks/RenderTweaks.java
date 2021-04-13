@@ -136,7 +136,7 @@ public class RenderTweaks {
                     Block block = state.getBlock();
                     boolean valid = true;
                     if (block instanceof ChestBlock) {
-                        valid = !ChestBlock.isChestBlocked(mc.world, tempPos) || mc.player.isSpectator();
+                        valid = !ChestBlock.isChestBlocked(mc.world, tempPos);
                     } else if (block instanceof ShulkerBoxBlock) {
                         ShulkerBoxBlockEntity lv1 = (ShulkerBoxBlockEntity) blockEntity;
                         boolean flag;

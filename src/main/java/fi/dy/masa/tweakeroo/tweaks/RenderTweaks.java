@@ -252,7 +252,7 @@ public class RenderTweaks {
         for (ContainerEntry entry : CONTAINERCACHE.values()) {
             if (entry.status == 2) {
 
-                if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue() || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getDefaultIntegerValue()) {
+                if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue() || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getIntegerValue()) {
                     if (MiscUtils.isInReach(entry.pos, mc.player, 10)) {
                         if (entry.itemCount == 0) {
                         OverlayRenderer.drawString("Empty", entry.pos, sideColor.intValue, -0.5F);

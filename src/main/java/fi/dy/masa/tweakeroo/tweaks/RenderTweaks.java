@@ -747,7 +747,7 @@ public class RenderTweaks {
         if (!FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue())
             return true;
         if (CONTAINERS_WAITING.isEmpty() || CONTAINERS_WAITING.size() <= CURRENT_CONTAINER) {
-            System.out.println("Desync, no containers are being scanned (open screen)");
+           // System.out.println("Desync, no containers are being scanned (open screen)");
             CURRENT_CONTAINER = -1;
             return true;
         }
@@ -763,7 +763,7 @@ public class RenderTweaks {
             return true;
 
         if (CONTAINERS_WAITING.isEmpty() || CONTAINERS_WAITING.size() <= CURRENT_CONTAINER) {
-            System.out.println("Desync, no containers are being scanned");
+            // System.out.println("Desync, no containers are being scanned");
             CURRENT_CONTAINER = -1;
             return true;
         }

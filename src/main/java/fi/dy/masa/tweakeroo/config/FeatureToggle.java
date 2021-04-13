@@ -98,10 +98,10 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_Y_MIRROR                  ("tweakYMirror",                        false, "",    "Mirrors the targeted y-position within the block bounds.\nThis is basically for placing slabs or stairs\nin the opposite top/bottom state from normal,\nif you have to place them against another slab for example."),
     TWEAK_ZOOM                      ("tweakZoom",                           false, "",    KeybindSettings.INGAME_BOTH, "Enables using the zoom hotkey to, well, zoom in"),
     TWEAK_SELECTIVE_BLOCKS_RENDERING ("tweakSelectiveBlocksRendering",      false, "",    "Enables selectively visible blocks rendering"),
-    TWEAK_SELECTIVE_BLOCKS_RENDER_OUTLINE   ("tweakSelectiveBlocksRenderOutline",          false, "",    "Renders an outline over listed blocks"),
+    TWEAK_SELECTIVE_BLOCKS_RENDER_OUTLINE   ("tweakSelectiveBlocksRenderOutline", false, "",    "Renders an outline over listed blocks"),
     TWEAK_AREA_SELECTOR             ("tweakAreaSelector",                   false, "",    "Enables the area selector"),
     TWEAK_DAY_CYCLE_OVERRIDE        ("tweakDayCycleOverride",               false, "",    "Overrides the time of day on the client only"),
-    TWEAK_NO_SNEAK_SLOWDOWN               ("tweakNoSneakSlowdown",                     false, "",    "Disables slowdown when sneaking"),
+    TWEAK_NO_SNEAK_SLOWDOWN         ("tweakNoSneakSlowdown",                     false, "",    "Disables slowdown when sneaking"),
     TWEAK_SCAFFOLD_PLACE            ("tweakScaffoldPlace",                  false, "",    "Place blocks as if they were scaffolding"),
     TWEAK_CONTAINER_SCAN            ("tweakContainerScan",                  false, "",    "Scans containers");
 

@@ -103,15 +103,13 @@ public class RenderTweaks {
         if (mc.player.isSneaking())
             return;
         long now = System.currentTimeMillis();
-        if (!CONTAINERS_WAITING.isEmpty() && CURRENT_CONTAINER < CONTAINERS_WAITING.size()) {
+        if (!CONTAINERS_WAITING.isEmpty()) {
 
             if (now - LAST_CHECK < 1000 * 5) {
                 return;
             }
 
-            for (ContainerEntry entry : CONTAINERS_WAITING) {
-                entry.status = 3;
-            }
+            onDesync();
         }
         int reach = Math.min((int) mc.interactionManager.getReachDistance(),6);
         BlockPos.Mutable tempPos = new BlockPos.Mutable();
@@ -743,13 +741,20 @@ public class RenderTweaks {
 
     }
 
+    public static void onDesync() {
+        CURRENT_CONTAINER = -1;
+
+        for (ContainerEntry entry : CONTAINERS_WAITING) {
+            entry.status = 3;
+        }
+    }
     public static boolean onOpenScreen(Text name, ScreenHandlerType<?> screenHandlerType, int syncId) {
         LAST_CHECK = System.currentTimeMillis();
         if (!FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue())
             return true;
         if (CONTAINERS_WAITING.isEmpty() || CONTAINERS_WAITING.size() <= CURRENT_CONTAINER) {
            // System.out.println("Desync, no containers are being scanned (open screen)");
-            CURRENT_CONTAINER = -1;
+            onDesync();
             return true;
         }
 
@@ -765,13 +770,13 @@ public class RenderTweaks {
 
         if (CONTAINERS_WAITING.isEmpty() || CONTAINERS_WAITING.size() <= CURRENT_CONTAINER) {
             // System.out.println("Desync, no containers are being scanned");
-            CURRENT_CONTAINER = -1;
+            onDesync();
             return true;
         }
 
         if (syncId != CURRENT_SYNC_ID) {
             System.out.println(CURRENT_CONTAINER + " Desync, expected " + CURRENT_SYNC_ID + " but got " + syncId);
-            CURRENT_CONTAINER = -1;
+            onDesync();
             return false;
         }
 
@@ -821,13 +826,18 @@ public class RenderTweaks {
             System.out.println(CURRENT_CONTAINER + " Desync, type mismatch. Expected block with "
                     + Registry.SCREEN_HANDLER.getId(CURRENT_SCREEN_TYPE).getPath() + " screen but found a "
                     + Registry.BLOCK.getId(block).getPath());
-            CURRENT_CONTAINER = -1;
+                    onDesync();
             return false;
         }
 
         HashSet<Item> hasSeenItem = new HashSet<Item>();
         int max = Math.min(contents.size(), end);
         ItemStack[] contentList = new ItemStack[max - start];
+        entry.areSlotsCovered = false;
+        entry.isFull = false;
+        entry.typeCount = 0;
+        entry.itemCount = 0;
+        entry.contentList = null;
         if (max - start > 0) {
             entry.areSlotsCovered = true;
             entry.isFull = true;
@@ -850,6 +860,7 @@ public class RenderTweaks {
         entry.contentList = contentList;
         entry.status = 2;
         CURRENT_CONTAINER++;
+        if (CURRENT_CONTAINER >= CONTAINERS_WAITING.size()) CONTAINERS_WAITING.clear();
         return false;
     }
 

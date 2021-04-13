@@ -290,8 +290,8 @@ public class Configs implements IConfigHandler
         public static final ConfigBooleanHotkeyed       DISABLE_VILLAGER_TRADE_LOCKING  = new ConfigBooleanClient  ("disableVillagerTradeLocking",          false, "", "Prevents villager trades from ever locking, by always incrementing\nthe max uses as well when the recipe uses is incremented");
         public static final ConfigBooleanHotkeyed       DISABLE_WALL_UNSPRINT           = new ConfigBooleanHotkeyed("disableWallUnsprint",                  false, "", "Touching a wall doesn't drop you out from sprint mode");
         public static final ConfigBooleanHotkeyed       DISABLE_WORLD_VIEW_BOB          = new ConfigBooleanHotkeyed("disableWorldViewBob",                  false, "", "Disables the view bob wobble effect of the world, but not the hand");
-        public static final ConfigBooleanHotkeyed       DISABLE_CONTAINER_SCAN_OUTLINES = new ConfigBooleanHotkeyed("disableContainerScanOutlines",         true, "", "Disables rendering container scan outlines");
-        public static final ConfigBooleanHotkeyed       DISABLE_CONTAINER_SCAN_COUNTS   = new ConfigBooleanHotkeyed("disableContainerScanCounts",         true, "", "Disables rendering container scan counts");
+        public static final ConfigBooleanHotkeyed       DISABLE_CONTAINER_SCAN_OUTLINES = new ConfigBooleanHotkeyed("disableContainerScanOutlines",         false, "", "Disables rendering container scan outlines");
+        public static final ConfigBooleanHotkeyed       DISABLE_CONTAINER_SCAN_COUNTS   = new ConfigBooleanHotkeyed("disableContainerScanCounts",           false, "", "Disables rendering container scan counts");
 
         public static final ImmutableList<IHotkeyTogglable> OPTIONS = ImmutableList.of(
                 DISABLE_ARMOR_STAND_RENDERING,

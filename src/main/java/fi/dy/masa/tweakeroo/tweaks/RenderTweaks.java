@@ -191,9 +191,11 @@ public class RenderTweaks {
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
 
-            renderUnknownContainerBoxes(matrices);
+            if (!Configs.Disable.DISABLE_CONTAINER_SCAN_OUTLINES.getBooleanValue())
+                renderUnknownContainerBoxes(matrices);
 
-            renderContainerBoxesInfo(matrices);
+            if (!Configs.Disable.DISABLE_CONTAINER_SCAN_COUNTS.getBooleanValue())
+                renderContainerBoxesInfo(matrices);
 
             RenderSystem.polygonOffset(0f, 0f);
             RenderSystem.disablePolygonOffset();

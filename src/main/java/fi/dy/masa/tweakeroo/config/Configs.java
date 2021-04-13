@@ -103,7 +103,9 @@ public class Configs implements IConfigHandler
         public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
         public static final ConfigInteger       SCAFFOLD_PLACE_DISTANCE             = new ConfigInteger     ("scaffoldPlaceDistance", 5, 1, 20, "Scaffold place max distance");
         public static final ConfigBoolean       SCAFFOLD_PLACE_VANILLA              = new ConfigBoolean     ("scaffoldPlaceVanilla", false, "When enabled, extend direction is only set by player direction");
-        
+        public static final ConfigInteger       CONTAINER_SCAN_MIN_ITEMS            = new ConfigInteger     ("containerScanMinItems", 1, 1, 100000, "Minimum items a container needs to have to be displayed");
+        public static final ConfigInteger       CONTAINER_SCAN_MIN_TYPES            = new ConfigInteger     ("containerScanMinTypes", 1, 1, 100000, "Minimum item types a container needs to have to be displayed");
+       
 
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -176,7 +178,9 @@ public class Configs implements IConfigHandler
                 ZOOM_FOV,
                 DAY_CYCLE_OVERRIDE_TIME,
                 SCAFFOLD_PLACE_DISTANCE,
-                SCAFFOLD_PLACE_VANILLA
+                SCAFFOLD_PLACE_VANILLA,
+                CONTAINER_SCAN_MIN_ITEMS,
+                CONTAINER_SCAN_MIN_TYPES
         );
     }
 

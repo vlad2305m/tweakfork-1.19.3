@@ -10,6 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.transformer.Config;
 
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -251,11 +252,20 @@ public class RenderTweaks {
         for (ContainerEntry entry : CONTAINERCACHE.values()) {
             if (entry.status == 2) {
 
-                if (entry.itemCount == 0) {
-                    if (MiscUtils.isInReach(entry.pos, mc.player, 10))
+                if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue() || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getDefaultIntegerValue()) {
+                    if (MiscUtils.isInReach(entry.pos, mc.player, 10)) {
+                        if (entry.itemCount == 0) {
                         OverlayRenderer.drawString("Empty", entry.pos, sideColor.intValue, -0.5F);
+                        } else {
+                            OverlayRenderer.drawString(entry.itemCount + " items" + (entry.isFull ?  " •" : ""), entry.pos,
+                            sideColor.intValue, -0.5F);
+                            OverlayRenderer.drawString(entry.typeCount + " types" + (entry.areSlotsCovered ?  " •" : ""),
+                        entry.pos, sideColor.intValue, 0.5F);
+                        }
+                    }
                     continue;
                 }
+                
 
                 OverlayRenderer.drawString(entry.itemCount + " items" + (entry.isFull ? fullIndicator : ""), entry.pos,
                         Formatting.GOLD.getColorValue(), -0.5F);

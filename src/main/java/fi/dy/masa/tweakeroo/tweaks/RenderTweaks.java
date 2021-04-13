@@ -38,6 +38,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
@@ -135,6 +136,10 @@ public class RenderTweaks {
                     boolean valid = true;
                     if (block instanceof ChestBlock) {
                         valid = !ChestBlock.isChestBlocked(mc.world, tempPos);
+                        if (valid && state.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE) {
+                            if (ChestBlock.isChestBlocked(mc.world,tempPos.offset(ChestBlock.getFacing(state))))
+                                valid = false;
+                        }
                     } else if (block instanceof ShulkerBoxBlock) {
                         ShulkerBoxBlockEntity lv1 = (ShulkerBoxBlockEntity) blockEntity;
                         boolean flag;

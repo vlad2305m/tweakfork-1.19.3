@@ -29,6 +29,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BrewingStandBlock;
+import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.DropperBlock;
@@ -811,6 +812,9 @@ public class RenderTweaks {
         } else if (CURRENT_SCREEN_TYPE == ScreenHandlerType.SHULKER_BOX) {
             end = 27;
             valid = block instanceof ShulkerBoxBlock;
+        } else if (CURRENT_SCREEN_TYPE == ScreenHandlerType.CRAFTING) {
+            end = 10;
+            valid = block instanceof CraftingTableBlock;
         }
 
         if (!valid) {

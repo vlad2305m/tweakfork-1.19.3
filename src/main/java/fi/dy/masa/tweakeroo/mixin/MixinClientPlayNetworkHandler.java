@@ -10,11 +10,27 @@ import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 
 @Mixin(net.minecraft.client.network.ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler
 {
+    @Inject(method = "onOpenScreen", at = @At("HEAD"), cancellable = true)
+    private void onOpenScreenListener(OpenScreenS2CPacket packet, CallbackInfo ci) {
+        if (!RenderTweaks.onOpenScreen(packet.getName(),packet.getScreenHandlerType(),packet.getSyncId())) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "onInventory", at = @At("HEAD"), cancellable = true)
+    private void onInventoryListener(InventoryS2CPacket packet, CallbackInfo ci) {
+        if (!RenderTweaks.onInventory(packet.getSyncId(),packet.getContents())) {
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "onScreenHandlerSlotUpdate", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/screen/ScreenHandler;setStackInSlot(ILnet/minecraft/item/ItemStack;)V"),

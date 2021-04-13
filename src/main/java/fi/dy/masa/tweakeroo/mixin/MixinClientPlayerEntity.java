@@ -43,7 +43,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
     @Inject(method = "shouldSlowDown", at = @At(value = "HEAD"), cancellable = true)
     private void shouldSlowDown(CallbackInfoReturnable<Boolean> ci) {
-        if (FeatureToggle.TWEAK_NO_SLOWDOWN.getBooleanValue()) {
+        if (FeatureToggle.TWEAK_NO_SNEAK_SLOWDOWN.getBooleanValue()) {
             ci.setReturnValue(false);
             ci.cancel();
         }

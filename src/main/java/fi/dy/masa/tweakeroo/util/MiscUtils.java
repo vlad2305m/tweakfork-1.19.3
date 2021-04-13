@@ -9,9 +9,13 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -286,4 +290,21 @@ public class MiscUtils
         double offsetRealRotation = MathHelper.floorMod(realRotation, 360.0D) + (step / 2.0);
         return MathHelper.floorMod(((int) (offsetRealRotation / step)) * step, 360.0D);
     }
+
+    public static Vec3d getEyesPos(PlayerEntity player)
+	{	
+		return new Vec3d(player.getX(), player.getY() + player.getEyeHeight(player.getPose()), player.getZ());
+	}
+    public static BlockPos getPlayerHeadPos(PlayerEntity player)
+	{	
+		return (player.getPose() == EntityPose.STANDING) ? player.getBlockPos().offset(Direction.UP) : player.getBlockPos();
+	}
+    public static boolean isInReach(BlockPos pos, PlayerEntity player, double reach) {
+        Vec3d playerpos = getEyesPos(player);
+		double d = playerpos.getX() - ((double)pos.getX() + 0.5D);
+		double d1 = playerpos.getY() - ((double)pos.getY() + 0.5D);
+		double d2 = playerpos.getZ() - ((double)pos.getZ() + 0.5D);
+        return d*d+d1*d1+d2*d2 <= reach*reach;
+    } 
+	
 }

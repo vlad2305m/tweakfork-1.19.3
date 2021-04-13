@@ -517,17 +517,14 @@ public class PlacementTweaks
         }
 
         Block itemBlock = ((BlockItem)stack.getItem()).getBlock();
-        
-        BlockPos playerPos = player.getBlockPos();
+        MinecraftClient mc = MinecraftClient.getInstance();
+        double reach = mc.interactionManager.getReachDistance();
+       
         BlockPos.Mutable tempPos = new BlockPos.Mutable(pos.getX(),pos.getY(),pos.getZ());
         for (int i = 0; i < Configs.Generic.SCAFFOLD_PLACE_DISTANCE.getIntegerValue(); i++) {
             tempPos.move(extendDirection);
 
-            int dx = tempPos.getX() - playerPos.getX();
-            int dy = tempPos.getY() - playerPos.getY();
-            int dz = tempPos.getZ() - playerPos.getZ();
-
-            if (dx*dx + dy*dy + dz*dz > 8*8) {
+            if (!MiscUtils.isInReach(tempPos, player, reach)) {
                 return null;
             }
 

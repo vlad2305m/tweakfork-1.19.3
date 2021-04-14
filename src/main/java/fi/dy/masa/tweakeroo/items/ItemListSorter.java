@@ -18,7 +18,7 @@ public class ItemListSorter implements Comparator<ItemListEntry>
     {
         boolean reverse = this.materialList.getSortInReverse();
         SortCriteria sortCriteria = this.materialList.getSortCriteria();
-        int nameCompare = entry1.getStack().getName().getString().compareTo(entry2.getStack().getName().getString());
+        int nameCompare = entry1.getItem().getName().getString().compareTo(entry2.getItem().getName().getString());
 
         if (sortCriteria == SortCriteria.COUNT_TOTAL)
         {

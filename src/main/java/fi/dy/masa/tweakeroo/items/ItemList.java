@@ -47,7 +47,7 @@ public class ItemList
     }
 
     public String getTitle() {
-        return "Item List";
+        return "Container Scanned Items";
     }
 
     public void clearSelected() {

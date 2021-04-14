@@ -76,11 +76,12 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
 
         int posX = x + width;
         int posY = y + 1;
-
+/*
         // Note: These are placed from right to left
         ButtonListener listener = new ButtonListener(ButtonListener.ButtonType.IGNORE, this.itemList, this.entry, this.listWidget);
         this.ignoreButton = this.createButtonGeneric(posX, posY, ButtonListener.ButtonType.IGNORE);
         posX = this.addButton(this.ignoreButton, listener).getX();
+        */
     }
 
     private ButtonGeneric createButtonGeneric(int xRight, int y, ButtonListener.ButtonType type)
@@ -113,7 +114,8 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
     @Override
     public boolean canSelectAt(int mouseX, int mouseY, int mouseButton)
     {
-        return mouseX < this.ignoreButton.getX();
+        return true;
+        //return mouseX < this.ignoreButton.getX();
     }
 
     @Override
@@ -237,7 +239,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             String gold = GuiBase.TXT_GOLD;
             String red = GuiBase.TXT_RED;
             String pre;
-            this.drawString(x1 + 20, y, color, this.entry.getStack().getName().getString(), matrixStack);
+            this.drawString(x1 + 20, y, color, this.entry.getItem().getName().toString(), matrixStack);
 
             this.drawString(x2, y, color, String.valueOf(countTotal), matrixStack);
 

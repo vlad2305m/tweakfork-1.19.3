@@ -94,7 +94,7 @@ public class GuiItemList extends GuiListBase<ItemListEntry, WidgetItemListEntry,
 
         x += this.createButtonOnOff(x, y, -1, this.itemList.getScanToggle(), ButtonListener.Type.SCAN_TOGGLE) + gap;
         x += this.createButtonOnOff(x, y, -1, this.itemList.getCountsRenderToggle(), ButtonListener.Type.RENDER_COUNTS_TOGGLE) + gap;
-        x += this.createButton(x, y, -1, ButtonListener.Type.CLEAR_IGNORED) + gap;
+       // x += this.createButton(x, y, -1, ButtonListener.Type.CLEAR_IGNORED) + gap;
         x += this.createButton(x, y, -1, ButtonListener.Type.CLEAR_CACHE) + gap;
         x += this.createButton(x, y, -1, ButtonListener.Type.WRITE_TO_FILE) + gap;
         y += 22;
@@ -140,7 +140,7 @@ public class GuiItemList extends GuiListBase<ItemListEntry, WidgetItemListEntry,
 
         width += (new ButtonOnOff(0, 0, -1, false, ButtonListener.Type.SCAN_TOGGLE.getTranslationKey(), false)).getWidth();
         width += (new ButtonOnOff(0, 0, -1, false, ButtonListener.Type.RENDER_COUNTS_TOGGLE.getTranslationKey(), false)).getWidth();
-        width += this.getStringWidth(ButtonListener.Type.CLEAR_IGNORED.getDisplayName());
+     //   width += this.getStringWidth(ButtonListener.Type.CLEAR_IGNORED.getDisplayName());
         width += this.getStringWidth(ButtonListener.Type.CLEAR_CACHE.getDisplayName());
         width += this.getStringWidth(ButtonListener.Type.WRITE_TO_FILE.getDisplayName());
         width += 130;

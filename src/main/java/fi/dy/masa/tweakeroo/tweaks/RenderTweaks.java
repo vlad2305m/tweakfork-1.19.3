@@ -284,7 +284,7 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
         String fullIndicator = Formatting.GREEN + " •";
         for (ContainerEntry entry : CONTAINERCACHE.values()) {
-            if (entry.status == 2 && !CACHED_OVERLAY_DATA.containsKey(entry.pos.asLong())) {
+            if (entry.status == 2) { // TODO && !CACHED_OVERLAY_DATA.containsKey(entry.pos.asLong())   -> when icons are done
 
                 if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue() || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getIntegerValue()) {
                     if (MiscUtils.isInReach(entry.pos, mc.player, 10)) {
@@ -354,7 +354,7 @@ public class RenderTweaks {
         }
         
     }
-    private static void renderSearchedContainerIcons(MatrixStack matrices) {
+    private static void renderSearchedContainerIcons(MatrixStack matrices) { // TODO figure out item icon rendering
        /*
         MinecraftClient mc = MinecraftClient.getInstance();
 

@@ -8,6 +8,13 @@
     "tweakeroo.gui.button.config_gui.placement": "Placement stuff",
     "tweakeroo.gui.button.config_gui.tweak_hotkeys": "Tweak Hotkeys",
     "tweakeroo.gui.button.config_gui.tweak_toggles": "Tweak Toggles",
+    "tweakeroo.gui.button.item_list.clear_cache": "Clear Cache",
+    "tweakeroo.gui.button.hover.item_list.write_hold_shift_for_csv": "Hold shift to write in CSV format",
+    "tweakeroo.gui.button.item_list.clear_ignored": "Clear Ignored",
+    "tweakeroo.gui.button.item_list.write_to_file": "Write to File",
+    "tweakeroo.gui.button.item_list.scan_toggle": "Scan",
+    "tweakeroo.gui.button.item_list.render_counts_toggle": "Render Counts",
+    "tweakeroo.gui.button.item_list.ignore": "Ignore",
 
     "tweakeroo.gui.button.misc.command_block.set_name": "Set name",
     "tweakeroo.gui.button.misc.command_block.update_execution": "Loops: %s",
@@ -33,6 +40,14 @@
     "tweakeroo.label.snap_aim_mode.pitch": "Pitch",
     "tweakeroo.label.snap_aim_mode.yaw": "Yaw",
 
+    "tweakeroo.gui.label.item_list.abbr.shulker_box": "SB",
+    "tweakeroo.gui.label.item_list.title.item": "Item",
+    "tweakeroo.gui.label.item_list.title.total": "Total",
+    "tweakeroo.gui.label.item_list.title.boxes": "Boxes",
+    "tweakeroo.gui.label.item_list.title.containers": "Containers",
+
+
+    "tweakeroo.message.cache_cleared": "Cache cleared",
     "tweakeroo.message.focusing_game": "§6Focusing§f the game (grabbing the cursor)",
     "tweakeroo.message.potion_effects_running_out": "§6!! WARNING - %s potion effect(s) about to run out in %s seconds !!§r",
     "tweakeroo.message.repair_mode.swapped_repairable_item_to_slot": "Swapped a repairable item to %s slot",
@@ -70,5 +85,6 @@
     "tweakeroo.message.toggled_zoom_on": "Toggled zoom %s, FOV: %s",
     "tweakeroo.message.unfocusing_game": "§6Un-focusing§f the game (un-grabbing the cursor)",
     "tweakeroo.message.value.off": "OFF",
-    "tweakeroo.message.value.on": "ON"
+    "tweakeroo.message.value.on": "ON",
+    "tweakeroo.message.item_list_written_to_file": "Item list written to file"
 }

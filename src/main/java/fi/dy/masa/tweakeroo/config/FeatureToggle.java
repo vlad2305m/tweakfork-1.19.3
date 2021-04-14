@@ -103,7 +103,8 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_DAY_CYCLE_OVERRIDE        ("tweakDayCycleOverride",               false, "",    "Overrides the time of day on the client only"),
     TWEAK_NO_SNEAK_SLOWDOWN         ("tweakNoSneakSlowdown",                     false, "",    "Disables slowdown when sneaking"),
     TWEAK_SCAFFOLD_PLACE            ("tweakScaffoldPlace",                  false, "",    "Place blocks as if they were scaffolding"),
-    TWEAK_CONTAINER_SCAN            ("tweakContainerScan",                  false, "",    "Scans containers");
+    TWEAK_CONTAINER_SCAN            ("tweakContainerScan",                  false, "",    "Scans containers"),
+    TWEAK_CONTAINER_SCAN_COUNTS     ("tweakContainerScanCounts",            false, "",    "Enables/disables container scan counts rendering"),;
 
     private final String name;
     private final String comment;

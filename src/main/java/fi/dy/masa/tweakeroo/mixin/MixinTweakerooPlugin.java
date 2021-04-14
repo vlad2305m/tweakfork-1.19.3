@@ -12,7 +12,7 @@ import java.util.Set;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-public class MixinTweakarooPlugin implements IMixinConfigPlugin
+public class MixinTweakerooPlugin implements IMixinConfigPlugin
 {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName)

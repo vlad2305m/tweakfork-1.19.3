@@ -1,9 +1,11 @@
 package fi.dy.masa.tweakeroo.tweaks;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,6 +21,7 @@ import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
+import fi.dy.masa.tweakeroo.items.ItemList;
 import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 import fi.dy.masa.tweakeroo.renderer.OverlayRenderer;
 import fi.dy.masa.tweakeroo.renderer.RenderUtils;
@@ -42,6 +45,7 @@ import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.item.Item;
@@ -83,6 +87,7 @@ public class RenderTweaks {
     public static long LAST_CHECK = 0;
     private static ScreenHandlerType<?> CURRENT_SCREEN_TYPE = null;
     private static int CURRENT_SYNC_ID = -1;
+    private static HashMap<Long, ArrayList<Item>> CACHED_OVERLAY_DATA = new HashMap<Long, ArrayList<Item>>();
 
     public static void onTick() {
         // Dumb rendundancy due to replaymod
@@ -183,6 +188,10 @@ public class RenderTweaks {
 
         if (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue()) {
             scanContainersNearby();
+        }
+        if (FeatureToggle.TWEAK_CONTAINER_SCAN_COUNTS.getBooleanValue() || 
+            (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue() && !Configs.Disable.DISABLE_CONTAINER_SCAN_OUTLINES.getBooleanValue())) {
+           
 
             RenderSystem.pushMatrix();
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
@@ -199,8 +208,33 @@ public class RenderTweaks {
             if (!Configs.Disable.DISABLE_CONTAINER_SCAN_OUTLINES.getBooleanValue())
                 renderUnknownContainerBoxes(matrices);
 
-            if (!Configs.Disable.DISABLE_CONTAINER_SCAN_COUNTS.getBooleanValue())
+            if (FeatureToggle.TWEAK_CONTAINER_SCAN_COUNTS.getBooleanValue())
                 renderContainerBoxesInfo(matrices);
+
+            RenderSystem.polygonOffset(0f, 0f);
+            RenderSystem.disablePolygonOffset();
+            RenderSystem.popMatrix();
+            RenderSystem.enableTexture();
+
+        }
+
+        if (CACHED_OVERLAY_DATA.size() > 0) {
+
+            RenderSystem.pushMatrix();
+            fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
+            fi.dy.masa.malilib.render.RenderUtils.setupBlend();
+            RenderSystem.disableDepthTest();
+            RenderSystem.disableLighting();
+            // RenderSystem.depthMask(false);
+            RenderSystem.disableTexture();
+            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+
+            RenderSystem.enablePolygonOffset();
+            RenderSystem.polygonOffset(-1.2f, -0.2f);
+
+            renderSearchedContainerBoxes(matrices);
+
+            renderSearchedContainerIcons(matrices);
 
             RenderSystem.polygonOffset(0f, 0f);
             RenderSystem.disablePolygonOffset();
@@ -250,7 +284,7 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
         String fullIndicator = Formatting.GREEN + " •";
         for (ContainerEntry entry : CONTAINERCACHE.values()) {
-            if (entry.status == 2) {
+            if (entry.status == 2 && !CACHED_OVERLAY_DATA.containsKey(entry.pos.asLong())) {
 
                 if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue() || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getIntegerValue()) {
                     if (MiscUtils.isInReach(entry.pos, mc.player, 10)) {
@@ -307,6 +341,27 @@ public class RenderTweaks {
                 RenderUtils.renderBlockOutline(entry.pos, expand, lineWidthBlockBox, colorOverlapping, mc);
             }
         }
+    }
+
+    private static void renderSearchedContainerBoxes(MatrixStack matrices) {
+        float expand = 0.001f;
+        float lineWidthBlockBox = 4f;
+        float lineWidthArea = 1.5f;
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) {
+            RenderUtils.renderBlockOutline(BlockPos.fromLong(entry.getKey()), expand, lineWidthBlockBox, sideColor, mc);
+        }
+        
+    }
+    private static void renderSearchedContainerIcons(MatrixStack matrices) {
+       /*
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) {
+        }
+        
+        */
     }
 
     public static void updateLookingAt() {
@@ -709,8 +764,8 @@ public class RenderTweaks {
     }
 
     public static Object containerScanTweakUpdate() {
-        CONTAINERCACHE.clear();
-        CONTAINERS_WAITING.clear();
+        //CONTAINERCACHE.clear();
+        //CONTAINERS_WAITING.clear();
         if (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue()) {
             scanContainers();
         }
@@ -734,7 +789,8 @@ public class RenderTweaks {
             }
 
             if (blockEntity instanceof LockableContainerBlockEntity) {
-                CONTAINERCACHE.put(pos.asLong(), new ContainerEntry(pos));
+                if (!CONTAINERCACHE.containsKey(pos.asLong()))
+                    CONTAINERCACHE.put(pos.asLong(), new ContainerEntry(pos));
             }
         }
 
@@ -749,12 +805,14 @@ public class RenderTweaks {
         public boolean areSlotsCovered = false;
         public boolean isFull = false;
         public int status = 0;
+        
 
         ContainerEntry(BlockPos p) {
             pos = p;
         }
 
     }
+   
 
     public static void onDesync() {
         CURRENT_CONTAINER = -1;
@@ -877,6 +935,17 @@ public class RenderTweaks {
         CURRENT_CONTAINER++;
         if (CURRENT_CONTAINER >= CONTAINERS_WAITING.size()) CONTAINERS_WAITING.clear();
         return false;
+    }
+
+    public static void setContainerOverlayData(HashMap<Long, ArrayList<Item>> data) {
+        CACHED_OVERLAY_DATA = data;
+    }
+
+    public static void clearContainerScanCache() {
+        CACHED_OVERLAY_DATA.clear();
+        ItemList.INSTANCE.clearSelected();
+        CONTAINERCACHE.clear();
+        scanContainers();
     }
 
 }

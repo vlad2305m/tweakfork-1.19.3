@@ -56,7 +56,10 @@ public class Hotkeys
     public static final ConfigHotkey AREA_SELECTION_OFFSET              = new ConfigHotkey("areaSelectionOffset",     "LEFT_SHIFT",     KeybindSettings.PRESS_ALLOWEXTRA, "The key to offset selection pos");
     public static final ConfigHotkey AREA_SELECTION_ADD_TO_LIST         = new ConfigHotkey("areaSelectionAddToList",            "",     KeybindSettings.PRESS_ALLOWEXTRA, "Add selected blocks to list");
     public static final ConfigHotkey AREA_SELECTION_REMOVE_FROM_LIST    = new ConfigHotkey("areaSelectionRemoveFromList",       "",     KeybindSettings.PRESS_ALLOWEXTRA, "remove selected blocks from list");
+    public static final ConfigHotkey OPEN_ITEM_LIST                     = new ConfigHotkey("openItemList",                      "",     "Opens the item list gui");
+    public static final ConfigHotkey CONTAINER_SCANNER_CLEAR_CACHE      = new ConfigHotkey("containerScannerClearCache",        "",     "Clears the container scanner cache");
    
+
     public static final List<ConfigHotkey> HOTKEY_LIST = ImmutableList.of(
             ACCURATE_BLOCK_PLACEMENT_IN,
             ACCURATE_BLOCK_PLACEMENT_REVERSE,
@@ -104,7 +107,9 @@ public class Hotkeys
             ZOOM_ACTIVATE,
             AREA_SELECTION_OFFSET,
             AREA_SELECTION_ADD_TO_LIST,
-            AREA_SELECTION_REMOVE_FROM_LIST
+            AREA_SELECTION_REMOVE_FROM_LIST,
+            OPEN_ITEM_LIST,
+            CONTAINER_SCANNER_CLEAR_CACHE
 
     );
 }

@@ -21,6 +21,7 @@ import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.tweakeroo.gui.GuiConfigs;
+import fi.dy.masa.tweakeroo.gui.GuiItemList;
 import fi.dy.masa.tweakeroo.mixin.IMixinAbstractBlock;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
@@ -97,6 +98,8 @@ public class Callbacks
         Hotkeys.ZOOM_ACTIVATE.getKeybind().setCallback(callbackGeneric);
         Hotkeys.AREA_SELECTION_ADD_TO_LIST.getKeybind().setCallback(callbackGeneric);
         Hotkeys.AREA_SELECTION_REMOVE_FROM_LIST.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.OPEN_ITEM_LIST.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.CONTAINER_SCANNER_CLEAR_CACHE.getKeybind().setCallback(callbackGeneric);
 
         Hotkeys.SKIP_ALL_RENDERING.getKeybind().setCallback(callbackMessage);
         Hotkeys.SKIP_WORLD_RENDERING.getKeybind().setCallback(callbackMessage);
@@ -256,6 +259,15 @@ public class Callbacks
         @Override
         public boolean onKeyAction(KeyAction action, IKeybind key)
         {
+            if (key == Hotkeys.CONTAINER_SCANNER_CLEAR_CACHE.getKeybind()) {
+                RenderTweaks.clearContainerScanCache();
+               
+                InfoUtils.printActionbarMessage("tweakeroo.message.cache_cleared");
+                return true;
+            } else if (key == Hotkeys.OPEN_ITEM_LIST.getKeybind()) {
+                GuiBase.openGui(GuiItemList.INSTANCE);
+                return true;
+            } else
             if (key == Hotkeys.AREA_SELECTION_ADD_TO_LIST.getKeybind()) {
                 RenderTweaks.addSelectionToList();
                 return true;

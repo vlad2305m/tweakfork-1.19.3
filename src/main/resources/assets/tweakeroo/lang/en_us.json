@@ -12,8 +12,8 @@
     "tweakeroo.gui.button.hover.item_list.write_hold_shift_for_csv": "Hold shift to write in CSV format",
     "tweakeroo.gui.button.item_list.clear_ignored": "Clear Ignored",
     "tweakeroo.gui.button.item_list.write_to_file": "Write to File",
-    "tweakeroo.gui.button.item_list.scan_toggle": "Scan",
-    "tweakeroo.gui.button.item_list.render_counts_toggle": "Render Counts",
+    "tweakeroo.gui.button.item_list.scan_toggle": "Scaner: %s",
+    "tweakeroo.gui.button.item_list.render_counts_toggle": "Counts Render: %s",
     "tweakeroo.gui.button.item_list.ignore": "Ignore",
 
     "tweakeroo.gui.button.misc.command_block.set_name": "Set name",

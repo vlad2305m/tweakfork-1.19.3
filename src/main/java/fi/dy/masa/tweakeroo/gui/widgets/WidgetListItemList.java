@@ -88,16 +88,16 @@ public class WidgetListItemList extends WidgetListBase<ItemListEntry, WidgetItem
     @Override
     protected List<String> getEntryStringsForFilter(ItemListEntry entry)
     {
-        ItemStack stack = entry.getStack();
-        Identifier rl = Registry.ITEM.getId(stack.getItem());
+    
+        Identifier rl = Registry.ITEM.getId(entry.getItem());
 
         if (rl != null)
         {
-            return ImmutableList.of(stack.getName().getString().toLowerCase(), rl.toString().toLowerCase());
+            return ImmutableList.of(entry.getItemName().toLowerCase(), rl.toString().toLowerCase());
         }
         else
         {
-            return ImmutableList.of(stack.getName().getString().toLowerCase());
+            return ImmutableList.of(entry.getItemName().toLowerCase());
         }
     }
 

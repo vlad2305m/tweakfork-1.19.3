@@ -231,7 +231,7 @@ public class GuiItemList extends GuiListBase<ItemListEntry, WidgetItemListEntry,
                 int total = entry.getCountTotal();
                 int boxes = entry.getCountBoxes();
                 int containers = entry.getCountContainers();
-                dump.addData(entry.getStack().getName().getString(), String.valueOf(total), String.valueOf(boxes), String.valueOf(containers));
+                dump.addData(entry.getItemName(), String.valueOf(total), String.valueOf(boxes), String.valueOf(containers));
             }
 
             dump.addTitle("Item", "Total", "Boxes", "Containers");

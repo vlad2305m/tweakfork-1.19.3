@@ -24,6 +24,9 @@ public class ItemListEntry
         this.countItemsInBoxes = countItemsInBoxes;
     }
 
+    public String getItemName() {
+        return this.getItem().getName().getString();
+    }
     public ItemStack getStack()
     {
         return this.item.getStack();

@@ -104,7 +104,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             int countBoxes = entry.getCountBoxes();
             int countContainer = entry.getCountContainers();
 
-            maxNameLength   = Math.max(maxNameLength,   StringUtils.getStringWidth(entry.getStack().getName().getString()));
+            maxNameLength   = Math.max(maxNameLength,   StringUtils.getStringWidth(entry.getItemName()));
             maxCountLength1 = Math.max(maxCountLength1, StringUtils.getStringWidth(String.valueOf(countTotal)));
             maxCountLength2 = Math.max(maxCountLength2, StringUtils.getStringWidth(String.valueOf(countBoxes)));
             maxCountLength3 = Math.max(maxCountLength3, StringUtils.getStringWidth(String.valueOf(countContainer)));
@@ -239,7 +239,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             String gold = GuiBase.TXT_GOLD;
             String red = GuiBase.TXT_RED;
             String pre;
-            this.drawString(x1 + 20, y, color, this.entry.getItem().getName().toString(), matrixStack);
+            this.drawString(x1 + 20, y, color, this.entry.getItemName(), matrixStack);
 
             this.drawString(x2, y, color, String.valueOf(countTotal), matrixStack);
 
@@ -279,7 +279,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             String header3 = GuiBase.TXT_BOLD + StringUtils.translate(HEADERS[2]);
 
             ItemStack stack = this.entry.getStack();
-            String stackName = stack.getName().getString();
+            String stackName = entry.getItemName();
             int countTotal = entry.getCountTotal();
             int countBoxes = entry.getCountBoxes();
             String strCountTotal = this.getFormattedCountString(countTotal, stack.getMaxCount());

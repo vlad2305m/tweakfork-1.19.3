@@ -147,6 +147,9 @@ public class RenderTweaks {
                             if (ChestBlock.isChestBlocked(mc.world,tempPos.offset(ChestBlock.getFacing(state))))
                                 valid = false;
                         }
+                        if (state.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) {
+                            entry.skipCount = true;
+                        }
                     } else if (block instanceof ShulkerBoxBlock) {
                         ShulkerBoxBlockEntity lv1 = (ShulkerBoxBlockEntity) blockEntity;
                         boolean flag;
@@ -806,6 +809,7 @@ public class RenderTweaks {
         public boolean areSlotsCovered = false;
         public boolean isFull = false;
         public int status = 0;
+        public boolean skipCount = false;
         
 
         ContainerEntry(BlockPos p) {

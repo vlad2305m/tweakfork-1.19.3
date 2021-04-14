@@ -120,6 +120,7 @@ public class ItemList
         Iterator<ContainerEntry> iterator = CONTAINERCACHE.values().iterator();
         while (iterator.hasNext()) {
             ContainerEntry entry = iterator.next();
+            if (entry.skipCount) continue;
             if (entry.status != 2) continue;
             this.scanCount++;
             for (ItemStack stack : entry.contentList) {

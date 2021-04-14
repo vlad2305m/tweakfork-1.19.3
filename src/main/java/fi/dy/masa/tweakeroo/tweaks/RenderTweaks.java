@@ -76,6 +76,7 @@ public class RenderTweaks {
     private static Color4f colorLooking = new Color4f(1.0f, 1.0f, 1.0f, 0.6f);
     private static Color4f colorWhitelist = new Color4f(0.1f, 0.7f, 0.1f, 0.25f);
     private static Color4f colorBlacklist = new Color4f(0.7f, 0.1f, 0.1f, 0.25f);
+    private static Color4f colorSearch = new Color4f(0.9f, 0f, 0.7f, 0.25f);
 
     public static Selection AREA_SELECTION = new Selection();
 
@@ -350,7 +351,7 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
 
         for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) {
-            RenderUtils.renderBlockOutline(BlockPos.fromLong(entry.getKey()), expand, lineWidthBlockBox, sideColor, mc);
+            RenderUtils.renderBlockOutline(BlockPos.fromLong(entry.getKey()), expand, lineWidthBlockBox, colorSearch, mc);
         }
         
     }

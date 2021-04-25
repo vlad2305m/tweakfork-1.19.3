@@ -70,4 +70,31 @@ public abstract class MixinClientWorld extends World
             }
         }
     }
+
+    @Inject(method = "scheduleBlockRerenderIfNeeded", at = @At("HEAD"), cancellable = true)
+    private void disableChunkReRenders(BlockPos pos, BlockState old, BlockState updated, CallbackInfo ci)
+    {
+        if (Configs.Disable.DISABLE_CHUNK_RENDERING.getBooleanValue())
+        {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "scheduleBlockRenders", at = @At("HEAD"), cancellable = true)
+    private void disableChunkReRenders(int x, int y, int z, CallbackInfo ci)
+    {
+        if (Configs.Disable.DISABLE_CHUNK_RENDERING.getBooleanValue())
+        {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "updateListeners", at = @At("HEAD"), cancellable = true)
+    private void disableChunkReRenders(BlockPos pos, BlockState oldState, BlockState newState, int flags, CallbackInfo ci)
+    {
+        if (Configs.Disable.DISABLE_CHUNK_RENDERING.getBooleanValue())
+        {
+            ci.cancel();
+        }
+    }
 }

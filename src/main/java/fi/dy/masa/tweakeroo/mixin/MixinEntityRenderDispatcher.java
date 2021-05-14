@@ -31,6 +31,11 @@ public abstract class MixinEntityRenderDispatcher
             cir.setReturnValue(false);
         }
 
+        if (FeatureToggle.TWEAK_RENDER_ALL_ENTITIES.getBooleanValue())
+        {
+            cir.setReturnValue(true);
+        }
+
         if (entityIn instanceof FallingBlockEntity && Configs.Disable.DISABLE_FALLING_BLOCK_RENDER.getBooleanValue())
         {
             cir.setReturnValue(false);

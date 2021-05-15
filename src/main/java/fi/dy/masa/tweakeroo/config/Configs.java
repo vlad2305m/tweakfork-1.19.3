@@ -99,6 +99,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       AREA_SELECTION_USE_ALL              = new ConfigBoolean     ("areaSelectionUseAll", false, "Whether or not to include air in selection");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_TRACK_PISTONS      = new ConfigBoolean     ("selectiveBlocksTrackPistons", true, "Whether or not to track piston movements for selective block rendering");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_HIDE_PARTICLES     = new ConfigBoolean     ("selectiveBlocksHideParticles", true, "Whether or not to hide particles for selective block rendering");
+        public static final ConfigBoolean       SELECTIVE_BLOCKS_HIDE_ENTITIES      = new ConfigBoolean     ("selectiveBlocksHideEntities", false, "Whether or not to hide entities for selective block rendering");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_NO_HIT             = new ConfigBoolean     ("selectiveBlocksNoHit", true, "Whether or not to disable targeting hidden blocks");
         public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
         public static final ConfigInteger       SCAFFOLD_PLACE_DISTANCE             = new ConfigInteger     ("scaffoldPlaceDistance", 5, 1, 20, "Scaffold place max distance");
@@ -134,6 +135,7 @@ public class Configs implements IConfigHandler
                 HOTBAR_SWAP_OVERLAY_ALIGNMENT,
                 SELECTIVE_BLOCKS_TRACK_PISTONS,
                 SELECTIVE_BLOCKS_HIDE_PARTICLES,
+                SELECTIVE_BLOCKS_HIDE_ENTITIES,
                 SELECTIVE_BLOCKS_NO_HIT,
                 SNAP_AIM_MODE,
 

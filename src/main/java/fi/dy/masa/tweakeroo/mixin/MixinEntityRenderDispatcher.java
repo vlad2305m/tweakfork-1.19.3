@@ -26,7 +26,17 @@ public abstract class MixinEntityRenderDispatcher
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private void onShouldRender(Entity entityIn, Frustum frustum, double camX, double camY, double camZ, CallbackInfoReturnable<Boolean> cir)
     {
-        if (Configs.Disable.DISABLE_ENTITY_RENDERING.getBooleanValue() && (entityIn instanceof PlayerEntity) == false)
+        boolean isPlayer = (entityIn instanceof PlayerEntity);
+        if (entityIn instanceof AbstractDecorationEntity) {
+            if (!RenderTweaks.isPositionValidForRendering(((IDecorationEntity) entityIn).getAttatched()))
+                cir.setReturnValue(false);
+        }
+        if (!isPlayer && Configs.Generic.SELECTIVE_BLOCKS_HIDE_ENTITIES.getBooleanValue()) {
+            if (!RenderTweaks.isPositionValidForRendering(entityIn.getBlockPos()))
+                cir.setReturnValue(false);
+        }
+
+        if (Configs.Disable.DISABLE_ENTITY_RENDERING.getBooleanValue() && !isPlayer)
         {
             cir.setReturnValue(false);
         }
@@ -74,9 +84,5 @@ public abstract class MixinEntityRenderDispatcher
             cir.setReturnValue(false);
         }
 
-        if (entityIn instanceof AbstractDecorationEntity) {
-            if (!RenderTweaks.isPositionValidForRendering(((IDecorationEntity) entityIn).getAttatched()))
-                cir.setReturnValue(false);
-        }
     }
 }

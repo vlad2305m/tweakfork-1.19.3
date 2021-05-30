@@ -44,7 +44,6 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
     @Nullable private final String header4;
     private final String shulkerBoxAbbr;
     private final boolean isOdd;
-    private ButtonGeneric ignoreButton;
 
     public WidgetItemListEntry(int x, int y, int width, int height, boolean isOdd,
             ItemList itemList, @Nullable ItemListEntry entry, int listIndex, WidgetListItemList listWidget)
@@ -76,12 +75,6 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
 
         int posX = x + width;
         int posY = y + 1;
-/*
-        // Note: These are placed from right to left
-        ButtonListener listener = new ButtonListener(ButtonListener.ButtonType.IGNORE, this.itemList, this.entry, this.listWidget);
-        this.ignoreButton = this.createButtonGeneric(posX, posY, ButtonListener.ButtonType.IGNORE);
-        posX = this.addButton(this.ignoreButton, listener).getX();
-        */
     }
 
     private ButtonGeneric createButtonGeneric(int xRight, int y, ButtonListener.ButtonType type)
@@ -383,11 +376,6 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
         @Override
         public void actionPerformedWithButton(ButtonBase button, int mouseButton)
         {
-            if (this.type == ButtonType.IGNORE)
-            {
-                this.itemList.ignoreEntry(this.entry);
-                this.listWidget.refreshEntries();
-            }
         }
 
         public enum ButtonType

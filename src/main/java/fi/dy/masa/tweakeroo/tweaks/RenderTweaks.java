@@ -349,7 +349,7 @@ public class RenderTweaks {
 
     private static void renderSearchedContainerBoxes(MatrixStack matrices) {
         float expand = 0.001f;
-        float lineWidthBlockBox = 4f;
+        float lineWidthBlockBox = 8f;
         float lineWidthArea = 1.5f;
         MinecraftClient mc = MinecraftClient.getInstance();
 

@@ -27,7 +27,7 @@ public class ItemList
 {
     public static final ItemList INSTANCE = new ItemList();
 
-    protected final Set<ItemListEntry> ignored = new HashSet<>();
+
     protected final List<ItemListEntry> itemListPreFiltered = new ArrayList<>();
     protected final List<ItemListEntry> itemListFiltered = new ArrayList<>();
     protected final HashSet<Item> selectedItems = new HashSet<Item>();
@@ -89,20 +89,6 @@ public class ItemList
         this.itemListFiltered.clear();
         this.itemListFiltered.addAll(this.itemListPreFiltered);
       
-    }
-
-    public void ignoreEntry(ItemListEntry entry)
-    {
-        this.ignored.add(entry);
-        this.itemListPreFiltered.remove(entry);
-        this.recreateFilteredList();
-    }
-
-    public void clearIgnored()
-    {
-        this.ignored.clear();
-        this.refreshPreFilteredList();
-        this.recreateFilteredList();
     }
 
     public void reCreateItemList() {
@@ -176,7 +162,6 @@ public class ItemList
     {
         this.itemListPreFiltered.clear();
         this.itemListPreFiltered.addAll(this.getItemsAll());
-        this.itemListPreFiltered.removeAll(this.ignored);
     }
 
     public SortCriteria getSortCriteria()
@@ -276,6 +261,7 @@ public class ItemList
 
     public void clearCache() {
         RenderTweaks.clearContainerScanCache();
+        reCreateItemList();
     }
 
     public JsonObject toJson()

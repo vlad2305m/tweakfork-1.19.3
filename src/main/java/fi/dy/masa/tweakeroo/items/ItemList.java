@@ -52,6 +52,7 @@ public class ItemList
 
     public void clearSelected() {
         selectedItems.clear();
+        rebuildOverlayData();
     }
 
     public boolean isEntrySelected(ItemListEntry entry) {

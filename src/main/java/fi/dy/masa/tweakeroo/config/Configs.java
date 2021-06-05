@@ -299,7 +299,8 @@ public class Configs implements IConfigHandler
         public static final ConfigBooleanHotkeyed       DISABLE_WALL_UNSPRINT           = new ConfigBooleanHotkeyed("disableWallUnsprint",                  false, "", "Touching a wall doesn't drop you out from sprint mode");
         public static final ConfigBooleanHotkeyed       DISABLE_WORLD_VIEW_BOB          = new ConfigBooleanHotkeyed("disableWorldViewBob",                  false, "", "Disables the view bob wobble effect of the world, but not the hand");
         public static final ConfigBooleanHotkeyed       DISABLE_CONTAINER_SCAN_OUTLINES = new ConfigBooleanHotkeyed("disableContainerScanOutlines",         false, "", "Disables rendering container scan outlines");
-     
+        public static final ConfigBooleanHotkeyed       DISABLE_NAMETAGS                = new ConfigBooleanHotkeyed("disableNametags",                      false, "", "Disables rendering name tags");
+
         public static final ImmutableList<IHotkeyTogglable> OPTIONS = ImmutableList.of(
                 DISABLE_ARMOR_STAND_RENDERING,
                 DISABLE_AXE_STRIPPING,
@@ -334,7 +335,8 @@ public class Configs implements IConfigHandler
                 DISABLE_VILLAGER_TRADE_LOCKING,
                 DISABLE_WALL_UNSPRINT,
                 DISABLE_WORLD_VIEW_BOB,
-                DISABLE_CONTAINER_SCAN_OUTLINES
+                DISABLE_CONTAINER_SCAN_OUTLINES,
+                DISABLE_NAMETAGS
         );
     }
 

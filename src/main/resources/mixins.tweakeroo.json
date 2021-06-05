@@ -72,7 +72,8 @@
         "MixinWorldRenderer",
         "MixinWidgetConfigOptionBase",
         "MixinAbstractDecorationEntity",
-        "MixinClientWorldProperties"
+        "MixinClientWorldProperties",
+        "MixinEntityRenderer"
     ],
     "mixinPriority": 990,
     "injectors": {

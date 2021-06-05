@@ -13,7 +13,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 10. tweakDayCycleOverride -> Overrides the time of day client-side
 11. tweakNoSneakSlowdown -> Doesnt slow you down when you sneak
 12. tweakScaffoldPlace -> Place blocks in a similar way to how scaffold placing works.
-13. disableNametags -> Disables nametag rendering
+13. disableNametags -> Disables nametag rendering for unobstrusive replays
 14. tweakContainerScan -> Scans containers and tells you how many items/types are in it. Useful for debugging storage tech.
     * Easily see which containers have items or not
     * Compile a list of all the items it found

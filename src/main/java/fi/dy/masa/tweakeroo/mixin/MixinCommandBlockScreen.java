@@ -11,6 +11,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.gui.screen.ingame.AbstractCommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -29,12 +30,12 @@ public abstract class MixinCommandBlockScreen extends AbstractCommandBlockScreen
     @Final
     private CommandBlockBlockEntity blockEntity;
 
-    @Shadow private ButtonWidget modeButton;
-    @Shadow private ButtonWidget conditionalModeButton;
-    @Shadow private ButtonWidget redstoneTriggerButton;
+    @Shadow private CyclingButtonWidget<CommandBlockBlockEntity.Type> modeButton;
+    @Shadow private CyclingButtonWidget<Boolean> conditionalModeButton;
+    @Shadow private CyclingButtonWidget<Boolean> redstoneTriggerButton;
 
     private TextFieldWidget textFieldName;
-    private ButtonWidget buttonUpdateExec;
+    private CyclingButtonWidget<Boolean> buttonUpdateExec;
     private boolean updateExecValue;
     private String lastName = "";
 
@@ -63,11 +64,11 @@ public abstract class MixinCommandBlockScreen extends AbstractCommandBlockScreen
             y = 181;
             this.textFieldName = new TextFieldWidget(this.textRenderer, x1, y, width, 20, new LiteralText(""));
             this.textFieldName.setText(this.blockEntity.getCommandExecutor().getCustomName().getString());
-            this.children.add(this.textFieldName);
+            this.addSelectableChild(this.textFieldName);
             final TextFieldWidget tf = this.textFieldName;
             final BlockPos pos = this.blockEntity.getPos();
 
-            this.addButton(new ButtonWidget(x2, y, widthBtn, 20, str, (button) ->
+            this.addDrawableChild(new ButtonWidget(x2, y, widthBtn, 20, str, (button) ->
             {
                 String name = tf.getText();
                 name = String.format("{\"CustomName\":\"{\\\"text\\\":\\\"%s\\\"}\"}", name);
@@ -76,24 +77,24 @@ public abstract class MixinCommandBlockScreen extends AbstractCommandBlockScreen
 
             this.updateExecValue = MiscUtils.getUpdateExec(this.blockEntity);
 
-            str = getDisplayStringForCurrentStatus(this.updateExecValue);
-            width = this.textRenderer.getWidth(str) + 10;
+            Text strOn = new TranslatableText("tweakeroo.gui.button.misc.command_block.update_execution.on");
+            Text strOff = new TranslatableText("tweakeroo.gui.button.misc.command_block.update_execution.off");
+            Text strLooping = new TranslatableText("tweakeroo.gui.button.misc.command_block.update_execution.looping");
+            width = this.textRenderer.getWidth(strOff) + 10;
 
-            this.buttonUpdateExec = new ButtonWidget(x2 + widthBtn + 4, y, width, 20, str, (button) ->
+            this.buttonUpdateExec = CyclingButtonWidget.onOffBuilder(strOn, strOff)
+                                    .omitKeyText().initially(this.updateExecValue)
+                                    .build(x2 + widthBtn + 4, y, width, 20, strLooping, (button, val) ->
             {
-                this.updateExecValue = ! this.updateExecValue;
+                this.updateExecValue = val;
                 MiscUtils.setUpdateExec(this.blockEntity, this.updateExecValue);
-
-                Text strBtn = getDisplayStringForCurrentStatus(this.updateExecValue);
-                button.setMessage(strBtn);
-                button.setWidth(this.textRenderer.getWidth(strBtn) + 10);
 
                 String cmd = String.format("/data merge block %d %d %d {\"UpdateLastExecution\":%s}",
                         pos.getX(), pos.getY(), pos.getZ(), this.updateExecValue ? "1b" : "0b");
                 this.client.player.sendChatMessage(cmd);
             });
 
-            this.addButton(this.buttonUpdateExec);
+            this.addDrawableChild(this.buttonUpdateExec);
         }
     }
 

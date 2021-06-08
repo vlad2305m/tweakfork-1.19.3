@@ -3,7 +3,7 @@ package fi.dy.masa.tweakeroo.event;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -94,7 +94,7 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
     {
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (GuiUtils.getCurrentScreen() == null && mc.player != null && mc.player.abilities.creativeMode &&
+        if (GuiUtils.getCurrentScreen() == null && mc.player != null && mc.player.isCreative() &&
             eventButtonState && mc.options.keyUse.matchesMouse(eventButton) &&
             FeatureToggle.TWEAK_ANGEL_BLOCK.getBooleanValue() &&
             mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.MISS)

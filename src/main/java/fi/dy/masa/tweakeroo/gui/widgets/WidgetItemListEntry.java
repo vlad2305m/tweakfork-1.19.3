@@ -1,11 +1,10 @@
 package fi.dy.masa.tweakeroo.gui.widgets;
 
 import java.util.Collection;
-import java.util.List;
-import javax.annotation.Nullable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
+
+import org.jetbrains.annotations.Nullable;
 
 // import fi.dy.masa.tweakeroo.gui.Icons;
 // import fi.dy.masa.tweakeroo.items.ItemListBase;
@@ -20,8 +19,10 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.tweakeroo.gui.Icons;
 import fi.dy.masa.tweakeroo.items.ItemList;
-import fi.dy.masa.tweakeroo.items.ItemListEntry;
 import fi.dy.masa.tweakeroo.items.ItemList.SortCriteria;
+import fi.dy.masa.tweakeroo.items.ItemListEntry;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 
 public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
 {
@@ -240,8 +241,8 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
 
             this.drawString(x4, y, color, String.valueOf(countContainers), matrixStack);
 
-            RenderSystem.pushMatrix();
-            RenderSystem.disableLighting();
+            matrixStack.push();
+            //RenderSystem.disableLighting();
             RenderUtils.enableDiffuseLightingGui3D();
 
             //mc.getRenderItem().zLevel -= 110;
@@ -253,7 +254,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
 
             RenderSystem.disableBlend();
             RenderUtils.disableDiffuseLighting();
-            RenderSystem.popMatrix();
+            matrixStack.pop();
 
             super.render(mouseX, mouseY, selected, matrixStack);
         }
@@ -264,8 +265,8 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
     {
         if (this.entry != null)
         {
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0, 0, 200);
+            matrixStack.push();
+            matrixStack.translate(0, 0, 200);
 
             String header1 = GuiBase.TXT_BOLD + StringUtils.translate(HEADERS[0]);
             String header2 = GuiBase.TXT_BOLD + StringUtils.translate(HEADERS[1]);
@@ -311,7 +312,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
 
             RenderUtils.drawRect(x2, y1, 16, 16, 0x20FFFFFF); // light background for the item
 
-            RenderSystem.disableLighting();
+            //RenderSystem.disableLighting();
             RenderUtils.enableDiffuseLightingGui3D();
 
             //mc.getRenderItem().zLevel += 100;
@@ -321,7 +322,7 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             //RenderSystem.disableBlend();
 
             RenderUtils.disableDiffuseLighting();
-            RenderSystem.popMatrix();
+            matrixStack.pop();
         }
     }
 

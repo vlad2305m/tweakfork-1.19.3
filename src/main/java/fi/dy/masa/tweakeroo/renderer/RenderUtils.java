@@ -23,8 +23,10 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -43,6 +45,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 public class RenderUtils
@@ -97,7 +100,7 @@ public class RenderUtils
 
                 for (int column = 0; column < 9; column++)
                 {
-                    ItemStack stack = player.inventory.getStack(row * 9 + column);
+                    ItemStack stack = player.getInventory().getStack(row * 9 + column);
 
                     if (stack.isEmpty() == false)
                     {
@@ -235,12 +238,12 @@ public class RenderUtils
         fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
 
         fi.dy.masa.malilib.render.InventoryOverlay.renderInventoryBackground(type, x, y, 9, 27, mc);
-        fi.dy.masa.malilib.render.InventoryOverlay.renderInventoryStacks(type, mc.player.inventory, x + slotOffsetX, y + slotOffsetY, 9, 9, 27, mc);
+        fi.dy.masa.malilib.render.InventoryOverlay.renderInventoryStacks(type, mc.player.getInventory(), x + slotOffsetX, y + slotOffsetY, 9, 9, 27, mc);
     }
 
     public static void renderHotbarScrollOverlay(MinecraftClient mc)
     {
-        Inventory inv = mc.player.inventory;
+        Inventory inv = mc.player.getInventory();
         final int xCenter = GuiUtils.getScaledWindowWidth() / 2;
         final int yCenter = GuiUtils.getScaledWindowHeight() / 2;
         final int x = xCenter - 176 / 2;
@@ -292,30 +295,34 @@ public class RenderUtils
 
     public static void overrideLavaFog(Entity entity)
     {
+        // FIXME 1.17
+        /*
         float fog = getLavaFog(entity, 2.0F);
 
         if (fog < 2.0F)
         {
             RenderSystem.fogDensity(fog);
         }
+        */
     }
 
     public static void renderDirectionsCursor(float zLevel, float partialTicks)
     {
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        RenderSystem.pushMatrix();
-
         int width = GuiUtils.getScaledWindowWidth();
         int height = GuiUtils.getScaledWindowHeight();
-        RenderSystem.translated(width / 2, height / 2, zLevel);
-        Entity entity = mc.getCameraEntity();
-        RenderSystem.rotatef(entity.prevPitch + (entity.pitch - entity.prevPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
-        RenderSystem.rotatef(entity.prevYaw + (entity.yaw - entity.prevYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
-        RenderSystem.scalef(-1.0F, -1.0F, -1.0F);
+        Camera camera = mc.gameRenderer.getCamera();
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.translate(width / 2.0, height / 2.0, zLevel);
+        matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw()));
+        matrixStack.scale(-1.0F, -1.0F, -1.0F);
+        RenderSystem.applyModelViewMatrix();
         RenderSystem.renderCrosshair(10);
-
-        RenderSystem.popMatrix();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 
     public static void notifyRotationChanged()
@@ -408,7 +415,7 @@ public class RenderUtils
         int height = 50;
         int x = xCenter - width / 2;
         int y = yCenter - height - 10;
-        double currentPitch = mc.player.pitch;
+        double currentPitch = mc.player.getPitch();
         double centerPitch = 0;
         double indicatorRange = 180;
 
@@ -460,7 +467,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
+        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
 
         drawBlockBoundingBoxOutlinesBatchedLines(pos, color, expand, buffer, mc);
 
@@ -533,7 +540,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
+        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
 
         // Min corner
         buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).next();
@@ -601,7 +608,7 @@ public class RenderUtils
     {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
+        bufferbuilder.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
 
         drawBoundingBoxLinesX(bufferbuilder, minX, minY, minZ, maxX, maxY, maxZ, colorX);
         drawBoundingBoxLinesY(bufferbuilder, minX, minY, minZ, maxX, maxY, maxZ, colorY);
@@ -662,7 +669,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_COLOR);
+        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer, mc);
 
@@ -728,7 +735,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
+        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
 
         // Edges along the X-axis
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMin) ? xMin + 1 : xMin;

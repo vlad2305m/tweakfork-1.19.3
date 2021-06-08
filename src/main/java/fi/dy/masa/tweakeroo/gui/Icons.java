@@ -1,8 +1,5 @@
 package fi.dy.masa.tweakeroo.gui;
 
-import java.io.File;
-import javax.annotation.Nullable;
-import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.tweakeroo.Reference;

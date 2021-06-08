@@ -1,6 +1,24 @@
 package fi.dy.masa.tweakeroo.tweaks;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
+import fi.dy.masa.malilib.util.BlockUtils;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.InfoUtils;
+import fi.dy.masa.malilib.util.PositionUtils;
+import fi.dy.masa.malilib.util.PositionUtils.HitPart;
+import fi.dy.masa.malilib.util.restrictions.BlockRestriction;
+import fi.dy.masa.malilib.util.restrictions.ItemRestriction;
+import fi.dy.masa.tweakeroo.config.Configs;
+import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import fi.dy.masa.tweakeroo.config.Hotkeys;
+import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
+import fi.dy.masa.tweakeroo.util.CameraUtils;
+import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
+import fi.dy.masa.tweakeroo.util.InventoryUtils;
+import fi.dy.masa.tweakeroo.util.MiscUtils;
+import fi.dy.masa.tweakeroo.util.PistonUtils;
+import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,13 +30,13 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -32,25 +50,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import fi.dy.masa.malilib.hotkeys.IKeybind;
-import fi.dy.masa.malilib.hotkeys.KeyAction;
-import fi.dy.masa.malilib.util.BlockUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.InfoUtils;
-import fi.dy.masa.malilib.util.PositionUtils;
-import fi.dy.masa.malilib.util.PositionUtils.HitPart;
-import fi.dy.masa.malilib.util.restrictions.BlockRestriction;
-import fi.dy.masa.malilib.util.restrictions.ItemRestriction;
-import fi.dy.masa.tweakeroo.config.Configs;
-import fi.dy.masa.tweakeroo.config.FeatureToggle;
-import fi.dy.masa.tweakeroo.config.Hotkeys;
-import fi.dy.masa.tweakeroo.util.CameraUtils;
-import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
-import fi.dy.masa.tweakeroo.util.InventoryUtils;
-import fi.dy.masa.tweakeroo.util.PistonUtils;
-import fi.dy.masa.tweakeroo.util.MiscUtils;
-import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
-import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 public class PlacementTweaks
 {
     private static BlockPos posFirst = null;
@@ -235,7 +234,7 @@ public class PlacementTweaks
         if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() && stackOriginal.isEmpty() == false)
         {
             stackBeforeUse[hand.ordinal()] = stackOriginal.copy();
-            hotbarSlot = player.inventory.selectedSlot;
+            hotbarSlot = player.getInventory().selectedSlot;
         }
     }
 
@@ -392,6 +391,7 @@ public class PlacementTweaks
         Direction playerFacingH = player.getHorizontalFacing();
         HitPart hitPart = PositionUtils.getHitPart(sideIn, playerFacingH, posIn, hitVec);
         Direction sideRotated = getRotatedFacing(sideIn, playerFacingH, hitPart);
+        float yaw = player.getYaw();
 
         if (!BLOCK_TYPE_RCLICK_RESTRICTION.isAllowed(world.getBlockState(posIn).getBlock())) return ActionResult.PASS;
 
@@ -473,7 +473,7 @@ public class PlacementTweaks
         }
 
         //System.out.printf("onProcessRightClickBlock() pos: %s, side: %s, part: %s, hitVec: %s\n", posIn, sideIn, hitPart, hitVec);
-        ActionResult result = tryPlaceBlock(controller, player, world, posIn, sideIn, sideRotated, player.yaw, hitVec, hand, hitPart, true);
+        ActionResult result = tryPlaceBlock(controller, player, world, posIn, sideIn, sideRotated, yaw, hitVec, hand, hitPart, true);
 
         // Store the initial click data for the fast placement mode
         if (posFirst == null && result == ActionResult.SUCCESS && restricted)
@@ -490,7 +490,7 @@ public class PlacementTweaks
             hitVecFirst = hitVec.subtract(posFirst.getX(), posFirst.getY(), posFirst.getZ());
             sideFirst = sideIn;
             sideRotatedFirst = sideRotated;
-            playerYawFirst = player.yaw;
+            playerYawFirst = yaw;
             stackBeforeUse[hand.ordinal()] = stackPre;
             //System.out.printf("plop store @ %s\n", posFirst);
         }
@@ -894,7 +894,7 @@ public class PlacementTweaks
         {
             ItemStack stackCurrent = player.getStackInHand(hand);
 
-            if (stackOriginal.isEmpty() == false && player.inventory.selectedSlot == hotbarSlot &&
+            if (stackOriginal.isEmpty() == false && player.getInventory().selectedSlot == hotbarSlot &&
                 (stackCurrent.isEmpty() || stackCurrent.isItemEqualIgnoreDamage(stackOriginal) == false))
             {
                 // Don't allow taking stacks from elsewhere in the hotbar, if the cycle tweak is on
@@ -1052,21 +1052,23 @@ public class PlacementTweaks
 
         if (result == ActionResult.SUCCESS)
         {
+            PlayerInventory inv = player.getInventory();
+
             if (FeatureToggle.TWEAK_HOTBAR_SLOT_CYCLE.getBooleanValue())
             {
-                int newSlot = player.inventory.selectedSlot + 1;
+                int newSlot = inv.selectedSlot + 1;
 
                 if (newSlot >= 9 || newSlot >= Configs.Generic.HOTBAR_SLOT_CYCLE_MAX.getIntegerValue())
                 {
                     newSlot = 0;
                 }
 
-                player.inventory.selectedSlot = newSlot;
+                inv.selectedSlot = newSlot;
             }
             else if (FeatureToggle.TWEAK_HOTBAR_SLOT_RANDOMIZER.getBooleanValue())
             {
                 int newSlot = player.getRandom().nextInt(Configs.Generic.HOTBAR_SLOT_RANDOMIZER_MAX.getIntegerValue());
-                player.inventory.selectedSlot = newSlot;
+                inv.selectedSlot = newSlot;
             }
         }
 
@@ -1086,7 +1088,7 @@ public class PlacementTweaks
     {
         /*
         Direction facing = Direction.fromHorizontal(MathHelper.floor((playerYaw * 4.0F / 360.0F) + 0.5D) & 3);
-        float yawOrig = player.yaw;
+        float yawOrig = player.getYaw();
 
         if (hitPart == HitPart.CENTER)
         {
@@ -1101,8 +1103,10 @@ public class PlacementTweaks
             facing = facing.rotateYClockwise();
         }
 
-        player.yaw = facing.asRotation();
-        player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(player.yaw, player.pitch, player.isOnGround()));
+        float yaw = facing.asRotation();
+        float pitch = player.getPitch();
+        player.setYaw(yaw);
+        player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(yaw, pitch, player.isOnGround()));
 
         //System.out.printf("handleFlexibleBlockPlacement() pos: %s, side: %s, facing orig: %s facing new: %s\n", pos, side, facingOrig, facing);
         
@@ -1110,7 +1114,8 @@ public class PlacementTweaks
         */
         ActionResult result = processRightClickBlockWrapper(controller, player, world, pos, side, hitVec, hand);
 
-       // player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(player.yaw, player.pitch, player.isOnGround()));
+        //player.setYaw(yawOrig);
+        //player.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(yawOrig, pitch, player.isOnGround()));
 
         return result;
     }
@@ -1414,7 +1419,7 @@ public class PlacementTweaks
         if (Configs.Generic.SLOT_SYNC_WORKAROUND.getBooleanValue() &&
             FeatureToggle.TWEAK_PICK_BEFORE_PLACE.getBooleanValue() == false &&
             container != null && container == player.playerScreenHandler &&
-            (slotNumber == 45 || (slotNumber - 36) == player.inventory.selectedSlot))
+            (slotNumber == 45 || (slotNumber - 36) == player.getInventory().selectedSlot))
         {
             if (mc.options.keyUse.isPressed() &&
                 (Configs.Generic.SLOT_SYNC_WORKAROUND_ALWAYS.getBooleanValue() ||

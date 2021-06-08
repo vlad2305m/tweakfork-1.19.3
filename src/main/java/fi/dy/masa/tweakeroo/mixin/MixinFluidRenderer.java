@@ -15,7 +15,7 @@ import net.minecraft.world.BlockView;
 @Mixin(FluidRenderer.class)
 public class MixinFluidRenderer {
     
-    @Inject(method = "method_29710", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isSideCovered(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/Direction;FLnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", at = @At("HEAD"), cancellable = true)
     private static void fluidRenderOverride(BlockView arg, Direction arg1, float f, BlockPos arg2, BlockState arg3, CallbackInfoReturnable<Boolean> ci) {
         if (!RenderTweaks.isPositionValidForRendering(arg2)) {
             ci.setReturnValue(false);

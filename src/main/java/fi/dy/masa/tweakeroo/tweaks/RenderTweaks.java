@@ -5,14 +5,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.transformer.Config;
 
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -33,8 +32,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.DropperBlock;
 import net.minecraft.block.HopperBlock;
@@ -45,9 +44,8 @@ import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.ShulkerLidCollisions;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerType;
@@ -56,10 +54,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.WorldChunk;
 
 public class RenderTweaks {
 
@@ -155,7 +156,7 @@ public class RenderTweaks {
                         boolean flag;
                         if (lv1.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
                             Direction lv2 = state.get(ShulkerBoxBlock.FACING);
-                            flag = mc.world.isSpaceEmpty(ShulkerLidCollisions.getLidCollisionBox(tempPos, lv2));
+                            flag = mc.world.isSpaceEmpty(ShulkerEntity.method_33347((Direction)state.get(ShulkerBoxBlock.FACING), 0.0F, 0.5F).offset(tempPos).contract(1.0E-6D));
                         } else {
                             flag = true;
                         }
@@ -184,12 +185,12 @@ public class RenderTweaks {
         
     }
 
-    public static void render(MatrixStack matrices, float partialTicks) {
+    public static void render(MatrixStack matrices) {
         MinecraftClient mc = MinecraftClient.getInstance();
         float expand = 0.001f;
         float lineWidthBlockBox = 2f;
         float lineWidthArea = 1.5f;
-
+           
         if (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue()) {
             scanContainersNearby();
         }
@@ -197,14 +198,14 @@ public class RenderTweaks {
             (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue() && !Configs.Disable.DISABLE_CONTAINER_SCAN_OUTLINES.getBooleanValue())) {
            
 
-            RenderSystem.pushMatrix();
+            matrices.push();
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
-            RenderSystem.disableLighting();
+            //RenderSystem.disableLighting();
             // RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+            //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
@@ -217,21 +218,21 @@ public class RenderTweaks {
 
             RenderSystem.polygonOffset(0f, 0f);
             RenderSystem.disablePolygonOffset();
-            RenderSystem.popMatrix();
+            matrices.pop();
             RenderSystem.enableTexture();
 
         }
 
         if (CACHED_OVERLAY_DATA.size() > 0) {
 
-            RenderSystem.pushMatrix();
+            matrices.push();
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
-            RenderSystem.disableLighting();
+            //RenderSystem.disableLighting();
             // RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+            //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
@@ -242,7 +243,7 @@ public class RenderTweaks {
 
             RenderSystem.polygonOffset(0f, 0f);
             RenderSystem.disablePolygonOffset();
-            RenderSystem.popMatrix();
+            matrices.pop();
             RenderSystem.enableTexture();
 
         }
@@ -252,14 +253,14 @@ public class RenderTweaks {
             if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue())
                 updateLookingAt();
 
-            RenderSystem.pushMatrix();
+            matrices.push();
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
-            RenderSystem.disableLighting();
+            //RenderSystem.disableLighting();
             // RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+            //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
@@ -276,7 +277,7 @@ public class RenderTweaks {
 
             RenderSystem.polygonOffset(0f, 0f);
             RenderSystem.disablePolygonOffset();
-            RenderSystem.popMatrix();
+            matrices.pop();
             RenderSystem.enableTexture();
             // RenderSystem.depthMask(true);
 
@@ -780,21 +781,30 @@ public class RenderTweaks {
     public static Object scanContainers() {
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        List<BlockEntity> blockEntities = mc.world.blockEntities;
-        Iterator<BlockEntity> iterator = blockEntities.iterator();
-        while (iterator.hasNext()) {
-            BlockEntity blockEntity = iterator.next();
-            BlockPos pos = blockEntity.getPos();
+        int vd = mc.options.viewDistance;
+        ChunkPos cp = mc.player.getChunkPos();
+        for (int j = -vd; j < vd; ++j) {
+            for (int l = -vd; l < vd; ++l) {
+                WorldChunk chunk = (WorldChunk) mc.world.getChunk(cp.x + j, cp.z + l, ChunkStatus.FULL, false);
+                Map<BlockPos, BlockEntity> blockEntities = chunk.getBlockEntities();
+                Iterator<BlockEntity> iterator = blockEntities.values().iterator();
+                while (iterator.hasNext()) {
+                    BlockEntity blockEntity = iterator.next();
+                    BlockPos pos = blockEntity.getPos();
 
-            if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue() && AREA_SELECTION.pos1 != null && AREA_SELECTION.pos2 != null) {
-                if (!isInSelection(pos)) {
-                    continue;
+                    if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue() && AREA_SELECTION.pos1 != null
+                            && AREA_SELECTION.pos2 != null) {
+                        if (!isInSelection(pos)) {
+                            continue;
+                        }
+                    }
+
+                    if (blockEntity instanceof LockableContainerBlockEntity) {
+                        if (!CONTAINERCACHE.containsKey(pos.asLong()))
+                            CONTAINERCACHE.put(pos.asLong(), new ContainerEntry(pos));
+                    }
                 }
-            }
 
-            if (blockEntity instanceof LockableContainerBlockEntity) {
-                if (!CONTAINERCACHE.containsKey(pos.asLong()))
-                    CONTAINERCACHE.put(pos.asLong(), new ContainerEntry(pos));
             }
         }
 

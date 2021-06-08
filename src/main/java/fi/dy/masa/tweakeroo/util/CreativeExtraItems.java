@@ -2,14 +2,17 @@ package fi.dy.masa.tweakeroo.util;
 
 import java.util.HashMap;
 import java.util.List;
-import javax.annotation.Nullable;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.mojang.brigadier.StringReader;
+
+import org.jetbrains.annotations.Nullable;
+
+import fi.dy.masa.tweakeroo.Tweakeroo;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import fi.dy.masa.tweakeroo.Tweakeroo;
 
 public class CreativeExtraItems
 {
@@ -66,7 +69,7 @@ public class CreativeExtraItems
             if (item != null)
             {
                 ItemStack stack = new ItemStack(item);
-                stack.setTag(reader.getTag());
+                stack.setTag(reader.getNbt());
                 return stack;
             }
         }

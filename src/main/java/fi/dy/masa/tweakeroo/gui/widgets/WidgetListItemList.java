@@ -3,8 +3,11 @@ package fi.dy.masa.tweakeroo.gui.widgets;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableList;
+
+import org.jetbrains.annotations.Nullable;
+
 /*
 import fi.dy.masa.tweakeroo.gui.GuiItemList;
 import fi.dy.masa.tweakeroo.gui.Icons;
@@ -19,7 +22,6 @@ import fi.dy.masa.tweakeroo.gui.Icons;
 import fi.dy.masa.tweakeroo.items.ItemListEntry;
 import fi.dy.masa.tweakeroo.items.ItemListSorter;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 

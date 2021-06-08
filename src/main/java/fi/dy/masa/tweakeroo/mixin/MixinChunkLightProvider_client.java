@@ -1,9 +1,9 @@
 package fi.dy.masa.tweakeroo.mixin;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -13,7 +13,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
-import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ChunkLightProvider.class)
 public class MixinChunkLightProvider_client {

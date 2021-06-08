@@ -4,7 +4,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
@@ -576,7 +576,7 @@ public class Callbacks
 
                     if (player != null)
                     {
-                        player.abilities.setFlySpeed(0.05f);
+                        player.getAbilities().setFlySpeed(0.05f);
                     }
 
                     InfoUtils.printActionbarMessage("tweakeroo.message.toggled", prettyName, strStatus);

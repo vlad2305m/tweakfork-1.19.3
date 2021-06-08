@@ -11,18 +11,15 @@ import fi.dy.masa.tweakeroo.util.PistonUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
 
 public class OverlayRenderer
 {
@@ -113,44 +110,45 @@ public class OverlayRenderer
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
-			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
-			RenderSystem.scalef(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
+            MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
+			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
+			matrixStack.method_34425(new Matrix4f(camera.getRotation()));
+            matrixStack.scale(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
 			RenderSystem.enableTexture();
 			RenderSystem.disableDepthTest();  // visibleThroughObjects
 			RenderSystem.depthMask(true);
-			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
-			RenderSystem.enableAlphaTest();
+            matrixStack.scale(-1.0F, 1.0F, 1.0F);
+			RenderSystem.applyModelViewMatrix();
 
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 			float renderX = -client.textRenderer.getWidth(text) * 0.5F;
-			float renderY = client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
+			float renderY = client.textRenderer.getWrappedLinesHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
 			Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
 			client.textRenderer.draw(text, renderX, renderY, color, false, matrix4f, immediate, true, 0, 0xF000F0);
 			immediate.draw();
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableDepthTest();
-			RenderSystem.popMatrix();
+			matrixStack.pop();
 		}
 	}
 
     public static void renderPistonGroups(MinecraftClient mc, HashMap<Long, PistonUtils.PistonInfo> hotBlocks)
     {
         if (hotBlocks.size() == 0) return;
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.disableLighting();
+       // RenderSystem.disableLighting();
         RenderSystem.disableTexture();
-        RenderSystem.pushMatrix();
+        matrixStack.push();
 
         RenderSystem.lineWidth(2f);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
+        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
 
        
         for (PistonUtils.PistonInfo entry : hotBlocks.values())
@@ -167,9 +165,9 @@ public class OverlayRenderer
 
         
 
-        RenderSystem.popMatrix();
+        matrixStack.pop();
         RenderSystem.enableTexture();
-        RenderSystem.enableLighting();
+        //RenderSystem.enableLighting();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
     }

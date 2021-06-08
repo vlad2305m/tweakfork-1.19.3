@@ -1,10 +1,13 @@
 package fi.dy.masa.tweakeroo.util;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
+import fi.dy.masa.tweakeroo.config.Configs;
+import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -12,8 +15,6 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import fi.dy.masa.tweakeroo.config.Configs;
-import fi.dy.masa.tweakeroo.config.FeatureToggle;
 
 public class CameraEntity extends ClientPlayerEntity
 {
@@ -131,8 +132,9 @@ public class CameraEntity extends ClientPlayerEntity
 
     private void handleMotion(float forward, float up, float strafe)
     {
-        double xFactor = Math.sin(this.yaw * Math.PI / 180D);
-        double zFactor = Math.cos(this.yaw * Math.PI / 180D);
+        float yaw = this.getYaw();
+        double xFactor = Math.sin(yaw * Math.PI / 180D);
+        double zFactor = Math.cos(yaw * Math.PI / 180D);
         double scale = getMoveSpeed();
 
         double x = (double) (strafe * zFactor - forward * xFactor) * scale;
@@ -141,10 +143,6 @@ public class CameraEntity extends ClientPlayerEntity
         this.setVelocity(new Vec3d(x, y, z));
 
         this.move(MovementType.SELF, this.getVelocity());
-
-        this.chunkX = (int) Math.floor(this.getX()) >> 4;
-        this.chunkY = (int) Math.floor(this.getY()) >> 4;
-        this.chunkZ = (int) Math.floor(this.getZ()) >> 4;
     }
 
     private void updateLastTickPosition()
@@ -157,18 +155,18 @@ public class CameraEntity extends ClientPlayerEntity
         this.prevY = this.getY();
         this.prevZ = this.getZ();
 
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        this.prevYaw = this.getYaw();
+        this.prevPitch = this.getPitch();
 
         this.prevHeadYaw = this.headYaw;
     }
 
     public void setCameraRotations(float yaw, float pitch)
     {
-        this.yaw = yaw;
-        this.pitch = pitch;
+        this.setYaw(yaw);
+        this.setPitch(pitch);
 
-        this.headYaw = this.yaw;
+        this.headYaw = yaw;
 
         //this.prevRotationYaw = this.rotationYaw;
         //this.prevRotationPitch = this.rotationPitch;
@@ -179,10 +177,13 @@ public class CameraEntity extends ClientPlayerEntity
 
     public void updateCameraRotations(float yawChange, float pitchChange)
     {
-        this.yaw += yawChange * 0.15F;
-        this.pitch = MathHelper.clamp(this.pitch + pitchChange * 0.15F, -90F, 90F);
+        float yaw = this.getYaw() + yawChange * 0.15F;
+        float pitch = MathHelper.clamp(this.getPitch() + pitchChange * 0.15F, -90F, 90F);
 
-        this.setCameraRotations(this.yaw, this.pitch);
+        this.setYaw(yaw);
+        this.setPitch(pitch);
+
+        this.setCameraRotations(yaw, pitch);
     }
 
     private static CameraEntity createCameraEntity(MinecraftClient mc)
@@ -190,9 +191,11 @@ public class CameraEntity extends ClientPlayerEntity
         ClientPlayerEntity player = mc.player;
         CameraEntity camera = new CameraEntity(mc, mc.world, player.networkHandler, player.getStatHandler(), player.getRecipeBook());
         camera.noClip = true;
+        float yaw = player.getYaw();
+        float pitch = player.getPitch();
 
-        camera.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
-        camera.setRotation(player.yaw, player.pitch);
+        camera.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), yaw, pitch);
+        camera.setRotation(yaw, pitch);
 
         return camera;
     }
@@ -241,16 +244,18 @@ public class CameraEntity extends ClientPlayerEntity
 
     private static void removeCamera(MinecraftClient mc)
     {
-        // Re-fetch the player entity, in case the player died while in Free Camera mode and the instance changed
-        mc.setCameraEntity(originalCameraWasPlayer ? mc.player : originalCameraEntity);
-        mc.chunkCullingEnabled = cullChunksOriginal;
-        originalCameraEntity = null;
-
         if (mc.world != null && camera != null)
         {
-            CameraUtils.markChunksForRebuildOnDeactivation(camera.chunkX, camera.chunkZ);
+            // Re-fetch the player entity, in case the player died while in Free Camera mode and the instance changed
+            mc.setCameraEntity(originalCameraWasPlayer ? mc.player : originalCameraEntity);
+            mc.chunkCullingEnabled = cullChunksOriginal;
+
+            final int chunkX = MathHelper.floor(camera.getX() / 16.0) >> 4;
+            final int chunkZ = MathHelper.floor(camera.getZ() / 16.0) >> 4;
+            CameraUtils.markChunksForRebuildOnDeactivation(chunkX, chunkZ);
         }
 
+        originalCameraEntity = null;
         camera = null;
     }
 }

@@ -3,7 +3,17 @@ package fi.dy.masa.tweakeroo.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
+
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.util.InfoUtils;
+import fi.dy.masa.tweakeroo.config.Configs;
+import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import fi.dy.masa.tweakeroo.config.Hotkeys;
+import fi.dy.masa.tweakeroo.mixin.IMixinAxeItem;
+import fi.dy.masa.tweakeroo.mixin.IMixinCommandBlockExecutor;
+import fi.dy.masa.tweakeroo.renderer.RenderUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -17,14 +27,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.util.InfoUtils;
-import fi.dy.masa.tweakeroo.config.Configs;
-import fi.dy.masa.tweakeroo.config.FeatureToggle;
-import fi.dy.masa.tweakeroo.config.Hotkeys;
-import fi.dy.masa.tweakeroo.mixin.IMixinAxeItem;
-import fi.dy.masa.tweakeroo.mixin.IMixinCommandBlockExecutor;
-import fi.dy.masa.tweakeroo.renderer.RenderUtils;
 
 public class MiscUtils
 {
@@ -188,8 +190,8 @@ public class MiscUtils
 
     public static void setEntityRotations(Entity entity, float yaw, float pitch)
     {
-        entity.yaw = yaw;
-        entity.pitch = pitch;
+        entity.setYaw(yaw);
+        entity.setPitch(pitch);
         entity.prevYaw = yaw;
         entity.prevPitch = pitch;
 

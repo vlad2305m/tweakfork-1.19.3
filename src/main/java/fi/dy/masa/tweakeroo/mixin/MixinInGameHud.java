@@ -37,7 +37,7 @@ public abstract class MixinInGameHud extends DrawableHelper
     }
 
     @Inject(method = "renderCrosshair", at = @At(value = "FIELD",
-                target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z", ordinal = 0), cancellable = true)
+                target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z", ordinal = 0), cancellable = true)
     private void overrideCursorRender(CallbackInfo ci)
     {
         if (FeatureToggle.TWEAK_F3_CURSOR.getBooleanValue())
@@ -49,7 +49,7 @@ public abstract class MixinInGameHud extends DrawableHelper
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/gui/hud/PlayerListHud;tick(Z)V",
+                     target = "Lnet/minecraft/client/gui/hud/PlayerListHud;setVisible(Z)V",
                      ordinal = 1, shift = At.Shift.AFTER))
     private void alwaysRenderPlayerList(MatrixStack matrixStack, float partialTicks, CallbackInfo ci)
     {
@@ -58,7 +58,7 @@ public abstract class MixinInGameHud extends DrawableHelper
             Scoreboard scoreboard = this.client.world.getScoreboard();
             ScoreboardObjective objective = scoreboard.getObjectiveForSlot(0);
 
-            this.playerListHud.tick(true);
+            this.playerListHud.setVisible(true);
             this.playerListHud.render(matrixStack, this.scaledWidth, scoreboard, objective);
         }
     }

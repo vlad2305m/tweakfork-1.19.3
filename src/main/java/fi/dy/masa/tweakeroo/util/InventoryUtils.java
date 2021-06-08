@@ -4,7 +4,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
+
+import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.InfoUtils;
+import fi.dy.masa.tweakeroo.Tweakeroo;
+import fi.dy.masa.tweakeroo.config.Configs;
+import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -16,7 +24,7 @@ import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -30,12 +38,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import fi.dy.masa.malilib.util.Constants;
-import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.InfoUtils;
-import fi.dy.masa.tweakeroo.Tweakeroo;
-import fi.dy.masa.tweakeroo.config.Configs;
-import fi.dy.masa.tweakeroo.config.FeatureToggle;
 
 public class InventoryUtils
 {
@@ -95,7 +97,7 @@ public class InventoryUtils
     private static boolean isConfiguredRepairSlot(int slotNum, PlayerEntity player)
     {
         if (REPAIR_MODE_SLOTS.contains(EquipmentSlot.MAINHAND) &&
-            (slotNum - 36) == player.inventory.selectedSlot)
+            (slotNum - 36) == player.getInventory().selectedSlot)
         {
             return true;
         }
@@ -111,7 +113,7 @@ public class InventoryUtils
     private static EquipmentSlot getEquipmentTypeForSlot(int slotNum, PlayerEntity player)
     {
         if (REPAIR_MODE_SLOTS.contains(EquipmentSlot.MAINHAND) &&
-            (slotNum - 36) == player.inventory.selectedSlot)
+            (slotNum - 36) == player.getInventory().selectedSlot)
         {
             return EquipmentSlot.MAINHAND;
         }
@@ -136,7 +138,7 @@ public class InventoryUtils
     {
         switch (type)
         {
-            case MAINHAND:  return player != null ? player.inventory.selectedSlot + 36 : -1;
+            case MAINHAND:  return player != null ? player.getInventory().selectedSlot + 36 : -1;
             case OFFHAND:   return 45;
             case HEAD:      return 5;
             case CHEST:     return 6;
@@ -187,12 +189,13 @@ public class InventoryUtils
 
         if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() && Configs.Generic.HAND_RESTOCK_PRE.getBooleanValue() &&
             stackHand.isEmpty() == false && stackHand.getCount() <= threshold && stackHand.getMaxCount() > threshold &&
-            player.currentScreenHandler == player.playerScreenHandler && player.inventory.getCursorStack().isEmpty())
+            player.currentScreenHandler == player.playerScreenHandler &&
+            player.currentScreenHandler.getCursorStack().isEmpty())
         {
             MinecraftClient mc = MinecraftClient.getInstance();
             ScreenHandler container = player.playerScreenHandler;
             int endSlot = allowHotbar ? 44 : 35;
-            int currentMainHandSlot = player.inventory.selectedSlot + 36;
+            int currentMainHandSlot = player.getInventory().selectedSlot + 36;
             int currentSlot = hand == Hand.MAIN_HAND ? currentMainHandSlot : 45;
 
             for (int slotNum = 9; slotNum <= endSlot; ++slotNum)
@@ -260,7 +263,7 @@ public class InventoryUtils
                 ScreenHandler container = player.playerScreenHandler;
                 int slotNumber = findSlotWithEffectiveItemWithDurabilityLeft(container, state);
 
-                if (slotNumber != -1 && (slotNumber - 36) != player.inventory.selectedSlot)
+                if (slotNumber != -1 && (slotNumber - 36) != player.getInventory().selectedSlot)
                 {
                     swapItemToHand(player, Hand.MAIN_HAND, slotNumber);
                 }
@@ -382,7 +385,7 @@ public class InventoryUtils
                 ItemStack stack = slot.getStack();
 
                 // Don't take items from the current hotbar slot
-                if ((slot.id - 36) != player.inventory.selectedSlot &&
+                if ((slot.id - 36) != player.getInventory().selectedSlot &&
                     stack.isDamageable() && stack.isDamaged() && targetSlot.canInsert(stack) &&
                     EnchantmentHelper.getLevel(Enchantments.MENDING, stack) > 0)
                 {
@@ -472,13 +475,13 @@ public class InventoryUtils
 
             if (hand == Hand.MAIN_HAND)
             {
-                int currentHotbarSlot = player.inventory.selectedSlot;
+                int currentHotbarSlot = player.getInventory().selectedSlot;
                 Slot slot = container.getSlot(slotNumber);
 
                 if (slot != null && isHotbarSlot(slot))
                 {
-                    player.inventory.selectedSlot = slotNumber - 36;
-                    mc.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(player.inventory.selectedSlot));
+                    player.getInventory().selectedSlot = slotNumber - 36;
+                    mc.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(player.getInventory().selectedSlot));
                 }
                 else
                 {
@@ -487,7 +490,7 @@ public class InventoryUtils
             }
             else if (hand == Hand.OFF_HAND)
             {
-                int currentHotbarSlot = player.inventory.selectedSlot;
+                int currentHotbarSlot = player.getInventory().selectedSlot;
                 // Swap the requested slot to the current hotbar slot
                 mc.interactionManager.clickSlot(container.syncId, slotNumber, currentHotbarSlot, SlotActionType.SWAP, mc.player);
 
@@ -509,13 +512,13 @@ public class InventoryUtils
 
             if (type == EquipmentSlot.MAINHAND)
             {
-                int currentHotbarSlot = player.inventory.selectedSlot;
+                int currentHotbarSlot = player.getInventory().selectedSlot;
                 mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, currentHotbarSlot, SlotActionType.SWAP, mc.player);
             }
             else if (type == EquipmentSlot.OFFHAND)
             {
                 // Use a hotbar slot that isn't the current slot
-                int tempSlot = (player.inventory.selectedSlot + 1) % 9;
+                int tempSlot = (player.getInventory().selectedSlot + 1) % 9;
                 // Swap the requested slot to the temp slot
                 mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, tempSlot, SlotActionType.SWAP, mc.player);
 
@@ -529,7 +532,7 @@ public class InventoryUtils
             else
             {
                 int armorSlot = getSlotNumberForEquipmentType(type, player);
-                int tempSlot = (player.inventory.selectedSlot + 1) % 9;
+                int tempSlot = (player.getInventory().selectedSlot + 1) % 9;
                 // Swap the requested slot's item with the temp hotbar slot
                 mc.interactionManager.clickSlot(container.syncId, sourceSlotNumber, tempSlot, SlotActionType.SWAP, mc.player);
                 // Swap the temp hotbar slot with the armor slot
@@ -656,7 +659,7 @@ public class InventoryUtils
                     mc.interactionManager.clickSlot(container.syncId, slot2.id, 0, SlotActionType.PICKUP, player);
 
                     // If the items didn't all fit, return the rest
-                    if (player.inventory.getMainHandStack().isEmpty() == false)
+                    if (player.getInventory().getMainHandStack().isEmpty() == false)
                     {
                         mc.interactionManager.clickSlot(container.syncId, slot1.id, 0, SlotActionType.PICKUP, player);
                     }
@@ -708,7 +711,7 @@ public class InventoryUtils
         }
 
         double reach = mc.interactionManager.getReachDistance();
-        boolean isCreative = player.abilities.creativeMode;
+        boolean isCreative = player.isCreative();
         HitResult trace = player.raycast(reach, mc.getTickDelta(), false);
 
         if (trace != null && trace.getType() == HitResult.Type.BLOCK)
@@ -733,22 +736,22 @@ public class InventoryUtils
 
                 if (isCreative)
                 {
-                    player.inventory.addPickBlock(stack);
-                    mc.interactionManager.clickCreativeStack(player.getStackInHand(Hand.MAIN_HAND), 36 + player.inventory.selectedSlot);
+                    player.getInventory().addPickBlock(stack);
+                    mc.interactionManager.clickCreativeStack(player.getStackInHand(Hand.MAIN_HAND), 36 + player.getInventory().selectedSlot);
                 }
                 else
                 {
-                    int slot = fi.dy.masa.malilib.util.InventoryUtils.findSlotWithItem(player.playerScreenHandler, stack, true); //player.inventory.getSlotFor(stack);
+                    int slot = fi.dy.masa.malilib.util.InventoryUtils.findSlotWithItem(player.playerScreenHandler, stack, true); //player.getInventory().getSlotFor(stack);
 
                     if (slot != -1)
                     {
-                        int currentHotbarSlot = player.inventory.selectedSlot;
+                        int currentHotbarSlot = player.getInventory().selectedSlot;
                         mc.interactionManager.clickSlot(player.playerScreenHandler.syncId, slot, currentHotbarSlot, SlotActionType.SWAP, mc.player);
 
                         /*
                         if (InventoryPlayer.isHotbar(slot))
                         {
-                            player.inventory.selectedSlot = slot;
+                            player.getInventory().selectedSlot = slot;
                         }
                         else
                         {
@@ -764,13 +767,13 @@ public class InventoryUtils
     public static boolean cleanUpShulkerBoxNBT(ItemStack stack)
     {
         boolean changed = false;
-        CompoundTag nbt = stack.getTag();
+        NbtCompound nbt = stack.getTag();
 
         if (nbt != null)
         {
             if (nbt.contains("BlockEntityTag", Constants.NBT.TAG_COMPOUND))
             {
-                CompoundTag tag = nbt.getCompound("BlockEntityTag");
+                NbtCompound tag = nbt.getCompound("BlockEntityTag");
 
                 if (tag.contains("Items", Constants.NBT.TAG_LIST) &&
                     tag.getList("Items", Constants.NBT.TAG_COMPOUND).size() == 0)

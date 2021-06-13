@@ -786,6 +786,7 @@ public class RenderTweaks {
         for (int j = -vd; j < vd; ++j) {
             for (int l = -vd; l < vd; ++l) {
                 WorldChunk chunk = (WorldChunk) mc.world.getChunk(cp.x + j, cp.z + l, ChunkStatus.FULL, false);
+                if (chunk == null) continue;
                 Map<BlockPos, BlockEntity> blockEntities = chunk.getBlockEntities();
                 Iterator<BlockEntity> iterator = blockEntities.values().iterator();
                 while (iterator.hasNext()) {

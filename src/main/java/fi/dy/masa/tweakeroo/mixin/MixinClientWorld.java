@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -40,13 +40,14 @@ public abstract class MixinClientWorld extends World
         if (!RenderTweaks.isPositionValidForRendering(pos)) return null;
 		return super.raycastBlock(start, end, pos, shape, state);
 	}
-
-    @Override
-    public <T extends Entity> void tickEntity(Consumer<T> tickConsumer, T entity) 
+    
+    @Inject(method = "tickEntity", at = @At("HEAD"), cancellable = true)
+    private void disableClientEntityTicking(Entity entity, CallbackInfo ci)
     {
-        if (Configs.Disable.DISABLE_CLIENT_ENTITY_UPDATES.getBooleanValue() == false || entity instanceof PlayerEntity)
+        if (Configs.Disable.DISABLE_CLIENT_ENTITY_UPDATES.getBooleanValue() &&
+            (entity instanceof PlayerEntity) == false)
         {
-            super.tickEntity(tickConsumer, entity);
+            ci.cancel();
         }
     }
 

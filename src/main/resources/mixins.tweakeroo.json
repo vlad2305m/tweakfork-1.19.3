@@ -75,7 +75,8 @@
         "MixinAbstractDecorationEntity",
         "MixinClientWorldProperties",
         "MixinEntityRenderer",
-        "MixinFluidRenderer"
+        "MixinFluidRenderer",
+        "MixinBossBarHud"
     ],
     "mixinPriority": 990,
     "injectors": {

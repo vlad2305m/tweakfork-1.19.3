@@ -27,6 +27,7 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -466,16 +467,24 @@ public class RenderUtils
     public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, MinecraftClient mc)
     {
         RenderSystem.lineWidth(lineWidth);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
+        startDrawingLines(buffer);
 
         drawBlockBoundingBoxOutlinesBatchedLines(pos, color, expand, buffer, mc);
 
         tessellator.draw();
     }
-
+    
+    static void startDrawingLines(BufferBuilder buffer)
+    {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.applyModelViewMatrix();
+        buffer.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+    }
+    
     public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color,
             double expand, BufferBuilder buffer, MinecraftClient mc)
     {
@@ -542,7 +551,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
+        startDrawingLines(buffer);
 
         // Min corner
         buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).next();
@@ -610,7 +619,7 @@ public class RenderUtils
     {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
+        startDrawingLines(bufferbuilder);
 
         drawBoundingBoxLinesX(bufferbuilder, minX, minY, minZ, maxX, maxY, maxZ, colorX);
         drawBoundingBoxLinesY(bufferbuilder, minX, minY, minZ, maxX, maxY, maxZ, colorY);
@@ -671,7 +680,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
+        startDrawingLines(buffer);
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer, mc);
 
@@ -737,7 +746,7 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
+        startDrawingLines(buffer);
 
         // Edges along the X-axis
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMin) ? xMin + 1 : xMin;

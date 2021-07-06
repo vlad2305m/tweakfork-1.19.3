@@ -6,11 +6,11 @@ plugins {
 /*
 buildscript {
 	repositories {
-		jcenter()
 		maven {
 			name = "Fabric"
 			url = "https://maven.fabricmc.net/"
 		}
+        mavenCentral()
 		maven { 
 			name = "Jitpack"
 			url = "https://jitpack.io/"
@@ -18,43 +18,41 @@ buildscript {
 	}
 	dependencies {
 		//Sin² Edition Loom
-		classpath 'com.github.Chocohead:fabric-loom:c290f8f'
+		classpath 'com.github.Chocohead.Fabric-Loom:fabric-loom:9f357ae'
 	}
 }
-*/
-//apply plugin: "fabric-loom"
-//apply plugin: 'maven-publish'
 
+
+apply plugin: net.fabricmc.loom.LoomGradlePlugin
+apply plugin: 'maven-publish'
+*/
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
 repositories {
+    mavenCentral()
     maven { url 'https://masa.dy.fi/maven' }
     maven { url 'https://maven.terraformersmc.com/releases/' }
 }
 
-ext.configFile = file "build.properties"
-
-configFile.withReader {
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
 
 dependencies {
-    minecraft "com.mojang:minecraft:${config.minecraft_version}"
-    mappings "net.fabricmc:yarn:${config.mappings_version}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${config.fabric_loader_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.mappings_version}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 
-    modImplementation "fi.dy.masa.malilib:malilib-fabric-1.17-pre4:${config.malilib_version}"
+    modImplementation "fi.dy.masa.malilib:malilib-fabric-1.17-pre4:${project.malilib_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    //modCompile "net.fabricmc.fabric-api:fabric-api:" + config.fabric_version
+    //modCompile "net.fabricmc.fabric-api:fabric-api:" + project.fabric_version
 
-    modCompileOnly "com.terraformersmc:modmenu:${config.mod_menu_version}"
+    modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"  
 
-    modCompileOnly "carpet:fabric-carpet:${config.fabric_carpet_version}"
-
+    modCompileOnly "carpet:fabric-carpet:${project.fabric_carpet_version}"
 }
 /*
 compileJava {
@@ -65,42 +63,23 @@ compileJava {
     }
 }
 */
-minecraft {
-    ext.mod_version = config.mod_version
-
-    if (mod_version.endsWith('-dev')) {
-        mod_version = mod_version + "." + new Date().format('yyyyMMdd.HHmmss')
-    }
-}
-
-group = config.group + "." + config.mod_id
-archivesBaseName = config.mod_file_name + '-' + config.minecraft_version
-version = project.minecraft.mod_version
 
 processResources {
-    // Exclude the GIMP image files
-    exclude '**/*.xcf'
-    exclude '**/xcf'
-
-    //
-
-    // this will ensure that this task is redone when the versions change.
-    //inputs.property "minecraft_version", project.config.minecraft_version
-
-    inputs.property "mod_version", project.minecraft.mod_version
+    inputs.property "mod_version", project.mod_version
 
     filesMatching("fabric.mod.json") {
-        expand "mod_version": project.minecraft.mod_version
+        expand "mod_version": project.mod_version
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    it.options.encoding = "UTF-8"
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+    options.release = 16
+}
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
 }

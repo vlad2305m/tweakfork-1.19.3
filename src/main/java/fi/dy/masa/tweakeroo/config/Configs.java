@@ -107,7 +107,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       SCAFFOLD_PLACE_VANILLA              = new ConfigBoolean     ("scaffoldPlaceVanilla", false, "When enabled, extend direction is only set by player direction");
         public static final ConfigInteger       CONTAINER_SCAN_MIN_ITEMS            = new ConfigInteger     ("containerScanMinItems", 1, 1, 100000, "Minimum items a container needs to have to be displayed");
         public static final ConfigInteger       CONTAINER_SCAN_MIN_TYPES            = new ConfigInteger     ("containerScanMinTypes", 1, 1, 100000, "Minimum item types a container needs to have to be displayed");
-        public static final ConfigInteger       AFK_TIMEOUT                         = new ConfigInteger     ("afkTimeout", 2400, 1, 100000, "Number of ticks for AFK timeout");
+        public static final ConfigInteger       AFK_TIMEOUT                         = new ConfigInteger     ("afkTimeout", 2400, 200, 200000, "Number of ticks for AFK timeout");
         public static final ConfigString        AFK_ACTION                          = new ConfigString      ("afkAction", "/disconnect", "The action to perform on AFK timeout. /disconnect is default.");
       
 

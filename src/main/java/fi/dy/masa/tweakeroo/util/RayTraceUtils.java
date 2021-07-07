@@ -3,7 +3,7 @@ package fi.dy.masa.tweakeroo.util;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.BlockHitResult;
@@ -17,14 +17,14 @@ import net.minecraft.world.World;
 
 public class RayTraceUtils
 {
-    @NotNull
+    @Nonnull
     public static HitResult getRayTraceFromEntity(World worldIn, Entity entityIn, boolean useLiquids)
     {
         double reach = 5.0d;
         return getRayTraceFromEntity(worldIn, entityIn, useLiquids, reach);
     }
 
-    @NotNull
+    @Nonnull
     public static HitResult getRayTraceFromEntity(World worldIn, Entity entityIn, boolean useLiquids, double range)
     {
         Vec3d eyesVec = new Vec3d(entityIn.getX(), entityIn.getY() + entityIn.getStandingEyeHeight(), entityIn.getZ());

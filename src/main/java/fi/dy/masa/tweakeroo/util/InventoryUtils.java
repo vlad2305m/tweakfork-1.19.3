@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.util.Constants;
 import fi.dy.masa.malilib.util.GuiUtils;

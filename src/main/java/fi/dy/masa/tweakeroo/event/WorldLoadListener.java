@@ -1,6 +1,6 @@
 package fi.dy.masa.tweakeroo.event;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;

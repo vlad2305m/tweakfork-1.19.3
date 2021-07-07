@@ -1,6 +1,6 @@
 package fi.dy.masa.tweakeroo.util;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;

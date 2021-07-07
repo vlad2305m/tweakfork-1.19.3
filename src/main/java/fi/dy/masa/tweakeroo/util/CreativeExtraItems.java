@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.mojang.brigadier.StringReader;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import net.minecraft.command.argument.ItemStringReader;

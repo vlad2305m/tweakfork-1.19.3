@@ -1,7 +1,5 @@
 package fi.dy.masa.tweakeroo.tweaks;
 
-import org.jetbrains.annotations.Nullable;
-
 import fi.dy.masa.malilib.util.BlockUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -13,6 +11,7 @@ import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
+import javax.annotation.Nullable;
 import fi.dy.masa.tweakeroo.util.CameraUtils;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;

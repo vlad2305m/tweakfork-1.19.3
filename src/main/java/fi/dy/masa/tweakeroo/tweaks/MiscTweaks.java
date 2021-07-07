@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
-
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.util.GuiUtils;
@@ -15,6 +13,7 @@ import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import javax.annotation.Nullable;
 import fi.dy.masa.tweakeroo.util.CameraEntity;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;

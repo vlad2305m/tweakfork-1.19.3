@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /*
 import fi.dy.masa.tweakeroo.gui.GuiItemList;

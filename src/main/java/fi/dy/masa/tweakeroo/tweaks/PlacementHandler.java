@@ -1,7 +1,6 @@
 package fi.dy.masa.tweakeroo.tweaks;
 
-import org.jetbrains.annotations.Nullable;
-
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ComparatorBlock;

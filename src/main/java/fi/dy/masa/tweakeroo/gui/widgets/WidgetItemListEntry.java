@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 // import fi.dy.masa.tweakeroo.gui.Icons;
 // import fi.dy.masa.tweakeroo.items.ItemListBase;

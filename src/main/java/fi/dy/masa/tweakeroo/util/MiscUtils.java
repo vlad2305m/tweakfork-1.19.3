@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.InfoUtils;

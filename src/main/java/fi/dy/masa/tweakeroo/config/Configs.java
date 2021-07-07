@@ -107,7 +107,9 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       SCAFFOLD_PLACE_VANILLA              = new ConfigBoolean     ("scaffoldPlaceVanilla", false, "When enabled, extend direction is only set by player direction");
         public static final ConfigInteger       CONTAINER_SCAN_MIN_ITEMS            = new ConfigInteger     ("containerScanMinItems", 1, 1, 100000, "Minimum items a container needs to have to be displayed");
         public static final ConfigInteger       CONTAINER_SCAN_MIN_TYPES            = new ConfigInteger     ("containerScanMinTypes", 1, 1, 100000, "Minimum item types a container needs to have to be displayed");
-       
+        public static final ConfigInteger       AFK_TIMEOUT                         = new ConfigInteger     ("afkTimeout", 2400, 1, 100000, "Number of ticks for AFK timeout");
+        public static final ConfigString        AFK_ACTION                          = new ConfigString      ("afkAction", "/disconnect", "The action to perform on AFK timeout. /disconnect is default.");
+      
 
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -184,7 +186,9 @@ public class Configs implements IConfigHandler
                 SCAFFOLD_PLACE_DISTANCE,
                 SCAFFOLD_PLACE_VANILLA,
                 CONTAINER_SCAN_MIN_ITEMS,
-                CONTAINER_SCAN_MIN_TYPES
+                CONTAINER_SCAN_MIN_TYPES,
+                AFK_TIMEOUT,
+                AFK_ACTION
         );
     }
 
@@ -233,7 +237,7 @@ public class Configs implements IConfigHandler
         public static final ConfigOptionList SELECTIVE_BLOCKS_LIST_TYPE         = new ConfigOptionList("selectiveBlocksListType", ListType.NONE, "The list type for selective blocks tweak");
         public static final ConfigString SELECTIVE_BLOCKS_WHITELIST             = new ConfigString("selectiveBlocksWhitelist", "0,0,0|0,0,1", "The block positions you want to whitelist");
         public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "0,0,0|0,0,1", "The block positions you want to blacklist");
-
+      
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CREATIVE_EXTRA_ITEMS,
                 FAST_PLACEMENT_ITEM_LIST_TYPE,

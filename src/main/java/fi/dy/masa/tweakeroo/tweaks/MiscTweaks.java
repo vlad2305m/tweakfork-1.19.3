@@ -20,11 +20,16 @@ import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.PotionRestriction;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
@@ -35,6 +40,9 @@ public class MiscTweaks
 
     private static final KeybindState KEY_STATE_ATTACK = new KeybindState(MinecraftClient.getInstance().options.keyAttack, (mc) -> ((IMinecraftClientInvoker) mc).leftClickMouseAccessor());
     private static final KeybindState KEY_STATE_USE = new KeybindState(MinecraftClient.getInstance().options.keyUse, (mc) -> ((IMinecraftClientInvoker) mc).rightClickMouseAccessor());
+
+    private static int ticksSinceAfk = 0;
+    private static boolean performedAfkAction = false;
 
     private static int potionWarningTimer;
 
@@ -102,14 +110,70 @@ public class MiscTweaks
         }
     }
 
+    public static void resetAfkTimer() {
+        if (!performedAfkAction || ticksSinceAfk > Configs.Generic.AFK_TIMEOUT.getIntegerValue() + 20*5) {
+            ticksSinceAfk = 0;
+            performedAfkAction = false;
+        }
+    }
+
+    public static void disconnectGracefully(MinecraftClient mc) {
+        boolean flag = mc.isInSingleplayer();
+        boolean flag1 = mc.isConnectedToRealms();
+        
+        mc.world.disconnect();
+        if (flag) {
+            mc.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+        } else {
+            mc.disconnect();
+        }
+
+        TitleScreen lv = new TitleScreen();
+        if (flag) {
+            mc.openScreen(lv);
+        } else if (flag1) {
+            mc.openScreen(new RealmsMainScreen(lv));
+        } else {
+            mc.openScreen(new MultiplayerScreen(lv));
+        }
+    }
+
+    private static void performAfkAction(MinecraftClient mc) {
+        String action = Configs.Generic.AFK_ACTION.getStringValue();
+
+        if (action.equals("/disconnect")) {
+            disconnectGracefully(mc);
+            return;
+        }
+
+        mc.player.sendChatMessage(action);
+    }
+
+    private static void checkAfk(MinecraftClient mc) {
+        ticksSinceAfk++;
+        if (!performedAfkAction && FeatureToggle.TWEAK_AFK_TIMEOUT.getBooleanValue()) {
+            int afkTimeout = Configs.Generic.AFK_TIMEOUT.getIntegerValue();
+            if (ticksSinceAfk > afkTimeout) {
+                performAfkAction(mc);
+                performedAfkAction = true;
+            } else if (ticksSinceAfk > afkTimeout - 20*30) {
+                InfoUtils.printActionbarMessage("tweakeroo.message.afk_detected", Math.ceil((double)(afkTimeout - ticksSinceAfk) / 2.0) / 10.0);
+            }
+        }
+    }
+
     public static void onTick(MinecraftClient mc)
     {
         ClientPlayerEntity player = mc.player;
 
         if (player == null)
         {
+            performedAfkAction = false;
+            ticksSinceAfk = 0;
             return;
         }
+
+        checkAfk(mc);
 
         doPeriodicClicks(mc);
         doPotionWarnings(player);

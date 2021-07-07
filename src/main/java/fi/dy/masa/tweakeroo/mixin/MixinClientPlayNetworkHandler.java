@@ -8,8 +8,14 @@ import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import fi.dy.masa.tweakeroo.tweaks.MiscTweaks;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
@@ -74,5 +80,12 @@ public abstract class MixinClientPlayNetworkHandler
         int i = packet.getChunkX();
         int j = packet.getChunkZ();
         RenderTweaks.onLightUpdateEvent(i,j, ci);
+    }
+
+    @Inject(method = "sendPacket", at = @At("HEAD"))
+    private void onSendPacket(Packet<?> packet, CallbackInfo ci) {
+        if (!((packet instanceof PlayerMoveC2SPacket) || (packet instanceof PlayPongC2SPacket) || (packet instanceof KeepAliveC2SPacket) || (packet instanceof CustomPayloadC2SPacket))) {
+            MiscTweaks.resetAfkTimer();
+        }
     }
 }

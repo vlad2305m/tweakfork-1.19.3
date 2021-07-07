@@ -106,7 +106,8 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_NO_SNEAK_SLOWDOWN         ("tweakNoSneakSlowdown",                     false, "",    "Disables slowdown when sneaking"),
     TWEAK_SCAFFOLD_PLACE            ("tweakScaffoldPlace",                  false, "",    "Place blocks as if they were scaffolding"),
     TWEAK_CONTAINER_SCAN            ("tweakContainerScan",                  false, "",    "Scans containers"),
-    TWEAK_CONTAINER_SCAN_COUNTS     ("tweakContainerScanCounts",            false, "",    "Enables/disables container scan counts rendering"),;
+    TWEAK_CONTAINER_SCAN_COUNTS     ("tweakContainerScanCounts",            false, "",    "Enables/disables container scan counts rendering"),
+    TWEAK_AFK_TIMEOUT               ("tweakAfkTimeout",                     false, "",    "When enabled, will perform an action after afking for a while");
 
     private final String name;
     private final String comment;

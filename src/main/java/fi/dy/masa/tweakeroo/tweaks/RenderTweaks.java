@@ -669,6 +669,10 @@ public class RenderTweaks {
 
     public static void onLightUpdateEvent(int chunkX, int chunkZ, CallbackInfo ci) {
 
+        if (true || !FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue()) {
+            return;
+        }
+
         ListType listtype = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
 
         if (listtype == ListType.NONE) {

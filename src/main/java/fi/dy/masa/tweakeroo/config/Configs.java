@@ -235,8 +235,8 @@ public class Configs implements IConfigHandler
         public static final ConfigStringList REPAIR_MODE_SLOTS                  = new ConfigStringList("repairModeSlots", ImmutableList.of("mainhand", "offhand"), "The slots the repair mode should use\nValid values: mainhand, offhand, head, chest, legs, feet");
         public static final ConfigStringList UNSTACKING_ITEMS                   = new ConfigStringList("unstackingItems", ImmutableList.of("minecraft:bucket", "minecraft:glass_bottle"), "The items that should be considered for the\n'tweakItemUnstackingProtection' tweak");
         public static final ConfigOptionList SELECTIVE_BLOCKS_LIST_TYPE         = new ConfigOptionList("selectiveBlocksListType", ListType.NONE, "The list type for selective blocks tweak");
-        public static final ConfigString SELECTIVE_BLOCKS_WHITELIST             = new ConfigString("selectiveBlocksWhitelist", "0,0,0|0,0,1", "The block positions you want to whitelist");
-        public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "0,0,0|0,0,1", "The block positions you want to blacklist");
+        public static final ConfigString SELECTIVE_BLOCKS_WHITELIST             = new ConfigString("selectiveBlocksWhitelist", "", "The block positions you want to whitelist");
+        public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "", "The block positions you want to blacklist");
       
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CREATIVE_EXTRA_ITEMS,

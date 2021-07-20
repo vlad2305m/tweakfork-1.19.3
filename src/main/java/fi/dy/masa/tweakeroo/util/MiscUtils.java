@@ -1,20 +1,30 @@
 package fi.dy.masa.tweakeroo.util;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.Message;
+import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
+import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.tweakeroo.Reference;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.mixin.IMixinAxeItem;
+import fi.dy.masa.tweakeroo.mixin.IMixinClientWorld;
 import fi.dy.masa.tweakeroo.mixin.IMixinCommandBlockExecutor;
 import fi.dy.masa.tweakeroo.renderer.RenderUtils;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -22,6 +32,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.map.MapState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -309,4 +320,71 @@ public class MiscUtils
         return d*d+d1*d1+d2*d2 <= reach*reach;
     } 
 	
+    public static boolean writeAllMapsAsImages()
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.world == null)
+        {
+            return true;
+        }
+
+        Map<String, MapState> data = ((IMixinClientWorld) mc.world).tweakeroo_getMapStates();
+        String worldName = StringUtils.getWorldOrServerName();
+
+        if (worldName == null)
+        {
+            worldName = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date(System.currentTimeMillis()));
+        }
+
+        File dir = FileUtils.getConfigDirectory().toPath().resolve(Reference.MOD_ID).resolve("map_images").resolve(worldName).toFile();
+
+        if (dir.exists() == false && dir.mkdirs() == false)
+        {
+            InfoUtils.showGuiOrInGameMessage(Message.MessageType.ERROR, "Failed to create directory: " + dir.getAbsolutePath());
+            return true;
+        }
+
+        int count = 0;
+
+        for (Map.Entry<String, MapState> entry : data.entrySet())
+        {
+            File file = new File(dir, entry.getKey() + ".png");
+            writeMapAsImage(file, entry.getValue());
+            ++count;
+        }
+
+        InfoUtils.showGuiOrInGameMessage(Message.MessageType.INFO, String.format("Wrote %d maps to image files", count));
+
+        return true;
+    }
+
+    private static void writeMapAsImage(File fileOut, MapState state)
+    {
+        BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+
+        for (int y = 0; y < 128; ++y)
+        {
+            for (int x = 0; x < 128; ++x)
+            {
+                int index = x + y * 128;
+                int color = state.colors[index] & 255;
+                int colorIndex = color / 4;
+                int col = colorIndex == 0 ? 0 : MapColor.COLORS[colorIndex].getRenderColor(color & 0x3);
+                // Swap the color channels from ABGR to ARGB
+                int outputColor = (col & 0xFF00FF00) | (col & 0xFF0000) >> 16 | (col & 0xFF) << 16;
+
+                image.setRGB(x, y, outputColor);
+            }
+        }
+
+        try
+        {
+            ImageIO.write(image, "png", fileOut);
+        }
+        catch (Exception e)
+        {
+            InfoUtils.showGuiOrInGameMessage(Message.MessageType.ERROR, "Failed to write image to file: " + fileOut.getAbsolutePath());
+        }
+    }
 }

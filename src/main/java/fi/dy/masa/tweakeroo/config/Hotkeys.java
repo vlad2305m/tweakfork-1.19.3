@@ -52,6 +52,7 @@ public class Hotkeys
     public static final ConfigHotkey SWAP_ELYTRA_CHESTPLATE             = new ConfigHotkey("swapElytraChestplate",              "",     "Swaps the currently equipped item in the chest slot between an Elytra and a Chest Plate");
     public static final ConfigHotkey TOGGLE_GRAB_CURSOR                 = new ConfigHotkey("toggleGrabCursor",                  "",     "Grabs or ungrabs the mouse cursor, depending on the current state");
     public static final ConfigHotkey TOOL_PICK                          = new ConfigHotkey("toolPick",                          "",     "Switches to the effective tool for the targeted block");
+    public static final ConfigHotkey WRITE_MAPS_AS_IMAGES               = new ConfigHotkey("writeMapsAsImages",                 "",     "Writes all the currently available maps as images\nto the 'config/tweakeroo/map_images/<worldname>/' directory");
     public static final ConfigHotkey ZOOM_ACTIVATE                      = new ConfigHotkey("zoomActivate",                      "",     KeybindSettings.create(Context.INGAME, KeyAction.BOTH, true, false, false, false, false), "Zoom activation hotkey");
     public static final ConfigHotkey AREA_SELECTION_OFFSET              = new ConfigHotkey("areaSelectionOffset",     "LEFT_SHIFT",     KeybindSettings.PRESS_ALLOWEXTRA, "The key to offset selection pos");
     public static final ConfigHotkey AREA_SELECTION_ADD_TO_LIST         = new ConfigHotkey("areaSelectionAddToList",            "",     KeybindSettings.PRESS_ALLOWEXTRA, "Add selected blocks to list");
@@ -109,7 +110,9 @@ public class Hotkeys
             AREA_SELECTION_ADD_TO_LIST,
             AREA_SELECTION_REMOVE_FROM_LIST,
             OPEN_ITEM_LIST,
-            CONTAINER_SCANNER_CLEAR_CACHE
+            CONTAINER_SCANNER_CLEAR_CACHE,
 
+            WRITE_MAPS_AS_IMAGES,
+            ZOOM_ACTIVATE
     );
 }

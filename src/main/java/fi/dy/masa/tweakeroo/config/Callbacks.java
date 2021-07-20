@@ -95,6 +95,7 @@ public class Callbacks
         Hotkeys.TOOL_PICK.getKeybind().setCallback(callbackGeneric);
         Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().setCallback(callbackGeneric);
         Hotkeys.PISTON_INFO_CLEAR.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.WRITE_MAPS_AS_IMAGES.getKeybind().setCallback((a, k) -> MiscUtils.writeAllMapsAsImages());
         Hotkeys.ZOOM_ACTIVATE.getKeybind().setCallback(callbackGeneric);
         Hotkeys.AREA_SELECTION_ADD_TO_LIST.getKeybind().setCallback(callbackGeneric);
         Hotkeys.AREA_SELECTION_REMOVE_FROM_LIST.getKeybind().setCallback(callbackGeneric);
@@ -105,6 +106,7 @@ public class Callbacks
         Hotkeys.SKIP_WORLD_RENDERING.getKeybind().setCallback(callbackMessage);
         
 
+        Configs.Generic.TOOL_SWITCHABLE_SLOTS.setValueChangeCallback((cfg) -> InventoryUtils.setToolSwitchableSlots(cfg.getStringValue()));
         Configs.Lists.CREATIVE_EXTRA_ITEMS.setValueChangeCallback((cfg) -> CreativeExtraItems.setCreativeExtraItems(cfg.getStrings()));
 
         FeatureToggle.TWEAK_AFTER_CLICKER.getKeybind().setCallback(KeyCallbackAdjustableFeature.createCallback(FeatureToggle.TWEAK_AFTER_CLICKER));

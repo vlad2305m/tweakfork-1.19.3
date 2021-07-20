@@ -8,6 +8,7 @@
         "IMixinAbstractBlock",
         "IMixinAxeItem",
         "IMixinChunkLightProvider",
+        "IMixinClientWorld",
         "IMixinCommandBlockExecutor",
         "IMixinHorseBaseEntity",
         "MixinAbstractBlockState",

@@ -62,7 +62,6 @@ public class PlacementTweaks
     private static Direction sideRotatedFirst = null;
     private static float playerYawFirst;
     private static ItemStack[] stackBeforeUse = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY };
-    private static boolean isFirstClick;
     private static long lastClick = 0;
     private static boolean isEmulatedClick;
     private static Direction tempDirection = null;
@@ -1128,7 +1127,6 @@ public class PlacementTweaks
         sideRotatedFirst = null;
         firstWasRotation = false;
         firstWasOffset = false;
-        isFirstClick = true;
         placementCount = 0;
         stackClickedOn = ItemStack.EMPTY;
         stateClickedOn = null;

@@ -46,7 +46,7 @@ public class CreativeExtraItems
 
             if (stack.isEmpty() == false)
             {
-                if (stack.hasTag())
+                if (stack.hasNbt())
                 {
                     ADDED_ITEMS.put(group, stack);
                 }
@@ -69,7 +69,7 @@ public class CreativeExtraItems
             if (item != null)
             {
                 ItemStack stack = new ItemStack(item);
-                stack.setTag(reader.getNbt());
+                stack.setNbt(reader.getNbt());
                 return stack;
             }
         }

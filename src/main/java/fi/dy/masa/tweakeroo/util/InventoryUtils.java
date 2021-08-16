@@ -941,10 +941,7 @@ public class InventoryUtils
             {
                 tryCombineStacksInInventory(player, stack);
 
-                if (fi.dy.masa.malilib.util.InventoryUtils.findEmptySlotInPlayerInventory(player.playerScreenHandler, false, false) == -1)
-                {
-                    return true;
-                }
+                return fi.dy.masa.malilib.util.InventoryUtils.findEmptySlotInPlayerInventory(player.playerScreenHandler, false, false) == -1;
             }
         }
 
@@ -1019,7 +1016,7 @@ public class InventoryUtils
     public static boolean cleanUpShulkerBoxNBT(ItemStack stack)
     {
         boolean changed = false;
-        NbtCompound nbt = stack.getTag();
+        NbtCompound nbt = stack.getNbt();
 
         if (nbt != null)
         {
@@ -1042,7 +1039,7 @@ public class InventoryUtils
 
             if (nbt.isEmpty())
             {
-                stack.setTag(null);
+                stack.setNbt(null);
                 changed = true;
             }
         }

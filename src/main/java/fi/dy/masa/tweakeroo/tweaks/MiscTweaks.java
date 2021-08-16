@@ -130,11 +130,11 @@ public class MiscTweaks
 
         TitleScreen lv = new TitleScreen();
         if (flag) {
-            mc.openScreen(lv);
+            mc.setScreen(lv);
         } else if (flag1) {
-            mc.openScreen(new RealmsMainScreen(lv));
+            mc.setScreen(new RealmsMainScreen(lv));
         } else {
-            mc.openScreen(new MultiplayerScreen(lv));
+            mc.setScreen(new MultiplayerScreen(lv));
         }
     }
 

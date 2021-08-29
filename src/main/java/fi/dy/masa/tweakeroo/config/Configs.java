@@ -1,6 +1,5 @@
 package fi.dy.masa.tweakeroo.config;
 
-import java.io.File;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +28,9 @@ import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
+import fi.dy.masa.tweakeroo.util.WeatherOverrideMode;
+
+import java.io.File;
 
 public class Configs implements IConfigHandler
 {
@@ -104,6 +106,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       SELECTIVE_BLOCKS_HIDE_ENTITIES      = new ConfigBoolean     ("selectiveBlocksHideEntities", false, "Whether or not to hide entities for selective block rendering");
         public static final ConfigBoolean       SELECTIVE_BLOCKS_NO_HIT             = new ConfigBoolean     ("selectiveBlocksNoHit", true, "Whether or not to disable targeting hidden blocks");
         public static final ConfigInteger       DAY_CYCLE_OVERRIDE_TIME             = new ConfigInteger     ("dayCycleOverrideTime", 0, 0, 24000, "The day time to use when overriding the daylight cycle time");
+        public static final ConfigOptionList    WEATHER_OVERRIDE_OPTION             = new ConfigOptionList  ("weatherOverrideOption", WeatherOverrideMode.CLEAR, "The weather to use when overriding the client weather");
         public static final ConfigInteger       SCAFFOLD_PLACE_DISTANCE             = new ConfigInteger     ("scaffoldPlaceDistance", 5, 1, 20, "Scaffold place max distance");
         public static final ConfigBoolean       SCAFFOLD_PLACE_VANILLA              = new ConfigBoolean     ("scaffoldPlaceVanilla", false, "When enabled, extend direction is only set by player direction");
         public static final ConfigInteger       CONTAINER_SCAN_MIN_ITEMS            = new ConfigInteger     ("containerScanMinItems", 1, 1, 100000, "Minimum items a container needs to have to be displayed");
@@ -184,6 +187,7 @@ public class Configs implements IConfigHandler
                 STRUCTURE_BLOCK_MAX_SIZE,
                 ZOOM_FOV,
                 DAY_CYCLE_OVERRIDE_TIME,
+                WEATHER_OVERRIDE_OPTION,
                 SCAFFOLD_PLACE_DISTANCE,
                 SCAFFOLD_PLACE_VANILLA,
                 CONTAINER_SCAN_MIN_ITEMS,

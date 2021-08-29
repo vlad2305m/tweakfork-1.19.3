@@ -37,6 +37,11 @@
     "tweakeroo.label.placement_restriction_mode.line": "Line",
     "tweakeroo.label.placement_restriction_mode.plane": "Plane",
 
+    "tweakeroo.label.weather_override_mode.clear": "Clear",
+    "tweakeroo.label.weather_override_mode.thunder": "Thunder",
+    "tweakeroo.label.weather_override_mode.rain": "Rain",
+    "tweakeroo.label.weather_override_mode.raining_thunder": "RainingThunder",
+
     "tweakeroo.label.config_comment.single_player_only": "§6Note: This feature works either at all or§r\n§6at least fully only in single player§r",
 
     "tweakeroo.label.snap_aim_mode.both": "Yaw & Pitch",

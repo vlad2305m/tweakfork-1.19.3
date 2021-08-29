@@ -103,6 +103,7 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_SELECTIVE_BLOCKS_RENDER_OUTLINE   ("tweakSelectiveBlocksRenderOutline", false, "",    "Renders an outline over listed blocks"),
     TWEAK_AREA_SELECTOR             ("tweakAreaSelector",                   false, "",    "Enables the area selector"),
     TWEAK_DAY_CYCLE_OVERRIDE        ("tweakDayCycleOverride",               false, "",    "Overrides the time of day on the client only"),
+    TWEAK_WEATHER_OVERRIDE          ("tweakWeatherOverride",                false, "",    "Overrides the weather on the client only"),
     TWEAK_NO_SNEAK_SLOWDOWN         ("tweakNoSneakSlowdown",                     false, "",    "Disables slowdown when sneaking"),
     TWEAK_SCAFFOLD_PLACE            ("tweakScaffoldPlace",                  false, "",    "Place blocks as if they were scaffolding"),
     TWEAK_CONTAINER_SCAN            ("tweakContainerScan",                  false, "",    "Scans containers"),

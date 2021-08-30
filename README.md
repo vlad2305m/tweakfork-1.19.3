@@ -17,7 +17,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 14. disableBossBar -> Disables the boss bar rendering
 15. chestMirrorFix -> Fixes wonky chest mirroring behavior (works with litematica).
 16. tweakAfkTimeout -> Automatically disconnects you (or does command/send chat) when afk.
-19. tweakWeatherOverride -> Overrides the weather client side
+17. tweakWeatherOverride -> Overrides the weather client side
 18. tweakContainerScan -> Scans containers and tells you how many items/types are in it. Useful for debugging storage tech.
     * Easily see which containers have items or not
     * Compile a list of all the items it found

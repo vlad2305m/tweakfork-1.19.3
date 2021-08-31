@@ -66,6 +66,10 @@ processResources {
     }
 }
 
+jar {
+    exclude('net/optifine/**')   
+}
+
 tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"
     options.release = 16

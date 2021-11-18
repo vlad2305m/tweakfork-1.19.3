@@ -68,7 +68,6 @@ public class Configs implements IConfigHandler
         public static final ConfigInteger       HOTBAR_SWAP_OVERLAY_OFFSET_X        = new ConfigInteger     ("hotbarSwapOverlayOffsetX", 4, "The horizontal offset of the hotbar swap overlay");
         public static final ConfigInteger       HOTBAR_SWAP_OVERLAY_OFFSET_Y        = new ConfigInteger     ("hotbarSwapOverlayOffsetY", 4, "The vertical offset of the hotbar swap overlay");
         public static final ConfigInteger       ITEM_SWAP_DURABILITY_THRESHOLD      = new ConfigInteger     ("itemSwapDurabilityThreshold", 20, 5, 10000, "This is the durability threshold (in uses left)\nfor the low-durability item swap feature.\nNote that items with low total durability will go lower\nand be swapped at 5%% left.");
-        public static final ConfigBoolean       LAVA_VISIBILITY_OPTIFINE            = new ConfigBoolean     ("lavaVisibilityOptifineCompat", true, "Use an alternative version of the Lava Visibility,\nwhich is Optifine compatible (but more hacky).\nImplementation credit to Nessie.");
         public static final ConfigInteger       MAP_PREVIEW_SIZE                    = new ConfigInteger     ("mapPreviewSize", 160, 16, 512, "The size of the rendered map previews");
         public static final ConfigInteger       PERIODIC_ATTACK_INTERVAL            = new ConfigInteger     ("periodicAttackInterval", 20, 0, Integer.MAX_VALUE, "The number of game ticks between automatic attacks (left clicks)");
         public static final ConfigInteger       PERIODIC_USE_INTERVAL               = new ConfigInteger     ("periodicUseInterval", 20, 0, Integer.MAX_VALUE, "The number of game ticks between automatic uses (right clicks)");
@@ -93,8 +92,11 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       SNAP_AIM_INDICATOR                  = new ConfigBoolean     ("snapAimIndicator", true, "Whether or not to render the snap aim angle indicator");
         public static final ConfigColor         SNAP_AIM_INDICATOR_COLOR            = new ConfigColor       ("snapAimIndicatorColor", "#603030FF", "The color for the snap aim indicator background");
         public static final ConfigOptionList    SNAP_AIM_MODE                       = new ConfigOptionList  ("snapAimMode", SnapAimMode.YAW, "Snap aim mode: yaw, or pitch, or both");
+        public static final ConfigBoolean       SNAP_AIM_ONLY_CLOSE_TO_ANGLE        = new ConfigBoolean     ("snapAimOnlyCloseToAngle", true, "If enabled, then the snap aim only snaps to the angle\nwhen the internal angle is within a certain distance of it.\nThe threshold can be set in snapAimThreshold");
         public static final ConfigBoolean       SNAP_AIM_PITCH_OVERSHOOT            = new ConfigBoolean     ("snapAimPitchOvershoot", false, "Whether or not to allow overshooting the pitch angle\nfrom the normal +/- 90 degrees up to +/- 180 degrees");
         public static final ConfigDouble        SNAP_AIM_PITCH_STEP                 = new ConfigDouble      ("snapAimPitchStep", 12.5, 0, 90, "The pitch angle step of the snap aim tweak");
+        public static final ConfigDouble        SNAP_AIM_THRESHOLD_PITCH            = new ConfigDouble      ("snapAimThresholdPitch", 1.5, "The angle threshold inside which the player rotation will\nbe snapped to the snap angle.");
+        public static final ConfigDouble        SNAP_AIM_THRESHOLD_YAW              = new ConfigDouble      ("snapAimThresholdYaw", 5.0, "The angle threshold inside which the player rotation will\nbe snapped to the snap angle.");
         public static final ConfigDouble        SNAP_AIM_YAW_STEP                   = new ConfigDouble      ("snapAimYawStep", 45, 0, 360, "The yaw angle step of the snap aim tweak");
         public static final ConfigInteger       STRUCTURE_BLOCK_MAX_SIZE            = new ConfigInteger     ("structureBlockMaxSize", 128, 1, 256, "The maximum dimensions for a Structure Block's saved area");
         public static final ConfigString        TOOL_SWITCHABLE_SLOTS               = new ConfigString      ("toolSwitchableSlots", "1-9", "The slots that the Tool Switch tweak is allowed to put tools to.\nNote that Tool Switch can also switch to other slots in the hotbar,\nif they already have the preferred tool, but it will only\nswap new tools to these slots");
@@ -120,7 +122,6 @@ public class Configs implements IConfigHandler
                 CLIENT_PLACEMENT_ROTATION,
                 FREE_CAMERA_PLAYER_INPUTS,
                 FREE_CAMERA_PLAYER_MOVEMENT,
-                LAVA_VISIBILITY_OPTIFINE,
                 HAND_RESTOCK_PRE,
                 HANGABLE_ENTITY_BYPASS_INVERSE,
                 PERMANENT_SNEAK_ALLOW_IN_GUIS,
@@ -131,6 +132,7 @@ public class Configs implements IConfigHandler
                 SLOT_SYNC_WORKAROUND,
                 SLOT_SYNC_WORKAROUND_ALWAYS,
                 SNAP_AIM_INDICATOR,
+                SNAP_AIM_ONLY_CLOSE_TO_ANGLE,
                 SNAP_AIM_PITCH_OVERSHOOT,
                 ZOOM_ADJUST_MOUSE_SENSITIVITY,
 
@@ -183,6 +185,8 @@ public class Configs implements IConfigHandler
                 RENDER_LIMIT_XP_ORB,
                 SCULK_SENSOR_PULSE_LENGTH,
                 SNAP_AIM_PITCH_STEP,
+                SNAP_AIM_THRESHOLD_PITCH,
+                SNAP_AIM_THRESHOLD_YAW,
                 SNAP_AIM_YAW_STEP,
                 STRUCTURE_BLOCK_MAX_SIZE,
                 ZOOM_FOV,
@@ -218,7 +222,9 @@ public class Configs implements IConfigHandler
 
     public static class Lists
     {
-
+        public static final ConfigOptionList BLOCK_BREAK_RESTRICTION_LIST_TYPE  = new ConfigOptionList("blockBreakRestrictionListType", ListType.NONE, "The restriction list type for the Block Type Break Restriction tweak");
+        public static final ConfigStringList BLOCK_BREAK_RESTRICTION_BLACKLIST  = new ConfigStringList("blockBreakRestrictionBlackList", ImmutableList.of("minecraft:budding_amethyst"), "The blocks that are NOT allowed to be broken while the Block Break Restriction tweak is enabled,\nif the blockBreakRestrictionListType is set to Black List");
+        public static final ConfigStringList BLOCK_BREAK_RESTRICTION_WHITELIST  = new ConfigStringList("blockBreakRestrictionWhiteList", ImmutableList.of(), "The only blocks that can be broken while the Block Break Restriction tweak is enabled,\nif the blockBreakRestrictionListType is set to White List");
         public static final ConfigStringList CREATIVE_EXTRA_ITEMS               = new ConfigStringList("creativeExtraItems", ImmutableList.of("minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block", "minecraft:dragon_egg", "minecraft:structure_void", "minecraft:structure_block", "minecraft:structure_block{BlockEntityTag:{mode:\"SAVE\"}}", "minecraft:structure_block{BlockEntityTag:{mode:\"LOAD\"}}", "minecraft:structure_block{BlockEntityTag:{mode:\"CORNER\"}}"), "Extra items that should be appended to the creative inventory.\nCurrently these will appear in the Transportation category.\nIn the future the group per added item will be customizable.");
         public static final ConfigOptionList FAST_PLACEMENT_ITEM_LIST_TYPE      = new ConfigOptionList("fastPlacementItemListType", ListType.BLACKLIST, "The item restriction type for the Fast Block Placement tweak");
         public static final ConfigStringList FAST_PLACEMENT_ITEM_BLACKLIST      = new ConfigStringList("fastPlacementItemBlackList", ImmutableList.of("minecraft:ender_chest", "minecraft:white_shulker_box"), "The items that are NOT allowed to be used for the Fast Block Placement tweak,\nif the fastPlacementItemListType is set to Black List");
@@ -227,15 +233,15 @@ public class Configs implements IConfigHandler
         public static final ConfigStringList FAST_RIGHT_CLICK_BLOCK_BLACKLIST   = new ConfigStringList("fastRightClickBlockBlackList", ImmutableList.of("minecraft:chest", "minecraft:ender_chest", "minecraft:trapped_chest", "minecraft:white_shulker_box"), "The blocks that are NOT allowed to be right clicked on with\nthe Fast Right Click tweak, if the fastRightClickBlockListType is set to Black List");
         public static final ConfigStringList FAST_RIGHT_CLICK_BLOCK_WHITELIST   = new ConfigStringList("fastRightClickBlockWhiteList", ImmutableList.of(), "The blocks that are allowed to be right clicked on with\nthe Fast Right Click tweak, if the fastRightClickBlockListType is set to White List");
         public static final ConfigOptionList FAST_RIGHT_CLICK_ITEM_LIST_TYPE    = new ConfigOptionList("fastRightClickListType", ListType.NONE, "The item restriction type for the Fast Right Click tweak");
-        public static final ConfigStringList FAST_RIGHT_CLICK_ITEM_BLACKLIST    = new ConfigStringList("fastRightClickBlackList", ImmutableList.of("minecraft:fireworks"), "The items that are NOT allowed to be used for the Fast Right Click tweak,\nif the fastRightClickListType is set to Black List");
+        public static final ConfigStringList FAST_RIGHT_CLICK_ITEM_BLACKLIST    = new ConfigStringList("fastRightClickBlackList", ImmutableList.of("minecraft:firework_rocket"), "The items that are NOT allowed to be used for the Fast Right Click tweak,\nif the fastRightClickListType is set to Black List");
         public static final ConfigStringList FAST_RIGHT_CLICK_ITEM_WHITELIST    = new ConfigStringList("fastRightClickWhiteList", ImmutableList.of("minecraft:bucket", "minecraft:water_bucket", "minecraft:lava_bucket", "minecraft:glass_bottle"), "The items that are allowed to be used for the Fast Right Click tweak,\nif the fastRightClickListType is set to White List");
-        public static final ConfigOptionList BLOCK_TYPE_BREAK_RESTRICTION_MODE  = new ConfigOptionList("blockTypeBreakRestrictionMode", ListType.NONE, "Restrict block breaking.");
-        public static final ConfigStringList BLOCK_TYPE_BREAK_WHITELIST         = new ConfigStringList("blockTypeBreakWhiteList", ImmutableList.of(), "The blocks that can be broken with type break restriction");
-        public static final ConfigStringList BLOCK_TYPE_BREAK_BLACKLIST         = new ConfigStringList("blockTypeBreakBlackList", ImmutableList.of(), "The blocks that can NOT be broken with type break restriction");
         public static final ConfigOptionList BLOCK_TYPE_RCLICK_RESTRICTION_MODE = new ConfigOptionList("blockTypeRClickRestrictionMode", ListType.NONE, "Restrict blocks you can right click on.");
         public static final ConfigStringList BLOCK_TYPE_RCLICK_WHITELIST        = new ConfigStringList("blockTypeRClickWhiteList", ImmutableList.of(), "The blocks that can be broken with type break restriction");
         public static final ConfigStringList BLOCK_TYPE_RCLICK_BLACKLIST        = new ConfigStringList("blockTypeRClickBlackList", ImmutableList.of(), "The blocks that can NOT be broken with type break restriction");
         public static final ConfigStringList FLAT_WORLD_PRESETS                 = new ConfigStringList("flatWorldPresets", ImmutableList.of("White Glass;1*minecraft:white_stained_glass;minecraft:plains;;minecraft:white_stained_glass", "Glass;1*minecraft:glass;minecraft:plains;;minecraft:glass"), "Custom flat world preset strings.\nThese are in the format: name;blocks_string;biome;generation_features;icon_item\nThe blocks string format is the vanilla format, such as: 62*minecraft:dirt,minecraft:grass\nThe biome can be the registry name, or the int ID\nThe icon item name format is minecraft:iron_nugget");
+        public static final ConfigOptionList HAND_RESTOCK_LIST_TYPE             = new ConfigOptionList("handRestockListType", ListType.NONE, "The restriction list type for the Hand Restock tweak");
+        public static final ConfigStringList HAND_RESTOCK_BLACKLIST             = new ConfigStringList("handRestockBlackList", ImmutableList.of("minecraft:bucket", "minecraft:lava_bucket", "minecraft:water_bucket"), "The items that are NOT allowed to be restocked with the Hand Restock tweak,\nif the handRestockListType is set to Black List");
+        public static final ConfigStringList HAND_RESTOCK_WHITELIST             = new ConfigStringList("handRestockWhiteList", ImmutableList.of(), "The only allowed items that can be restocked with the Hand Restock tweak,\nif the handRestockListType is set to White List");
         public static final ConfigOptionList POTION_WARNING_LIST_TYPE           = new ConfigOptionList("potionWarningListType", ListType.NONE, "The list type for potion warning effects");
         public static final ConfigStringList POTION_WARNING_BLACKLIST           = new ConfigStringList("potionWarningBlackList", ImmutableList.of("minecraft:hunger", "minecraft:mining_fatigue", "minecraft:nausea", "minecraft:poison", "minecraft:slowness", "minecraft:weakness"), "The potion effects that will not be warned about");
         public static final ConfigStringList POTION_WARNING_WHITELIST           = new ConfigStringList("potionWarningWhiteList", ImmutableList.of("minecraft:fire_resistance", "minecraft:invisibility", "minecraft:water_breathing"), "The only potion effects that will be warned about");
@@ -246,6 +252,9 @@ public class Configs implements IConfigHandler
         public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "", "The block positions you want to blacklist");
       
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+                BLOCK_BREAK_RESTRICTION_LIST_TYPE,
+                BLOCK_BREAK_RESTRICTION_BLACKLIST,
+                BLOCK_BREAK_RESTRICTION_WHITELIST,
                 CREATIVE_EXTRA_ITEMS,
                 FAST_PLACEMENT_ITEM_LIST_TYPE,
                 FAST_RIGHT_CLICK_BLOCK_LIST_TYPE,
@@ -257,13 +266,13 @@ public class Configs implements IConfigHandler
                 FAST_RIGHT_CLICK_BLOCK_WHITELIST,
                 FAST_RIGHT_CLICK_ITEM_BLACKLIST,
                 FAST_RIGHT_CLICK_ITEM_WHITELIST,
-                BLOCK_TYPE_BREAK_RESTRICTION_MODE,
-                BLOCK_TYPE_BREAK_WHITELIST,
-                BLOCK_TYPE_BREAK_BLACKLIST,
                 BLOCK_TYPE_RCLICK_RESTRICTION_MODE,
                 BLOCK_TYPE_RCLICK_WHITELIST,
                 BLOCK_TYPE_RCLICK_BLACKLIST,
                 FLAT_WORLD_PRESETS,
+                HAND_RESTOCK_LIST_TYPE,
+                HAND_RESTOCK_BLACKLIST,
+                HAND_RESTOCK_WHITELIST,
                 POTION_WARNING_BLACKLIST,
                 POTION_WARNING_WHITELIST,
                 REPAIR_MODE_SLOTS,
@@ -303,6 +312,8 @@ public class Configs implements IConfigHandler
         public static final ConfigBooleanHotkeyed       DISABLE_RAIN_EFFECTS            = new ConfigBooleanHotkeyed("disableRainEffects",                   false, "", "Disables rain rendering and sounds");
         public static final ConfigBooleanHotkeyed       DISABLE_RENDERING_SCAFFOLDING   = new ConfigBooleanHotkeyed("disableRenderingScaffolding",          false, "", "Disables rendering of Scaffolding Blocks");
         public static final ConfigBooleanHotkeyed       DISABLE_RENDER_DISTANCE_FOG     = new ConfigBooleanHotkeyed("disableRenderDistanceFog",             false, "", "Disables the fog that increases around the render distance");
+        public static final ConfigBooleanHotkeyed       DISABLE_SCOREBOARD_RENDERING    = new ConfigBooleanHotkeyed("disableScoreboardRendering",           false, "", "Removes the sidebar scoreboard rendering");
+        public static final ConfigBooleanHotkeyed       DISABLE_SHULKER_BOX_TOOLTIP     = new ConfigBooleanHotkeyed("disableShulkerBoxTooltip",             false, "", "Disables the vanilla text tooltip for Shulker Box contents");
         public static final ConfigBooleanHotkeyed       DISABLE_SIGN_GUI                = new ConfigBooleanHotkeyed("disableSignGui",                       false, "", "Prevent the Sign edit GUI from opening");
         public static final ConfigBooleanHotkeyed       DISABLE_SLIME_BLOCK_SLOWDOWN    = new ConfigBooleanHotkeyed("disableSlimeBlockSlowdown",            false, "", "Removes the slowdown from walking on Slime Blocks.\n(This is originally from usefulmod by nessie.)");
         public static final ConfigBooleanHotkeyed       DISABLE_TILE_ENTITY_RENDERING   = new ConfigBooleanHotkeyed("disableTileEntityRendering",           false, "", "Prevents all TileEntity renderers from rendering");
@@ -341,6 +352,8 @@ public class Configs implements IConfigHandler
                 DISABLE_RAIN_EFFECTS,
                 DISABLE_RENDERING_SCAFFOLDING,
                 DISABLE_RENDER_DISTANCE_FOG,
+                DISABLE_SCOREBOARD_RENDERING,
+                DISABLE_SHULKER_BOX_TOOLTIP,
                 DISABLE_SIGN_GUI,
                 DISABLE_SLIME_BLOCK_SLOWDOWN,
                 DISABLE_TILE_ENTITY_RENDERING,
@@ -411,15 +424,16 @@ public class Configs implements IConfigHandler
         InventoryUtils.setRepairModeSlots(Lists.REPAIR_MODE_SLOTS.getStrings());
         InventoryUtils.setUnstackingItems(Lists.UNSTACKING_ITEMS.getStrings());
 
+        PlacementTweaks.BLOCK_BREAK_RESTRICTION.setListType((ListType) Lists.BLOCK_BREAK_RESTRICTION_LIST_TYPE.getOptionListValue());
+        PlacementTweaks.BLOCK_BREAK_RESTRICTION.setListContents(
+                Lists.BLOCK_BREAK_RESTRICTION_BLACKLIST.getStrings(),
+                Lists.BLOCK_BREAK_RESTRICTION_WHITELIST.getStrings());
+
         PlacementTweaks.FAST_RIGHT_CLICK_BLOCK_RESTRICTION.setListType((ListType) Lists.FAST_RIGHT_CLICK_BLOCK_LIST_TYPE.getOptionListValue());
         PlacementTweaks.FAST_RIGHT_CLICK_BLOCK_RESTRICTION.setListContents(
                 Lists.FAST_RIGHT_CLICK_BLOCK_BLACKLIST.getStrings(),
                 Lists.FAST_RIGHT_CLICK_BLOCK_WHITELIST.getStrings());
 
-        PlacementTweaks.BLOCK_TYPE_BREAK_RESTRICTION.setListType((ListType) Lists.BLOCK_TYPE_BREAK_RESTRICTION_MODE.getOptionListValue());
-        PlacementTweaks.BLOCK_TYPE_BREAK_RESTRICTION.setListContents(
-                Lists.BLOCK_TYPE_BREAK_BLACKLIST.getStrings(),
-                Lists.BLOCK_TYPE_BREAK_WHITELIST.getStrings());
 
         PlacementTweaks.BLOCK_TYPE_RCLICK_RESTRICTION.setListType((ListType) Lists.BLOCK_TYPE_RCLICK_RESTRICTION_MODE.getOptionListValue());
         PlacementTweaks.BLOCK_TYPE_RCLICK_RESTRICTION.setListContents(
@@ -435,6 +449,11 @@ public class Configs implements IConfigHandler
         PlacementTweaks.FAST_PLACEMENT_ITEM_RESTRICTION.setListContents(
                 Lists.FAST_PLACEMENT_ITEM_BLACKLIST.getStrings(),
                 Lists.FAST_PLACEMENT_ITEM_WHITELIST.getStrings());
+
+        PlacementTweaks.HAND_RESTOCK_RESTRICTION.setListType((ListType) Lists.HAND_RESTOCK_LIST_TYPE.getOptionListValue());
+        PlacementTweaks.HAND_RESTOCK_RESTRICTION.setListContents(
+                Lists.HAND_RESTOCK_BLACKLIST.getStrings(),
+                Lists.HAND_RESTOCK_WHITELIST.getStrings());
 
         MiscTweaks.POTION_RESTRICTION.setListType((ListType) Lists.POTION_WARNING_LIST_TYPE.getOptionListValue());
         MiscTweaks.POTION_RESTRICTION.setListContents(

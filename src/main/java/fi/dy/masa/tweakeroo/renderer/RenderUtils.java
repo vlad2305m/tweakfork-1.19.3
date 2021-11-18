@@ -1,51 +1,43 @@
 package fi.dy.masa.tweakeroo.renderer;
 
-import java.util.List;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import org.lwjgl.opengl.GL11;
-
 import fi.dy.masa.malilib.util.Color4f;
+import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.PositionUtils;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.mixin.IMixinHorseBaseEntity;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.RayTraceUtils;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
@@ -122,16 +114,21 @@ public class RenderUtils
     public static void renderInventoryOverlay(MinecraftClient mc, MatrixStack matrixStack)
     {
         World world = fi.dy.masa.malilib.util.WorldUtils.getBestWorld(mc);
+        Entity cameraEntity = EntityUtils.getCameraEntity();
 
-        // We need to get the player from the server world, so that the player itself won't be included in the ray trace
-        PlayerEntity player = world.getPlayerByUuid(mc.player.getUuid());
-
-        if (player == null)
+        if (cameraEntity == mc.player && world instanceof ServerWorld)
         {
-            player = mc.player;
+            // We need to get the player from the server world (if available, ie. in single player),
+            // so that the player itself won't be included in the ray trace
+            Entity serverPlayer = world.getPlayerByUuid(mc.player.getUuid());
+
+            if (serverPlayer != null)
+            {
+                cameraEntity = serverPlayer;
+            }
         }
 
-        HitResult trace = RayTraceUtils.getRayTraceFromEntity(world, player, false);
+        HitResult trace = RayTraceUtils.getRayTraceFromEntity(world, cameraEntity, false);
 
         if (trace == null)
         {
@@ -267,46 +264,28 @@ public class RenderUtils
         fi.dy.masa.malilib.render.RenderUtils.drawOutline(x + 5, y + currentRow * 18 + 5, 9 * 18 + 4, 22, 2, 0xFFFF2020);
     }
 
-    public static float getLavaFog(Entity entity, float originalFog)
+    public static float getLavaFogDistance(Entity entity, float originalFog)
     {
-        if (entity instanceof LivingEntity)
+        if (entity instanceof LivingEntity living)
         {
-            LivingEntity living = (LivingEntity) entity;
             final int resp = EnchantmentHelper.getRespiration(living);
-            // The original fog value of 2.0F is way too much to reduce gradually from.
-            // You would only be able to see meaningfully with the full reduction.
-            final float baseFog = 0.6F;
-            final float respDecrement = (baseFog * 0.75F) / 3F - 0.02F;
-            float fog = baseFog;
+            final int aqua = EnchantmentHelper.getEquipmentLevel(Enchantments.AQUA_AFFINITY, living);
+            float fog = originalFog;
 
-            if (living.hasStatusEffect(StatusEffects.WATER_BREATHING))
+            if (aqua > 0)
             {
-                fog -= baseFog * 0.4F;
+                fog *= 1.6f;
             }
 
             if (resp > 0)
             {
-                fog -= (float) resp * respDecrement;
-                fog = Math.max(0.12F,  fog);
+                fog *= (float) resp * 1.6f;
             }
 
-            return fog < baseFog ? fog : originalFog;
+            return Math.max(fog, originalFog);
         }
 
         return originalFog;
-    }
-
-    public static void overrideLavaFog(Entity entity)
-    {
-        // FIXME 1.17
-        /*
-        float fog = getLavaFog(entity, 2.0F);
-
-        if (fog < 2.0F)
-        {
-            RenderSystem.fogDensity(fog);
-        }
-        */
     }
 
     public static void renderDirectionsCursor(float zLevel, float partialTicks)
@@ -346,12 +325,12 @@ public class RenderUtils
 
             if (mode != SnapAimMode.PITCH)
             {
-                renderSnapAimAngleIndicatorYaw(xCenter, yCenter, 80, 10, mc, matrixStack);
+                renderSnapAimAngleIndicatorYaw(xCenter, yCenter, 80, 12, mc, matrixStack);
             }
 
             if (mode != SnapAimMode.YAW)
             {
-                renderSnapAimAngleIndicatorPitch(xCenter, yCenter, 10, 50, mc, matrixStack);
+                renderSnapAimAngleIndicatorPitch(xCenter, yCenter, 12, 50, mc, matrixStack);
             }
         }
     }
@@ -362,26 +341,44 @@ public class RenderUtils
         double realYaw = MathHelper.floorMod(MiscUtils.getLastRealYaw(), 360.0D);
         double snappedYaw = MiscUtils.calculateSnappedAngle(realYaw, step);
         double startYaw = snappedYaw - (step / 2.0);
-        int x = xCenter - width / 2;
-        int y = yCenter + 10;
+        final int x = xCenter - width / 2;
+        final int y = yCenter + 10;
         int lineX = x + (int) ((MathHelper.wrapDegrees(realYaw - startYaw)) / step * width);
         TextRenderer textRenderer = mc.textRenderer;
 
         fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
 
         int bgColor = Configs.Generic.SNAP_AIM_INDICATOR_COLOR.getIntegerValue();
+
+        // Draw the main box
         fi.dy.masa.malilib.render.RenderUtils.drawOutlinedBox(x, y, width, height, bgColor, 0xFFFFFFFF);
 
-        fi.dy.masa.malilib.render.RenderUtils.drawRect(lineX, y, 2, height, 0xFFFFFFFF);
-
-        String str = String.valueOf(MathHelper.wrapDegrees(snappedYaw)) + "°";
+        String str = MathHelper.wrapDegrees(snappedYaw) + "°";
         textRenderer.draw(matrixStack, str, xCenter - textRenderer.getWidth(str) / 2, y + height + 2, 0xFFFFFFFF);
 
-        str = "<  " + String.valueOf(MathHelper.wrapDegrees(snappedYaw - step)) + "°";
+        str = "<  " + MathHelper.wrapDegrees(snappedYaw - step) + "°";
         textRenderer.draw(matrixStack, str, x - textRenderer.getWidth(str), y + height + 2, 0xFFFFFFFF);
 
-        str = String.valueOf(MathHelper.wrapDegrees(snappedYaw + step)) + "°  >";
+        str = MathHelper.wrapDegrees(snappedYaw + step) + "°  >";
         textRenderer.draw(matrixStack, str, x + width, y + height + 2, 0xFFFFFFFF);
+
+        if (Configs.Generic.SNAP_AIM_ONLY_CLOSE_TO_ANGLE.getBooleanValue())
+        {
+            double threshold = Configs.Generic.SNAP_AIM_THRESHOLD_YAW.getDoubleValue();
+            int snapThreshOffset = (int) (width * threshold / step);
+
+            // Draw the middle region
+            fi.dy.masa.malilib.render.RenderUtils.drawRect(xCenter - snapThreshOffset, y, snapThreshOffset * 2, height, 0x6050FF50);
+
+            if (threshold < (step / 2.0))
+            {
+                fi.dy.masa.malilib.render.RenderUtils.drawRect(xCenter - snapThreshOffset, y, 2, height, 0xFF20FF20);
+                fi.dy.masa.malilib.render.RenderUtils.drawRect(xCenter + snapThreshOffset, y, 2, height, 0xFF20FF20);
+            }
+        }
+
+        // Draw the current angle indicator
+        fi.dy.masa.malilib.render.RenderUtils.drawRect(lineX, y, 2, height, 0xFFFFFFFF);
     }
 
     private static void renderSnapAimAngleIndicatorPitch(int xCenter, int yCenter, int width, int height,
@@ -414,7 +411,7 @@ public class RenderUtils
     {
         final int xCenter = GuiUtils.getScaledWindowWidth() / 2;
         final int yCenter = GuiUtils.getScaledWindowHeight() / 2;
-        int width = 10;
+        int width = 12;
         int height = 50;
         int x = xCenter - width / 2;
         int y = yCenter - height - 10;
@@ -434,33 +431,53 @@ public class RenderUtils
         int lineY = y + (int) ((MathHelper.wrapDegrees(currentPitch) - startPitch) / indicatorRange * height);
         double angleUp = centerPitch - printedRange;
         double angleDown = centerPitch + printedRange;
-        String strUp, strDown;
-
-        if (isSnapRange)
-        {
-            strUp   = String.format("%6.1f° ^", MathHelper.wrapDegrees(angleUp));
-            strDown = String.format("%6.1f° v", MathHelper.wrapDegrees(angleDown));
-        }
-        else
-        {
-            strUp   = String.format("%6.1f°", angleUp);
-            strDown = String.format("%6.1f°", angleDown);
-        }
 
         fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
         TextRenderer textRenderer = mc.textRenderer;
 
+        if (isSnapRange)
+        {
+            String strUp   = String.format("%6.1f° ^", MathHelper.wrapDegrees(angleUp));
+            String strDown = String.format("%6.1f° v", MathHelper.wrapDegrees(angleDown));
+            textRenderer.draw(matrixStack, strUp, x + width + 4, y - 4, 0xFFFFFFFF);
+            textRenderer.draw(matrixStack, strDown, x + width + 4, y + height - 4, 0xFFFFFFFF);
+
+            String str = String.format("%6.1f°", MathHelper.wrapDegrees(isSnapRange ? centerPitch : currentPitch));
+            textRenderer.draw(matrixStack, str, x + width + 4, y + height / 2 - 4, 0xFFFFFFFF);
+        }
+        else
+        {
+            String str = String.format("%4.1f°", MathHelper.wrapDegrees(isSnapRange ? centerPitch : currentPitch));
+            textRenderer.draw(matrixStack, str, x + width + 4, lineY - 4, 0xFFFFFFFF);
+        }
+
         int bgColor = Configs.Generic.SNAP_AIM_INDICATOR_COLOR.getIntegerValue();
+        // Draw the main box
         fi.dy.masa.malilib.render.RenderUtils.drawOutlinedBox(x, y, width, height, bgColor, 0xFFFFFFFF);
 
-        fi.dy.masa.malilib.render.RenderUtils.drawRect(x - 1, lineY - 1, width + 2, 2, 0xFFFFFFFF);
+        int yCenter = y + height / 2 - 1;
 
-        String str = String.format("%6.1f°", MathHelper.wrapDegrees(isSnapRange ? centerPitch : currentPitch));
-        textRenderer.draw(matrixStack, str, x + width + 4, y + height / 2 - 4, 0xFFFFFFFF);
+        if (isSnapRange && Configs.Generic.SNAP_AIM_ONLY_CLOSE_TO_ANGLE.getBooleanValue())
+        {
+            double step = Configs.Generic.SNAP_AIM_YAW_STEP.getDoubleValue();
+            double threshold = Configs.Generic.SNAP_AIM_THRESHOLD_PITCH.getDoubleValue();
+            int snapThreshOffset = (int) ((double) height * threshold / indicatorRange);
 
-        //textRenderer.drawString(strUp, x - textRenderer.getStringWidth(strUp) - 4, y - 4, 0xFFFFFFFF);
-        textRenderer.draw(matrixStack, strUp, x + width + 4, y - 4, 0xFFFFFFFF);
-        textRenderer.draw(matrixStack, strDown, x + width + 4, y + height - 4, 0xFFFFFFFF);
+            fi.dy.masa.malilib.render.RenderUtils.drawRect(x, yCenter - snapThreshOffset, width, snapThreshOffset * 2, 0x6050FF50);
+
+            if (threshold < (step / 2.0))
+            {
+                fi.dy.masa.malilib.render.RenderUtils.drawRect(x, yCenter - snapThreshOffset, width, 2, 0xFF20FF20);
+                fi.dy.masa.malilib.render.RenderUtils.drawRect(x, yCenter + snapThreshOffset, width, 2, 0xFF20FF20);
+            }
+        }
+        else if (isSnapRange == false)
+        {
+            fi.dy.masa.malilib.render.RenderUtils.drawRect(x + 1, yCenter - 1, width - 2, 2, 0xFFC0C0C0);
+        }
+
+        // Draw the current angle indicator
+        fi.dy.masa.malilib.render.RenderUtils.drawRect(x, lineY - 1, width, 2, 0xFFFFFFFF);
     }
 
 

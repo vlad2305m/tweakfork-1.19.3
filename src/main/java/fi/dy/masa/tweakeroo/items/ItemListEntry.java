@@ -1,6 +1,5 @@
 package fi.dy.masa.tweakeroo.items;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import fi.dy.masa.malilib.util.ItemType;

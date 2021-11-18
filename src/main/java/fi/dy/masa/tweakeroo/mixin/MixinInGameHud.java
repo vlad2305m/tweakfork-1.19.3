@@ -64,8 +64,10 @@ public abstract class MixinInGameHud extends DrawableHelper
     }
 
     @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
-    private void overrideRenderScoreboardSidebar(MatrixStack matrices, ScoreboardObjective objective, CallbackInfo ci) {
-        if (FeatureToggle.TWEAK_HIDE_SCOREBOARD.getBooleanValue()) {
+    private void disableScoreboardRendering(CallbackInfo ci)
+    {
+        if (Configs.Disable.DISABLE_SCOREBOARD_RENDERING.getBooleanValue())
+        {
             ci.cancel();
         }
     }

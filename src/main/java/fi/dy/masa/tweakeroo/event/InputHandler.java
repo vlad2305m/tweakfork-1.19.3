@@ -299,7 +299,8 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
 
     public void handleMovementKeys(Input movement)
     {
-        GameOptions settings = MinecraftClient.getInstance().options;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        GameOptions settings = mc.options;
 
         if (settings.keyLeft.isPressed() && settings.keyRight.isPressed())
         {

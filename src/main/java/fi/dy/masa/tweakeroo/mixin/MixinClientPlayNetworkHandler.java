@@ -63,7 +63,7 @@ public abstract class MixinClientPlayNetworkHandler
             net.minecraft.text.LiteralText message = new net.minecraft.text.LiteralText(str);
             message.getStyle().withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.SUGGEST_COMMAND, pos.getX() + " " + pos.getY() + " " + pos.getZ()));
             message.formatted(net.minecraft.util.Formatting.UNDERLINE);
-            net.minecraft.client.MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message);
+            mc.inGameHud.getChatHud().addMessage(message);
             Tweakeroo.logger.info(str);
         }
     }

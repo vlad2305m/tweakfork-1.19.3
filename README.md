@@ -23,7 +23,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
     * Compile a list of all the items it found
     * Search the list and click to easily find the location of the items.
     * To use, set the `openItemList` hotkey in Hotkeys.
-19. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (works with Optifucked). Selectively renders blocks depending on position based white/blacklists.
+19. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (Doesnt work with optifucked). Selectively renders blocks depending on position based white/blacklists.
     * Lists.selectiveBlocksWhitelist and Lists.selectiveBlocksBlacklist -> strings encoding the white/blacklists. Format: `x,y,z|x2,y2,z2|...`
     * tweakAreaSelector -> allows you to add/remove selection from list easily with areaSelectionAddToList and areaSelectionRemoveFromList hotkeys. works in replay editor. Use areaSelectionOffset hotkey to offset selection box.
     * tweakSelectiveBlocksRendering -> Turns on selective block rendering with the lists. Turn on before you render replay.

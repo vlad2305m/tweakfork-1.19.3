@@ -16,7 +16,8 @@ public abstract class MixinPlayerAbilities
     @Inject(method = "getFlySpeed", at = @At("HEAD"), cancellable = true)
     private void overrideFlySpeed(CallbackInfoReturnable<Float> cir)
     {
-        PlayerEntity player = MinecraftClient.getInstance().player;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        PlayerEntity player = mc.player;
 
         if (FeatureToggle.TWEAK_FLY_SPEED.getBooleanValue() &&
             player != null && player.getAbilities().allowFlying)

@@ -1,10 +1,9 @@
 {
-    "required": true,
-    "package": "fi.dy.masa.tweakeroo.mixin",
-    "minVersion": "0.7",
-    "compatibilityLevel": "JAVA_16",
-    "plugin": "fi.dy.masa.tweakeroo.mixin.MixinTweakerooPlugin",
-    "client": [
+	"required": true,
+	"package": "fi.dy.masa.tweakeroo.mixin",
+	"minVersion": "0.8",
+	"compatibilityLevel": "JAVA_16",
+	"client": [
         "IMixinAbstractBlock",
         "IMixinAxeItem",
         "IMixinChunkLightProvider",
@@ -79,10 +78,11 @@
         "MixinEntityRenderer",
         "MixinFluidRenderer",
         "MixinBossBarHud",
-        "MixinChestBlock"
+        "MixinChestBlock",
+        "MixinShulkerBoxBlock"
     ],
-    "mixinPriority": 990,
-    "injectors": {
-        "defaultRequire": 0
-    }
+	"mixinPriority": 990,
+	"injectors": {
+		"defaultRequire": 0
+	}
 }

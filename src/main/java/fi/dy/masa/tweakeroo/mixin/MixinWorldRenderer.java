@@ -77,7 +77,8 @@ public abstract class MixinWorldRenderer
     {
         if (FeatureToggle.TWEAK_FREE_CAMERA.getBooleanValue())
         {
-            return MinecraftClient.getInstance().player;
+            MinecraftClient mc = MinecraftClient.getInstance();
+            return mc.player;
         }
 
         return camera.getFocusedEntity();

@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import org.lwjgl.opengl.GL11;
-
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.tweakeroo.util.PistonUtils;
 import net.minecraft.client.MinecraftClient;

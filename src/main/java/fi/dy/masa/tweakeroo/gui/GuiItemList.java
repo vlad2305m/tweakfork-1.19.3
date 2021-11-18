@@ -3,6 +3,7 @@ package fi.dy.masa.tweakeroo.gui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+
 // import fi.dy.masa.tweakeroo.Reference;
 // import fi.dy.masa.tweakeroo.data.DataManager;
 // import fi.dy.masa.tweakeroo.gui.GuiMainMenu.ButtonListenerChangeMenu;
@@ -20,27 +21,19 @@ import java.util.Collections;
 import fi.dy.masa.malilib.data.DataDump;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiListBase;
-import fi.dy.masa.malilib.gui.GuiTextFieldInteger;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonOnOff;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
-import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
-import fi.dy.masa.malilib.gui.widgets.WidgetInfoIcon;
-import fi.dy.masa.malilib.interfaces.ICompletionListener;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.tweakeroo.Reference;
 import fi.dy.masa.tweakeroo.gui.widgets.WidgetItemListEntry;
 import fi.dy.masa.tweakeroo.gui.widgets.WidgetListItemList;
 import fi.dy.masa.tweakeroo.items.ItemList;
-import fi.dy.masa.tweakeroo.items.ItemList;
 import fi.dy.masa.tweakeroo.items.ItemListEntry;
 import fi.dy.masa.tweakeroo.items.ItemListSorter;
-import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 
 public class GuiItemList extends GuiListBase<ItemListEntry, WidgetItemListEntry, WidgetListItemList>
 //     implements ISelectionListener<ItemListEntry>
@@ -80,13 +73,9 @@ public class GuiItemList extends GuiListBase<ItemListEntry, WidgetItemListEntry,
         this.itemList.reCreateItemList();
         WidgetItemListEntry.setMaxNameLength(itemList.getItemsAll());
        
-        boolean isNarrow = this.width < this.getElementTotalWidth();
 
         int x = 12;
         int y = 24;
-        int buttonWidth;
-        String label;
-        ButtonGeneric button;
 
         
         int gap = 1;
@@ -132,20 +121,6 @@ public class GuiItemList extends GuiListBase<ItemListEntry, WidgetItemListEntry,
         this.addButton(button, listener);
 
         return button.getWidth();
-    }
-
-    private int getElementTotalWidth()
-    {
-        int width = 0;
-
-        width += (new ButtonOnOff(0, 0, -1, false, ButtonListener.Type.SCAN_TOGGLE.getTranslationKey(), false)).getWidth();
-        width += (new ButtonOnOff(0, 0, -1, false, ButtonListener.Type.RENDER_COUNTS_TOGGLE.getTranslationKey(), false)).getWidth();
-        width += this.getStringWidth(ButtonListener.Type.CLEAR_SELECTED.getDisplayName());
-        width += this.getStringWidth(ButtonListener.Type.CLEAR_CACHE.getDisplayName());
-        width += this.getStringWidth(ButtonListener.Type.WRITE_TO_FILE.getDisplayName());
-        width += 130;
-
-        return width;
     }
 
     private int createButtonOnOff(int x, int y, int width, boolean isCurrentlyOn, ButtonListener.Type type)

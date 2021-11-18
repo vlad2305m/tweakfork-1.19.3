@@ -6,14 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import javax.annotation.Nullable;
 
-// import fi.dy.masa.tweakeroo.gui.Icons;
-// import fi.dy.masa.tweakeroo.items.ItemListBase;
-// import fi.dy.masa.tweakeroo.items.ItemListBase.SortCriteria;
-// import fi.dy.masa.tweakeroo.items.ItemListEntry;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntrySortable;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -73,16 +66,6 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             this.header3 = GuiBase.TXT_BOLD + StringUtils.translate(HEADERS[2]) + GuiBase.TXT_RST;
             this.header4 = GuiBase.TXT_BOLD + StringUtils.translate(HEADERS[3]) + GuiBase.TXT_RST;
         }
-
-        int posX = x + width;
-        int posY = y + 1;
-    }
-
-    private ButtonGeneric createButtonGeneric(int xRight, int y, ButtonListener.ButtonType type)
-    {
-        String label = type.getDisplayName();
-       
-        return new ButtonGeneric(xRight, y, -1, true, label);
     }
 
     public static void setMaxNameLength(Collection<ItemListEntry> items)
@@ -229,10 +212,6 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
             int countTotal = this.entry.getCountTotal();
             int countBoxes = this.entry.getCountBoxes();
             int countContainers = this.entry.getCountContainers();
-            String green = GuiBase.TXT_GREEN;
-            String gold = GuiBase.TXT_GOLD;
-            String red = GuiBase.TXT_RED;
-            String pre;
             this.drawString(x1 + 20, y, color, this.entry.getItemName(), matrixStack);
 
             this.drawString(x2, y, color, String.valueOf(countTotal), matrixStack);
@@ -357,43 +336,5 @@ public class WidgetItemListEntry extends WidgetListEntrySortable<ItemListEntry>
         }
 
         return strCount;
-    }
-
-    static class ButtonListener implements IButtonActionListener
-    {
-        private final ButtonType type;
-        private final ItemList itemList;
-        private final WidgetListItemList listWidget;
-        private final ItemListEntry entry;
-
-        public ButtonListener(ButtonType type, ItemList itemList, ItemListEntry entry, WidgetListItemList listWidget)
-        {
-            this.type = type;
-            this.itemList = itemList;
-            this.listWidget = listWidget;
-            this.entry = entry;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-        }
-
-        public enum ButtonType
-        {
-            IGNORE  ("tweakeroo.gui.button.item_list.ignore");
-
-            private final String translationKey;
-
-            private ButtonType(String translationKey)
-            {
-                this.translationKey = translationKey;
-            }
-
-            public String getDisplayName()
-            {
-                return StringUtils.translate(this.translationKey);
-            }
-        }
     }
 }

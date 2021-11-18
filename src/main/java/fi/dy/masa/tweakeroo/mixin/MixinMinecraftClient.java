@@ -1,5 +1,7 @@
 package fi.dy.masa.tweakeroo.mixin;
 
+import javax.annotation.Nullable;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.option.GameOptions;
@@ -30,10 +33,12 @@ import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient implements IMinecraftClientInvoker
 {
+    @Shadow @Nullable public ClientPlayerEntity player;
+    @Shadow @Nullable public ClientWorld world;
+    @Shadow @Nullable public Screen currentScreen;
     @Shadow @Final public GameOptions options;
-
-    @Shadow
-    private int itemUseCooldown;
+    @Shadow private int itemUseCooldown;
+    @Shadow protected int attackCooldown;
 
     @Shadow
     private void doAttack() {}
@@ -62,7 +67,10 @@ public abstract class MixinMinecraftClient implements IMinecraftClientInvoker
     @Inject(method = "render", at = @At("RETURN"))
     private void onGameLoop(boolean renderWorld, CallbackInfo ci)
     {
-        MiscTweaks.onGameLoop();
+        if (this.player != null && this.world != null)
+        {
+            MiscTweaks.onGameLoop((MinecraftClient) (Object) this);
+        }
     }
     
     @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
@@ -129,10 +137,17 @@ public abstract class MixinMinecraftClient implements IMinecraftClientInvoker
     @Inject(method = "handleInputEvents", at = @At("HEAD"))
     private void onProcessKeybindsPre(CallbackInfo ci)
     {
-        if (((MinecraftClient) (Object) this).currentScreen == null)
+        if (this.currentScreen == null)
         {
             if (FeatureToggle.TWEAK_HOLD_ATTACK.getBooleanValue())
             {
+                // Opening a GUI sets the cooldown to 10000, and it won't have a chance
+                // to get reset normally when this tweak is active.
+                if (this.attackCooldown >= 10000)
+                {
+                    this.attackCooldown = 0;
+                }
+
                 KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.keyAttack.getBoundKeyTranslationKey()), true);
             }
 

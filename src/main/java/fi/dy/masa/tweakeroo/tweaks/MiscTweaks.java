@@ -189,9 +189,9 @@ public class MiscTweaks
         }
     }
 
-    public static void onGameLoop()
+    public static void onGameLoop(MinecraftClient mc)
     {
-        PlacementTweaks.onTick();
+        PlacementTweaks.onTick(mc);
         RenderTweaks.onTick();
         // Reset the counters after rendering each frame
         Tweakeroo.renderCountItems = 0;

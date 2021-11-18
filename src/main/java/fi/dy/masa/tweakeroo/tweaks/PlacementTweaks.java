@@ -1,5 +1,8 @@
 package fi.dy.masa.tweakeroo.tweaks;
 
+import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.util.BlockUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -11,7 +14,6 @@ import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
-import javax.annotation.Nullable;
 import fi.dy.masa.tweakeroo.util.CameraUtils;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
@@ -49,6 +51,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
 public class PlacementTweaks
 {
     private static BlockPos posFirst = null;
@@ -78,11 +81,12 @@ public class PlacementTweaks
     private static int hotbarSlot = -1;
     private static ItemStack stackClickedOn = ItemStack.EMPTY;
     @Nullable private static BlockState stateClickedOn = null;
+    public static final BlockRestriction BLOCK_BREAK_RESTRICTION = new BlockRestriction();
     public static final BlockRestriction FAST_RIGHT_CLICK_BLOCK_RESTRICTION = new BlockRestriction();
-    public static final BlockRestriction BLOCK_TYPE_BREAK_RESTRICTION = new BlockRestriction();
     public static final BlockRestriction BLOCK_TYPE_RCLICK_RESTRICTION = new BlockRestriction();
     public static final ItemRestriction FAST_RIGHT_CLICK_ITEM_RESTRICTION = new ItemRestriction();
     public static final ItemRestriction FAST_PLACEMENT_ITEM_RESTRICTION = new ItemRestriction();
+    public static final ItemRestriction HAND_RESTOCK_RESTRICTION = new ItemRestriction();
 
     private static final Class<? extends Block>[] ACCURATE_AFTERCLICKER_BLOCKS = (Class<? extends Block>[]) new Class[] {
             RepeaterBlock.class, ComparatorBlock.class
@@ -124,9 +128,8 @@ public class PlacementTweaks
         InfoUtils.printActionbarMessage("Holding " + count + " settings." + (reset > 0 ? (" Reset " + reset) : ""));
         
     }
-    public static void onTick()
+    public static void onTick(MinecraftClient mc)
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
 
         if (!Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld() &&
         !Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_OFFSET.getKeybind().isKeybindHeld() &&
@@ -137,13 +140,15 @@ public class PlacementTweaks
         }
 
         if (GuiUtils.getCurrentScreen() == null && !FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue())
+    
+        if (GuiUtils.getCurrentScreen() == null)
         {
             if (mc.options.keyUse.isPressed())
             {
                 onUsingTick();
             }
 
-            if (mc.options.keyAttack.isPressed())
+            if (mc.player.getAbilities().creativeMode && mc.options.keyAttack.isPressed())
             {
                 onAttackTick(mc);
             }
@@ -180,7 +185,9 @@ public class PlacementTweaks
 
         ItemStack stackOriginal = player.getStackInHand(hand);
 
-        if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() && stackOriginal.isEmpty() == false)
+        if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() &&
+            stackOriginal.isEmpty() == false &&
+            canUseItemWithRestriction(HAND_RESTOCK_RESTRICTION, stackOriginal))
         {
             if (isEmulatedClick == false)
             {
@@ -221,15 +228,19 @@ public class PlacementTweaks
 
     public static void onLeftClickMousePost()
     {
-        onProcessRightClickPost(MinecraftClient.getInstance().player, Hand.MAIN_HAND);
+        MinecraftClient mc = MinecraftClient.getInstance();
+        onProcessRightClickPost(mc.player, Hand.MAIN_HAND);
     }
 
     public static void cacheStackInHand(Hand hand)
     {
-        PlayerEntity player = MinecraftClient.getInstance().player;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        PlayerEntity player = mc.player;
         ItemStack stackOriginal = player.getStackInHand(hand);
 
-        if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() && stackOriginal.isEmpty() == false)
+        if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() &&
+            stackOriginal.isEmpty() == false &&
+            canUseItemWithRestriction(HAND_RESTOCK_RESTRICTION, stackOriginal))
         {
             stackBeforeUse[hand.ordinal()] = stackOriginal.copy();
             hotbarSlot = player.getInventory().selectedSlot;
@@ -830,23 +841,21 @@ public class PlacementTweaks
         return true;
     }
 
-    private static boolean canUseItemWithRestriction(ItemRestriction restriction, PlayerEntity player)
+    public static boolean canUseItemWithRestriction(ItemRestriction restriction, Hand hand, PlayerEntity player)
     {
-        ItemStack stack = player.getMainHandStack();
+        ItemStack stack = player.getStackInHand(hand);
+        return canUseItemWithRestriction(restriction, stack);
+    }
 
-        if (stack.isEmpty() == false && restriction.isAllowed(stack.getItem()) == false)
-        {
-            return false;
-        }
+    public static boolean canUseItemWithRestriction(ItemRestriction restriction, ItemStack stack)
+    {
+        return stack.isEmpty() || restriction.isAllowed(stack.getItem());
+    }
 
-        stack = player.getOffHandStack();
-
-        if (stack.isEmpty() == false && restriction.isAllowed(stack.getItem()) == false)
-        {
-            return false;
-        }
-
-        return true;
+    public static boolean canUseItemWithRestriction(ItemRestriction restriction, PlayerEntity player)
+    {
+        return canUseItemWithRestriction(restriction, Hand.MAIN_HAND, player) &&
+               canUseItemWithRestriction(restriction, Hand.OFF_HAND, player);
     }
 
     private static boolean canUseCarpetProtocolForAfterclicker(ItemStack stack) {
@@ -888,7 +897,8 @@ public class PlacementTweaks
 
     private static void tryRestockHand(PlayerEntity player, Hand hand, ItemStack stackOriginal)
     {
-        if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue())
+        if (FeatureToggle.TWEAK_HAND_RESTOCK.getBooleanValue() &&
+            canUseItemWithRestriction(HAND_RESTOCK_RESTRICTION, stackOriginal))
         {
             ItemStack stackCurrent = player.getStackInHand(hand);
 
@@ -1184,11 +1194,22 @@ public class PlacementTweaks
 
     public static boolean isPositionAllowedByBreakingRestriction(BlockPos pos, Direction side)
     {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        World world = mc.world;
+
+        if (world != null && FeatureToggle.TWEAK_BLOCK_TYPE_BREAK_RESTRICTION.getBooleanValue())
+        {
+            BlockState state = world.getBlockState(pos);
+
+            if (BLOCK_BREAK_RESTRICTION.isAllowed(state.getBlock()) == false)
+            {
+                InfoUtils.showGuiOrInGameMessage(Message.MessageType.WARNING, "Block breaking prevented by Block Break Restriction tweak");
+                return false;
+            }
+        }
+
         boolean restrictionEnabled = FeatureToggle.TWEAK_BREAKING_RESTRICTION.getBooleanValue();
         boolean gridEnabled = FeatureToggle.TWEAK_BREAKING_GRID.getBooleanValue();
-        MinecraftClient mc = MinecraftClient.getInstance();
-        Block block = mc.world.getBlockState(pos).getBlock();
-        if (!BLOCK_TYPE_BREAK_RESTRICTION.isAllowed(block)) return false;
         if (restrictionEnabled == false && gridEnabled == false)
         {
             return true;

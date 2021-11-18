@@ -576,7 +576,8 @@ public class Callbacks
                 }
                 else
                 {
-                    PlayerEntity player = MinecraftClient.getInstance().player;
+                    MinecraftClient mc = MinecraftClient.getInstance();
+                    PlayerEntity player = mc.player;
 
                     if (player != null)
                     {

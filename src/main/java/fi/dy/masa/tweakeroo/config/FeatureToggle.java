@@ -69,7 +69,6 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_PERIODIC_HOLD_USE         ("tweakPeriodicHoldUse",                false, "",    "Enables periodically holding use for a configurable amount of time.\nConfigure the interval in Generic -> periodicHoldUseInterval\nand the duration in periodicHoldUseDuration\\n§6Note: You should not use the normal hold use\n§6or the periodic use at the same time"),
     TWEAK_PERMANENT_SNEAK           ("tweakPermanentSneak",                 false, "",    "If enabled, the player will be sneaking the entire time"),
     TWEAK_PERMANENT_SPRINT          ("tweakPermanentSprint",                false, "",    "If enabled, the player will be always sprinting when moving forward"),
-    TWEAK_PISTON_INFO               ("tweakPistonInfo",                     false, "",    "Allows you to see blockcounts/update orders for pistons"),
     TWEAK_PLACEMENT_GRID            ("tweakPlacementGrid",                  false, "",    KeybindSettings.INGAME_BOTH, "When enabled, you can only place blocks in\na grid pattern, with a configurable interval.\nTo quickly adjust the value, scroll while\nholding down the tweak toggle keybind."),
     TWEAK_PLACEMENT_LIMIT           ("tweakPlacementLimit",                 false, "",    KeybindSettings.INGAME_BOTH, "When enabled, you can only place a set number\nof blocks per use/right click.\nTo quickly adjust the value, scroll while\nholding down the tweak toggle keybind."),
     TWEAK_PLACEMENT_RESTRICTION     ("tweakPlacementRestriction",           false, "",    "Enables the Placement Restriction mode\n  (Plane, Layer, Face, Column, Line, Diagonal)"),
@@ -108,7 +107,8 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_SCAFFOLD_PLACE            ("tweakScaffoldPlace",                  false, "",    "Place blocks as if they were scaffolding"),
     TWEAK_CONTAINER_SCAN            ("tweakContainerScan",                  false, "",    "Scans containers"),
     TWEAK_CONTAINER_SCAN_COUNTS     ("tweakContainerScanCounts",            false, "",    "Enables/disables container scan counts rendering"),
-    TWEAK_AFK_TIMEOUT               ("tweakAfkTimeout",                     false, "",    "When enabled, will perform an action after afking for a while");
+    TWEAK_AFK_TIMEOUT               ("tweakAfkTimeout",                     false, "",    "When enabled, will perform an action after afking for a while"),
+    TWEAK_NOTEBLOCK_EDIT            ("tweakNoteblockEdit",                  false, "",    "Turns on noteblock editing mode");
 
     private final String name;
     private final String comment;

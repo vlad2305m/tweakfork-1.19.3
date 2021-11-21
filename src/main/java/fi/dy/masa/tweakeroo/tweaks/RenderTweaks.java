@@ -668,6 +668,7 @@ public class RenderTweaks {
                 SELECTIVE_BLACKLIST.put(p.currentPosition.asLong(), p);
             }
         }
+        reloadSelective();
     }
 
     public static boolean isPositionValidForRendering(BlockPos pos) {
@@ -725,6 +726,11 @@ public class RenderTweaks {
         }
     }
     public static void reloadSelective() {
+        MinecraftClient.getInstance().execute(()->{
+            reloadSelectiveInternal();
+        });
+    }
+    public static void reloadSelectiveInternal() {
 
         MinecraftClient mc = MinecraftClient.getInstance();
         ListType listtype = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
@@ -1124,6 +1130,7 @@ public class RenderTweaks {
         fakeWorld.setBlockState(pos, state, 0);
         if (be != null) {
             fakeWorld.addBlockEntity(be);
+            be.setWorld(null);
         }
     }
 

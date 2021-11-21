@@ -18,7 +18,6 @@ import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
 import fi.dy.masa.tweakeroo.renderer.RenderUtils;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
-import fi.dy.masa.tweakeroo.util.PistonUtils;
 
 public class RenderHandler implements IRenderer
 {
@@ -114,13 +113,7 @@ public class RenderHandler implements IRenderer
             (FeatureToggle.TWEAK_FLEXIBLE_BLOCK_PLACEMENT.getBooleanValue() &&
             (Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld() ||
              Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_OFFSET.getKeybind().isKeybindHeld() ||
-             Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ADJACENT.getKeybind().isKeybindHeld()))) ||
-
-             (
-                FeatureToggle.TWEAK_PISTON_INFO.getBooleanValue() &&
-                 (Hotkeys.PISTON_INFO_PULL.getKeybind().isKeybindHeld() || 
-             Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld()))
-            )
+             Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ADJACENT.getKeybind().isKeybindHeld()))))
         {
             BlockHitResult hitResult = (BlockHitResult) mc.crosshairTarget;
             RenderSystem.depthMask(false);
@@ -147,8 +140,5 @@ public class RenderHandler implements IRenderer
             RenderSystem.enableCull();
             RenderSystem.depthMask(true);
         }
-
-        if (FeatureToggle.TWEAK_PISTON_INFO.getBooleanValue())
-            PistonUtils.renderOverlay();
     }
 }

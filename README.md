@@ -6,24 +6,23 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 3. Block based right click whitelist/blacklist restriction -> can prevent you from accidentally placing water outside of cauldrons and flooding your redstone
 4. Toggleable flexible block placement -> may save you from arthritis
 5. Stacking flexible block placement -> apply rotation to adjacent/offset placements
-6. Piston info tweak to show piston update order & counts -> Easier slimestone. Improving on the [PistOrder mod](https://github.com/Fallen-Breath/pistorder) by Fallen Breath. (you can now have multiple toggled & have hotkeys)
-7. tweakHideScoreboard -> may save your sanity when servers turn on sidebar scoreboards during big digs
-8. disableClientBlockEvents -> stops client side piston lag
-9. Fixed afterClicker with accurate placement protocol -> so placing repeaters isn't pain
-10. tweakDayCycleOverride -> Overrides the time of day client-side
-11. tweakNoSneakSlowdown -> Doesnt slow you down when you sneak
-12. tweakScaffoldPlace -> Place blocks in a similar way to how scaffold placing works.
-13. disableNametags -> Disables nametag rendering for unobstrusive replays
-14. disableBossBar -> Disables the boss bar rendering
-15. chestMirrorFix -> Fixes wonky chest mirroring behavior (works with litematica).
-16. tweakAfkTimeout -> Automatically disconnects you (or does command/send chat) when afk.
-17. tweakWeatherOverride -> Overrides the weather client side
-18. tweakContainerScan -> Scans containers and tells you how many items/types are in it. Useful for debugging storage tech.
+6. tweakHideScoreboard -> may save your sanity when servers turn on sidebar scoreboards during big digs
+7. disableClientBlockEvents -> stops client side piston lag
+8. Fixed afterClicker with accurate placement protocol -> so placing repeaters isn't pain
+9.  tweakDayCycleOverride -> Overrides the time of day client-side
+10. tweakNoSneakSlowdown -> Doesnt slow you down when you sneak
+11. tweakScaffoldPlace -> Place blocks in a similar way to how scaffold placing works.
+12. disableNametags -> Disables nametag rendering for unobstrusive replays
+13. disableBossBar -> Disables the boss bar rendering
+14. chestMirrorFix -> Fixes wonky chest mirroring behavior (works with litematica).
+15. tweakAfkTimeout -> Automatically disconnects you (or does command/send chat) when afk.
+16. tweakWeatherOverride -> Overrides the weather client side
+17. tweakContainerScan -> Scans containers and tells you how many items/types are in it. Useful for debugging storage tech.
     * Easily see which containers have items or not
     * Compile a list of all the items it found
     * Search the list and click to easily find the location of the items.
     * To use, set the `openItemList` hotkey in Hotkeys.
-19. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (Works with optifucked and sodium+iris). Selectively renders blocks depending on position based white/blacklists.
+18. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (Works with optifucked and sodium+iris). Selectively renders blocks depending on position based white/blacklists.
     * Lists.selectiveBlocksWhitelist and Lists.selectiveBlocksBlacklist -> strings encoding the white/blacklists. Format: `x,y,z|x2,y2,z2|...`
     * tweakAreaSelector -> allows you to add/remove selection from list easily with areaSelectionAddToList and areaSelectionRemoveFromList hotkeys. works in replay editor. Use areaSelectionOffset hotkey to offset selection box.
     * tweakSelectiveBlocksRendering -> Turns on selective block rendering with the lists. Turn on before you render replay.

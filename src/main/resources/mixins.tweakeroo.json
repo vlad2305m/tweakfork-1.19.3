@@ -49,7 +49,6 @@
         "MixinMouse",
         "MixinObserverBlock",
         "MixinParticleManager",
-        "MixinPistonHandler",
         "MixinPistonBlock",
         "MixinPistonBlock_eventTracker",
         "MixinPlayerAbilities",

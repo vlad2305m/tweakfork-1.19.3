@@ -13,18 +13,15 @@ import fi.dy.masa.malilib.util.restrictions.ItemRestriction;
 import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.config.Hotkeys;
-import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 import fi.dy.masa.tweakeroo.util.CameraUtils;
 import fi.dy.masa.tweakeroo.util.IMinecraftClientInvoker;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
-import fi.dy.masa.tweakeroo.util.PistonUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComparatorBlock;
-import net.minecraft.block.PistonBlock;
 import net.minecraft.block.RepeaterBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -40,7 +37,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -65,7 +61,6 @@ public class PlacementTweaks
     private static Direction sideRotatedFirst = null;
     private static float playerYawFirst;
     private static ItemStack[] stackBeforeUse = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY };
-    private static long lastClick = 0;
     private static boolean isEmulatedClick;
     private static Direction tempDirection = null;
     private static BlockPos offsetPos = null;
@@ -403,47 +398,6 @@ public class PlacementTweaks
         float yaw = player.getYaw();
 
         if (!BLOCK_TYPE_RCLICK_RESTRICTION.isAllowed(world.getBlockState(posIn).getBlock())) return ActionResult.PASS;
-
-        long now = System.currentTimeMillis();
-        if (FeatureToggle.TWEAK_PISTON_INFO.getBooleanValue() && now - lastClick >= 200) {
-            lastClick = now;
-        if (Hotkeys.PISTON_INFO_PULL.getKeybind().isKeybindHeld() || Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld()) {
-
-            BlockPos np = posIn.offset(sideRotated.getOpposite(),Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld() ? 1 : 2);
-
-           // System.out.println(np);
-           // System.out.println(sideRotated);
-            PistonUtils.toggleAtPos(world,np,sideRotated, Hotkeys.PISTON_INFO_PUSH.getKeybind().isKeybindHeld());
-            return ActionResult.PASS;
-        }
-
-        
-
-		// click with empty main hand, not sneaking
-		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
-		{
-		
-			BlockState blockState = world.getBlockState(posIn);
-			Block block = blockState.getBlock();
-			if (block instanceof PistonBlock)
-			{
-                Direction dir = blockState.get(Properties.FACING);
-                boolean extended = blockState.get(PistonBlock.EXTENDED);
-                boolean sticky = ((MixinPistonBlock)block).getSticky();
-				if (!extended || sticky)
-				{
-
-                    boolean isAir = world.getBlockState(posIn.offset(dir)).isAir();
-
-
-                    PistonUtils.toggleAtPos(world, posIn,dir, !extended && (!sticky || !isAir));
-           
-					return ActionResult.PASS;
-				}
-			}
-        }
-    }
-        
 
         cacheStackInHand(hand);
 

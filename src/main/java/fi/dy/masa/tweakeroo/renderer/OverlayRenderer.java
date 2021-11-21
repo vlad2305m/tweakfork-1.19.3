@@ -1,18 +1,11 @@
 package fi.dy.masa.tweakeroo.renderer;
 
-import java.util.HashMap;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import fi.dy.masa.malilib.util.Color4f;
-import fi.dy.masa.tweakeroo.util.PistonUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.AffineTransformation;
@@ -131,44 +124,5 @@ public class OverlayRenderer
 			matrixStack.pop();
 		}
 	}
-
-    public static void renderPistonGroups(MinecraftClient mc, HashMap<Long, PistonUtils.PistonInfo> hotBlocks)
-    {
-        if (hotBlocks.size() == 0) return;
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-       // RenderSystem.disableLighting();
-        RenderSystem.disableTexture();
-        matrixStack.push();
-
-        RenderSystem.lineWidth(2f);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.LINES, VertexFormats.POSITION_COLOR);
-
-       
-        for (PistonUtils.PistonInfo entry : hotBlocks.values())
-        {
-            Color4f color = Color4f.fromColor(KELLY_COLORS[entry.source.id % KELLY_COLORS.length], (entry.type == 0) ? 0.5F : 0.2F);
-        
-             RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(entry.pos, color,entry.type == 2 ? 0.0005 : 0.001, buffer, mc);
-           
-        }
-
-     
-        tessellator.draw();
-        //buffer.end();
-
-        
-
-        matrixStack.pop();
-        RenderSystem.enableTexture();
-        //RenderSystem.enableLighting();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-    }
-
 
 }

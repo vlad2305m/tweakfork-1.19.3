@@ -29,7 +29,6 @@ import fi.dy.masa.tweakeroo.util.CameraEntity;
 import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
-import fi.dy.masa.tweakeroo.util.PistonUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
 
@@ -96,7 +95,6 @@ public class Callbacks
         Hotkeys.TOGGLE_GRAB_CURSOR.getKeybind().setCallback(callbackGeneric);
         Hotkeys.TOOL_PICK.getKeybind().setCallback(callbackGeneric);
         Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_HOLD.getKeybind().setCallback(callbackGeneric);
-        Hotkeys.PISTON_INFO_CLEAR.getKeybind().setCallback(callbackGeneric);
         Hotkeys.WRITE_MAPS_AS_IMAGES.getKeybind().setCallback((a, k) -> MiscUtils.writeAllMapsAsImages());
         Hotkeys.ZOOM_ACTIVATE.getKeybind().setCallback(callbackGeneric);
         Hotkeys.AREA_SELECTION_ADD_TO_LIST.getKeybind().setCallback(callbackGeneric);
@@ -277,10 +275,6 @@ public class Callbacks
                 return true;
             } else if (key == Hotkeys.AREA_SELECTION_REMOVE_FROM_LIST.getKeybind()) {
                 RenderTweaks.removeSelectionFromList();
-                return true;
-            } else
-            if (key == Hotkeys.PISTON_INFO_CLEAR.getKeybind()) {
-                PistonUtils.clearAll();
                 return true;
             } else
             if (key == Hotkeys.TOOL_PICK.getKeybind())

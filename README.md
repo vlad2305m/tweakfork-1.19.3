@@ -35,7 +35,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 19. Noteblock edit -> tune noteblocks without getting carpal tunnel
     * While looking at noteblock, press number keys to add the amount of notes. eg, for high F note 23, press 1 two times then press 3 (1 = 10, 0 = reset)
     * Use plus key to add 1, minus key to subtract 1. 
-    * Press letter keys A-G to set notes by letter name. Use Tab to toggle octave.
+    * Press letter keys A-G to set notes by letter name (only when Configs.Generic.noteEditLetters is set to true). Use Tab to toggle octave.
 
 *Using Selectively Visible Blocks for the [brewer](https://www.youtube.com/watch?v=1_jSkyq-WOs) video*
 <img width="1280" alt="Screen Shot 2021-02-16 at 2 01 08 PM" src="https://user-images.githubusercontent.com/13282284/108109105-7742c280-705f-11eb-81cf-b5341ca740c3.png">

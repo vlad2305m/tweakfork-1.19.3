@@ -115,7 +115,8 @@ public class Configs implements IConfigHandler
         public static final ConfigInteger       CONTAINER_SCAN_MIN_TYPES            = new ConfigInteger     ("containerScanMinTypes", 1, 1, 100000, "Minimum item types a container needs to have to be displayed");
         public static final ConfigInteger       AFK_TIMEOUT                         = new ConfigInteger     ("afkTimeout", 2400, 200, 200000, "Number of ticks for AFK timeout");
         public static final ConfigString        AFK_ACTION                          = new ConfigString      ("afkAction", "/disconnect", "The action to perform on AFK timeout. /disconnect is default.");
-      
+        public static final ConfigBoolean       NOTE_EDIT_LETTERS                   = new ConfigBoolean     ("noteEditLetters", false, "When enabled, can use letter keys to set noteblock notes");
+       
 
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -199,7 +200,8 @@ public class Configs implements IConfigHandler
                 AFK_TIMEOUT,
                 AFK_ACTION,
                 TOOL_SWITCHABLE_SLOTS,
-                ZOOM_FOV
+                ZOOM_FOV,
+                NOTE_EDIT_LETTERS 
         );
     }
 

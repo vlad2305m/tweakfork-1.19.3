@@ -8,3 +8,5 @@ logs/
 .project
 build.number
 .DS_Store
+run/
+.vscode/

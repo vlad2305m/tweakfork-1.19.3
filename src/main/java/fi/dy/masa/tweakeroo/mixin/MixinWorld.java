@@ -1,22 +1,32 @@
 package fi.dy.masa.tweakeroo.mixin;
 
-import fi.dy.masa.tweakeroo.config.Configs;
-import fi.dy.masa.tweakeroo.config.FeatureToggle;
-import fi.dy.masa.tweakeroo.util.WeatherOverrideMode;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import java.util.function.Consumer;
+
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.function.Consumer;
+import fi.dy.masa.tweakeroo.config.Configs;
+import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
+import fi.dy.masa.tweakeroo.util.WeatherOverrideMode;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Mixin(World.class)
 public abstract class MixinWorld
 {
+    @Shadow @Final
+    public boolean isClient;
+
     @Inject(method = "tickBlockEntities", at = @At("HEAD"), cancellable = true)
     private void disableBlockEntityTicking(CallbackInfo ci)
     {
@@ -62,6 +72,27 @@ public abstract class MixinWorld
         if (FeatureToggle.TWEAK_WEATHER_OVERRIDE.getBooleanValue()) {
             final boolean isThundering = ((WeatherOverrideMode) Configs.Generic.WEATHER_OVERRIDE_OPTION.getOptionListValue()).isThundering();
             ci.setReturnValue(isThundering ? 1F : 0F);
+        }
+    }
+
+    @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;II)Z", at = @At("HEAD"), cancellable = true)
+    private void setBlockStateInject(BlockPos pos, BlockState state, int flags, int maxUpdateDepth, CallbackInfoReturnable<Boolean> ci) {
+        if (!isClient) {
+            return;
+        }
+
+        if ((flags & Block.FORCE_STATE) == 0) {
+            System.out.println("This shouldn't have been called " + pos.toString());
+            return;
+        }
+        
+      
+        if (!RenderTweaks.isPositionValidForRendering(pos)) {
+            if ((flags & RenderTweaks.PASSTHROUGH) != 0) {
+                return;
+            }
+            RenderTweaks.setFakeBlockState(pos, state, null);
+            ci.setReturnValue(false);
         }
     }
 }

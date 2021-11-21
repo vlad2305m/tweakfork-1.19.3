@@ -25,6 +25,8 @@ import fi.dy.masa.tweakeroo.mixin.MixinPistonBlock;
 import fi.dy.masa.tweakeroo.renderer.OverlayRenderer;
 import fi.dy.masa.tweakeroo.renderer.RenderUtils;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
+import fi.dy.masa.tweakeroo.world.FakeChunk;
+import fi.dy.masa.tweakeroo.world.FakeWorld;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BarrelBlock;
@@ -57,8 +59,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -66,6 +71,10 @@ public class RenderTweaks {
 
     private static ConcurrentHashMap<Long, ListMapEntry> SELECTIVE_BLACKLIST = new ConcurrentHashMap<Long, ListMapEntry>();
     private static ConcurrentHashMap<Long, ListMapEntry> SELECTIVE_WHITELIST = new ConcurrentHashMap<Long, ListMapEntry>();
+
+    private static ConcurrentHashMap<Long, ListMapEntry> CACHED_LIST = new ConcurrentHashMap<Long, ListMapEntry>();
+
+    public static final int PASSTHROUGH = 1024;
 
     private static Color4f colorPos1 = new Color4f(1f, 0.0625f, 0.0625f);
     private static Color4f colorPos2 = new Color4f(0.0625f, 0.0625f, 1f);
@@ -90,6 +99,19 @@ public class RenderTweaks {
     private static ScreenHandlerType<?> CURRENT_SCREEN_TYPE = null;
     private static int CURRENT_SYNC_ID = -1;
     private static HashMap<Long, ArrayList<Item>> CACHED_OVERLAY_DATA = new HashMap<Long, ArrayList<Item>>();
+
+    private static ListType previousType = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
+    private static boolean previousSelectiveToggle = FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue();
+
+    private static FakeWorld fakeWorld = null;
+
+    public static void resetWorld(DynamicRegistryManager registry, int loadDistance) {
+        fakeWorld = new FakeWorld(registry, loadDistance);
+    }
+
+    public static FakeWorld getFakeWorld() {
+        return fakeWorld;
+    }
 
     public static void onTick() {
         // Dumb rendundancy due to replaymod
@@ -120,7 +142,7 @@ public class RenderTweaks {
 
             onDesync();
         }
-        int reach = Math.min((int) mc.interactionManager.getReachDistance(),6);
+        int reach = Math.min((int) mc.interactionManager.getReachDistance(), 6);
         BlockPos.Mutable tempPos = new BlockPos.Mutable();
         BlockPos playerPos = MiscUtils.getPlayerHeadPos(mc.player);
         CURRENT_CONTAINER = 0;
@@ -145,7 +167,7 @@ public class RenderTweaks {
                     if (block instanceof ChestBlock) {
                         valid = !ChestBlock.isChestBlocked(mc.world, tempPos);
                         if (valid && state.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE) {
-                            if (ChestBlock.isChestBlocked(mc.world,tempPos.offset(ChestBlock.getFacing(state))))
+                            if (ChestBlock.isChestBlocked(mc.world, tempPos.offset(ChestBlock.getFacing(state))))
                                 valid = false;
                         }
                         if (state.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) {
@@ -156,7 +178,9 @@ public class RenderTweaks {
                         boolean flag;
                         if (lv1.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
                             Direction lv2 = state.get(ShulkerBoxBlock.FACING);
-                            flag = mc.world.isSpaceEmpty(ShulkerEntity.method_33347((Direction)state.get(ShulkerBoxBlock.FACING), 0.0F, 0.5F).offset(tempPos).contract(1.0E-6D));
+                            flag = mc.world.isSpaceEmpty(ShulkerEntity
+                                    .method_33347((Direction) state.get(ShulkerBoxBlock.FACING), 0.0F, 0.5F)
+                                    .offset(tempPos).contract(1.0E-6D));
                         } else {
                             flag = true;
                         }
@@ -178,11 +202,10 @@ public class RenderTweaks {
                             false);
                     mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, hitResult);
 
-                  
                 }
             }
         }
-        
+
     }
 
     public static void render(MatrixStack matrices) {
@@ -190,22 +213,22 @@ public class RenderTweaks {
         float expand = 0.001f;
         float lineWidthBlockBox = 2f;
         float lineWidthArea = 1.5f;
-           
+
         if (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue()) {
             scanContainersNearby();
         }
-        if (FeatureToggle.TWEAK_CONTAINER_SCAN_COUNTS.getBooleanValue() || 
-            (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue() && !Configs.Disable.DISABLE_CONTAINER_SCAN_OUTLINES.getBooleanValue())) {
-           
+        if (FeatureToggle.TWEAK_CONTAINER_SCAN_COUNTS.getBooleanValue()
+                || (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue()
+                        && !Configs.Disable.DISABLE_CONTAINER_SCAN_OUTLINES.getBooleanValue())) {
 
             matrices.push();
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
-            //RenderSystem.disableLighting();
+            // RenderSystem.disableLighting();
             // RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
-            //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+            // RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
@@ -229,10 +252,10 @@ public class RenderTweaks {
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
-            //RenderSystem.disableLighting();
+            // RenderSystem.disableLighting();
             // RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
-            //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+            // RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
@@ -257,10 +280,10 @@ public class RenderTweaks {
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
-            //RenderSystem.disableLighting();
+            // RenderSystem.disableLighting();
             // RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
-            //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
+            // RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
             RenderSystem.enablePolygonOffset();
             RenderSystem.polygonOffset(-1.2f, -0.2f);
@@ -289,22 +312,23 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
         String fullIndicator = Formatting.GREEN + " •";
         for (ContainerEntry entry : CONTAINERCACHE.values()) {
-            if (entry.status == 2) { // TODO && !CACHED_OVERLAY_DATA.containsKey(entry.pos.asLong())   -> when icons are done
+            if (entry.status == 2) { // TODO && !CACHED_OVERLAY_DATA.containsKey(entry.pos.asLong()) -> when icons
+                                     // are done
 
-                if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue() || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getIntegerValue()) {
+                if (entry.itemCount < Configs.Generic.CONTAINER_SCAN_MIN_ITEMS.getIntegerValue()
+                        || entry.typeCount < Configs.Generic.CONTAINER_SCAN_MIN_TYPES.getIntegerValue()) {
                     if (MiscUtils.isInReach(entry.pos, mc.player, 10)) {
                         if (entry.itemCount == 0) {
-                        OverlayRenderer.drawString("Empty", entry.pos, sideColor.intValue, -0.5F);
+                            OverlayRenderer.drawString("Empty", entry.pos, sideColor.intValue, -0.5F);
                         } else {
-                            OverlayRenderer.drawString(entry.itemCount + " items" + (entry.isFull ?  " •" : ""), entry.pos,
-                            sideColor.intValue, -0.5F);
-                            OverlayRenderer.drawString(entry.typeCount + " types" + (entry.areSlotsCovered ?  " •" : ""),
-                        entry.pos, sideColor.intValue, 0.5F);
+                            OverlayRenderer.drawString(entry.itemCount + " items" + (entry.isFull ? " •" : ""),
+                                    entry.pos, sideColor.intValue, -0.5F);
+                            OverlayRenderer.drawString(entry.typeCount + " types" + (entry.areSlotsCovered ? " •" : ""),
+                                    entry.pos, sideColor.intValue, 0.5F);
                         }
                     }
                     continue;
                 }
-                
 
                 OverlayRenderer.drawString(entry.itemCount + " items" + (entry.isFull ? fullIndicator : ""), entry.pos,
                         Formatting.GOLD.getColorValue(), -0.5F);
@@ -355,18 +379,19 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
 
         for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) {
-            RenderUtils.renderBlockOutline(BlockPos.fromLong(entry.getKey()), expand, lineWidthBlockBox, colorSearch, mc);
+            RenderUtils.renderBlockOutline(BlockPos.fromLong(entry.getKey()), expand, lineWidthBlockBox, colorSearch,
+                    mc);
         }
-        
-    }
-    private static void renderSearchedContainerIcons(MatrixStack matrices) { // TODO figure out item icon rendering
-       /*
-        MinecraftClient mc = MinecraftClient.getInstance();
 
-        for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) {
-        }
-        
-        */
+    }
+
+    private static void renderSearchedContainerIcons(MatrixStack matrices) { // TODO figure out item icon rendering
+        /*
+         * MinecraftClient mc = MinecraftClient.getInstance();
+         * 
+         * for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) { }
+         * 
+         */
     }
 
     public static void updateLookingAt() {
@@ -401,7 +426,8 @@ public class RenderTweaks {
         int maxY = Math.max(AREA_SELECTION.pos1.getY(), AREA_SELECTION.pos2.getY());
         int maxZ = Math.max(AREA_SELECTION.pos1.getZ(), AREA_SELECTION.pos2.getZ());
 
-        return !(pos.getX() < minX || pos.getX() > maxX || pos.getY() < minY || pos.getY() > maxY || pos.getZ() < minZ || pos.getZ() > maxZ); 
+        return !(pos.getX() < minX || pos.getX() > maxX || pos.getY() < minY || pos.getY() > maxY || pos.getZ() < minZ
+                || pos.getZ() > maxZ);
     }
 
     public static void addSelectionToList() {
@@ -436,6 +462,14 @@ public class RenderTweaks {
         }
         rebuildStrings();
         InfoUtils.printActionbarMessage("Added " + count + " blocks");
+    }
+
+    public static void showPos(BlockPos pos) {
+
+    }
+
+    public static void hidePos(BlockPos pos) {
+
     }
 
     public static void removeSelectionFromList() {
@@ -524,6 +558,8 @@ public class RenderTweaks {
         PistonHandler pistonHandler = new PistonHandler(world, pos, pushDirection, type == 0);
 
         BlockState state2 = null;
+        BlockEntity entity = null;
+        BlockEntity entity2 = null;
 
         if (type != 0 && !((MixinPistonBlock) state.getBlock()).getSticky())
             return; // non sticky pistons do nothing
@@ -531,14 +567,22 @@ public class RenderTweaks {
         if (type != 0) {
 
             state2 = world.getBlockState(pos.offset(pushDirection)); // piston head
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 18);
-            world.setBlockState(pos.offset(pushDirection), Blocks.AIR.getDefaultState(), 18);
+            entity = world.getBlockEntity(pos);
+            entity2 = world.getBlockEntity(pos.offset(pushDirection));
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
+            world.setBlockState(pos.offset(pushDirection), Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
         }
         boolean moveSuccess = pistonHandler.calculatePush();
 
         if (type != 0) {
-            world.setBlockState(pos, state, 18);
-            world.setBlockState(pos.offset(pushDirection), state2, 18);
+            world.setBlockState(pos, state, Block.FORCE_STATE);
+            world.setBlockState(pos.offset(pushDirection), state2, Block.FORCE_STATE);
+            if (entity != null) {
+                world.addBlockEntity(entity);
+            }
+            if (entity2 != null) {
+                world.addBlockEntity(entity2);
+            }
         }
 
         boolean attatchedWhitelist = SELECTIVE_WHITELIST
@@ -653,18 +697,121 @@ public class RenderTweaks {
         putMapFromString(SELECTIVE_BLACKLIST, Configs.Lists.SELECTIVE_BLOCKS_BLACKLIST.getStringValue());
         putMapFromString(SELECTIVE_WHITELIST, Configs.Lists.SELECTIVE_BLOCKS_WHITELIST.getStringValue());
 
+        reloadSelective();
+
+    }
+
+    public static void updateSelectiveAtPos(BlockPos pos) {
         MinecraftClient mc = MinecraftClient.getInstance();
-        if (mc != null && mc.world != null && mc.worldRenderer != null) {
-            if (mc.world.getLightingProvider() != null) {
-                for (ListMapEntry entry : SELECTIVE_BLACKLIST.values()) {
-                    mc.world.getLightingProvider().checkBlock(entry.currentPosition);
-                }
-                for (ListMapEntry entry : SELECTIVE_WHITELIST.values()) {
-                    mc.world.getLightingProvider().checkBlock(entry.currentPosition);
+        BlockState state = mc.world.getBlockState(pos);
+        if (RenderTweaks.isPositionValidForRendering(pos)) {
+            if (state.isAir()) {
+                BlockState originalState = fakeWorld.getBlockState(pos);
+                if (!originalState.isAir()) {
+                    BlockEntity be = fakeWorld.getBlockEntity(pos);
+                    fakeWorld.setBlockState(pos, Blocks.AIR.getDefaultState());
+                    mc.world.setBlockState(pos, originalState,
+                            Block.NOTIFY_ALL | Block.FORCE_STATE | PASSTHROUGH);
+                    if (be != null) fakeWorld.addBlockEntity(be);
                 }
             }
-            mc.worldRenderer.reload();
+        } else {
+            if (!state.isAir()) {
+                BlockEntity be = mc.world.getBlockEntity(pos);
+                mc.world.setBlockState(pos, Blocks.AIR.getDefaultState(),
+                        Block.NOTIFY_ALL | Block.FORCE_STATE | PASSTHROUGH);
+                setFakeBlockState(pos, state, be);
+            }
         }
+    }
+    public static void reloadSelective() {
+
+        MinecraftClient mc = MinecraftClient.getInstance();
+        ListType listtype = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
+        boolean toggle = FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue();
+        if (mc.world == null) {
+            CACHED_LIST.clear();
+            if (listtype != ListType.NONE) {
+                ConcurrentHashMap<Long, ListMapEntry> list = (listtype == ListType.WHITELIST) ? SELECTIVE_WHITELIST
+                        : SELECTIVE_BLACKLIST;
+                Iterator<ListMapEntry> iterator = list.values().iterator();
+                while (iterator.hasNext()) {
+                    ListMapEntry entry = iterator.next();
+                    CACHED_LIST.put(entry.currentPosition.asLong(), entry);
+                }
+            }
+
+            previousSelectiveToggle = toggle;
+            previousType = listtype;
+            return;
+        }
+        if (listtype != previousType || toggle != previousSelectiveToggle) {
+            ChunkPos center = fakeWorld.getChunkManager().getChunkMapCenter();
+            int radius = fakeWorld.getChunkManager().getRadius();
+
+            BlockPos.Mutable pos = new BlockPos.Mutable();
+
+            for (int cx = center.x - radius; cx <= center.x + radius; cx++) {
+                for (int cz = center.z - radius; cz <= center.z + radius; cz++) {
+
+                    WorldChunk chunk = (WorldChunk) mc.world.getChunkManager().getChunk(cx, cz, ChunkStatus.FULL,
+                            false);
+                    FakeChunk fakeChunk = fakeWorld.getChunkManager().getChunkIfExists(cx, cz);
+                    if (chunk != null && fakeChunk != null) {
+                        ChunkPos cpos = chunk.getPos();
+                        ChunkSection[] sections = chunk.getSectionArray();
+                        for (int i = 0; i < sections.length; i++) {
+                            ChunkSection section = sections[i];
+                            if (section != WorldChunk.EMPTY_SECTION) {
+                                for (int x = 0; x < 16; x++) {
+                                    for (int y = 0; y < 16; y++) {
+                                        for (int z = 0; z < 16; z++) {
+                                            pos.set(x + cpos.getStartX(), y + section.getYOffset(),
+                                                    z + cpos.getStartZ());
+                                            updateSelectiveAtPos(pos);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            CACHED_LIST.clear();
+            if (listtype != ListType.NONE) {
+                ConcurrentHashMap<Long, ListMapEntry> list = (listtype == ListType.WHITELIST) ? SELECTIVE_WHITELIST
+                        : SELECTIVE_BLACKLIST;
+                Iterator<ListMapEntry> iterator = list.values().iterator();
+                while (iterator.hasNext()) {
+                    ListMapEntry entry = iterator.next();
+                    CACHED_LIST.put(entry.currentPosition.asLong(), entry);
+                }
+            }
+        } else if (listtype != ListType.NONE) {
+            ConcurrentHashMap<Long, ListMapEntry> list = (listtype == ListType.WHITELIST) ? SELECTIVE_WHITELIST
+                    : SELECTIVE_BLACKLIST;
+            Iterator<ListMapEntry> iterator = CACHED_LIST.values().iterator();
+            while (iterator.hasNext()) {
+                ListMapEntry entry = iterator.next();
+                if (!list.containsKey(entry.currentPosition.asLong())) {
+                    updateSelectiveAtPos(entry.currentPosition);
+                    iterator.remove();
+                }
+            }
+
+            iterator = list.values().iterator();
+            while (iterator.hasNext()) {
+                ListMapEntry entry = iterator.next();
+                if (!CACHED_LIST.containsKey(entry.currentPosition.asLong())) {
+                    updateSelectiveAtPos(entry.currentPosition);
+                    CACHED_LIST.put(entry.currentPosition.asLong(), entry);
+                }
+            }
+        }
+
+        previousSelectiveToggle = toggle;
+        previousType = listtype;
     }
 
     public static void onLightUpdateEvent(int chunkX, int chunkZ, CallbackInfo ci) {
@@ -745,14 +892,14 @@ public class RenderTweaks {
 
         while (iterator.hasNext()) {
             ListMapEntry entry = iterator.next();
-            entries.add(entry.currentPosition.getX() + "," + entry.currentPosition.getY() + ","
-                    + entry.currentPosition.getZ());
+            entries.add(entry.originalPosition.getX() + "," + entry.originalPosition.getY() + ","
+                    + entry.originalPosition.getZ());
         }
         return String.join("|", entries);
     }
 
     static class ListMapEntry {
-        public BlockPos originalPosition;
+        public final BlockPos originalPosition;
         public BlockPos currentPosition;
         public boolean preserve = false;
 
@@ -773,8 +920,8 @@ public class RenderTweaks {
     }
 
     public static Object containerScanTweakUpdate() {
-        //CONTAINERCACHE.clear();
-        //CONTAINERS_WAITING.clear();
+        // CONTAINERCACHE.clear();
+        // CONTAINERS_WAITING.clear();
         if (FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue()) {
             scanContainers();
         }
@@ -790,7 +937,8 @@ public class RenderTweaks {
         for (int j = -vd; j < vd; ++j) {
             for (int l = -vd; l < vd; ++l) {
                 WorldChunk chunk = (WorldChunk) mc.world.getChunk(cp.x + j, cp.z + l, ChunkStatus.FULL, false);
-                if (chunk == null) continue;
+                if (chunk == null)
+                    continue;
                 Map<BlockPos, BlockEntity> blockEntities = chunk.getBlockEntities();
                 Iterator<BlockEntity> iterator = blockEntities.values().iterator();
                 while (iterator.hasNext()) {
@@ -825,14 +973,12 @@ public class RenderTweaks {
         public boolean isFull = false;
         public int status = 0;
         public boolean skipCount = false;
-        
 
         ContainerEntry(BlockPos p) {
             pos = p;
         }
 
     }
-   
 
     public static void onDesync() {
         CURRENT_CONTAINER = -1;
@@ -841,12 +987,13 @@ public class RenderTweaks {
             entry.status = 3;
         }
     }
+
     public static boolean onOpenScreen(Text name, ScreenHandlerType<?> screenHandlerType, int syncId) {
         LAST_CHECK = System.currentTimeMillis();
         if (!FeatureToggle.TWEAK_CONTAINER_SCAN.getBooleanValue())
             return true;
         if (CONTAINERS_WAITING.isEmpty() || CONTAINERS_WAITING.size() <= CURRENT_CONTAINER) {
-           // System.out.println("Desync, no containers are being scanned (open screen)");
+            // System.out.println("Desync, no containers are being scanned (open screen)");
             onDesync();
             return true;
         }
@@ -919,7 +1066,7 @@ public class RenderTweaks {
             System.out.println(CURRENT_CONTAINER + " Desync, type mismatch. Expected block with "
                     + Registry.SCREEN_HANDLER.getId(CURRENT_SCREEN_TYPE).getPath() + " screen but found a "
                     + Registry.BLOCK.getId(block).getPath());
-                    onDesync();
+            onDesync();
             return false;
         }
 
@@ -947,13 +1094,14 @@ public class RenderTweaks {
             entry.itemCount += stack.getCount();
             if (stack.getMaxCount() != stack.getCount())
                 entry.isFull = false;
-           
+
             contentList[i - start] = stack;
         }
         entry.contentList = contentList;
         entry.status = 2;
         CURRENT_CONTAINER++;
-        if (CURRENT_CONTAINER >= CONTAINERS_WAITING.size()) CONTAINERS_WAITING.clear();
+        if (CURRENT_CONTAINER >= CONTAINERS_WAITING.size())
+            CONTAINERS_WAITING.clear();
         return false;
     }
 
@@ -966,6 +1114,21 @@ public class RenderTweaks {
         ItemList.INSTANCE.clearSelected();
         CONTAINERCACHE.clear();
         scanContainers();
+    }
+
+    public static void loadFakeChunk(int x, int z) {
+        fakeWorld.getChunkManager().loadChunk(x, z);
+    }
+
+    public static void setFakeBlockState(BlockPos pos, BlockState state, BlockEntity be) {
+        fakeWorld.setBlockState(pos, state, 0);
+        if (be != null) {
+            fakeWorld.addBlockEntity(be);
+        }
+    }
+
+    public static void unloadFakeChunk(int x, int z) {
+        fakeWorld.getChunkManager().unloadChunk(x, z);
     }
 
 }

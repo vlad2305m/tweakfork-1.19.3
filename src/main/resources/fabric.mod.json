@@ -23,6 +23,9 @@
 		"main": [
 			"fi.dy.masa.tweakeroo.Tweakeroo"
 		],
+		"client": [
+			"fi.dy.masa.tweakeroo.ClientTweakeroo"
+		],
 		"modmenu": [
 			"fi.dy.masa.tweakeroo.compat.modmenu.ModMenuImpl"
 		]

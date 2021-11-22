@@ -80,12 +80,6 @@ public abstract class MixinWorld
         if (!isClient) {
             return;
         }
-
-        if ((flags & Block.FORCE_STATE) == 0) {
-            System.out.println("This shouldn't have been called " + pos.toString());
-            return;
-        }
-        
       
         if (!RenderTweaks.isPositionValidForRendering(pos)) {
             if ((flags & RenderTweaks.PASSTHROUGH) != 0) {

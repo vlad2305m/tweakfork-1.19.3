@@ -92,7 +92,7 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
         MiscUtils.checkZoomStatus();
 
         if (eventKeyState && FeatureToggle.TWEAK_NOTEBLOCK_EDIT.getBooleanValue()) {
-            if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+            if (mc.world != null && mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult hit = (BlockHitResult)mc.crosshairTarget;
                 BlockState state = mc.world.getBlockState(hit.getBlockPos());
                 if (state.getBlock() instanceof NoteBlock) {

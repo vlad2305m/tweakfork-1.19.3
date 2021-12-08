@@ -1130,7 +1130,7 @@ public class RenderTweaks {
         fakeWorld.setBlockState(pos, state, 0);
         if (be != null) {
             fakeWorld.addBlockEntity(be);
-            be.setWorld(null);
+            be.setWorld(fakeWorld);
         }
     }
 

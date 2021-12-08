@@ -156,7 +156,7 @@ public abstract class MixinClientPlayNetworkHandler
                                     BlockEntity be = worldChunk.getBlockEntity(pos);
                                     BlockState state = section.getBlockState(x, y, z);
                                     worldChunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false);
-                                    RenderTweaks.setFakeBlockState(pos, state, be);
+                                    RenderTweaks.setFakeBlockState(this.world, pos, state, be);
                                 }
                             }
                         }

@@ -721,7 +721,7 @@ public class RenderTweaks {
                 BlockEntity be = mc.world.getBlockEntity(pos);
                 mc.world.setBlockState(pos, Blocks.AIR.getDefaultState(),
                         Block.NOTIFY_ALL | Block.FORCE_STATE | PASSTHROUGH);
-                setFakeBlockState(pos, state, be);
+                setFakeBlockState(mc.world, pos, state, be);
             }
         }
     }
@@ -1126,11 +1126,11 @@ public class RenderTweaks {
         fakeWorld.getChunkManager().loadChunk(x, z);
     }
 
-    public static void setFakeBlockState(BlockPos pos, BlockState state, BlockEntity be) {
+    public static void setFakeBlockState(World realWorld, BlockPos pos, BlockState state, BlockEntity be) {
         fakeWorld.setBlockState(pos, state, 0);
         if (be != null) {
             fakeWorld.addBlockEntity(be);
-            be.setWorld(fakeWorld);
+            be.setWorld(realWorld);
         }
     }
 

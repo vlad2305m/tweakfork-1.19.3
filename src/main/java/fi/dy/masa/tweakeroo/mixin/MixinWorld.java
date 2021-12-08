@@ -2,6 +2,7 @@ package fi.dy.masa.tweakeroo.mixin;
 
 import java.util.function.Consumer;
 
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,6 +17,7 @@ import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import fi.dy.masa.tweakeroo.util.WeatherOverrideMode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -85,7 +87,8 @@ public abstract class MixinWorld
             if ((flags & RenderTweaks.PASSTHROUGH) != 0) {
                 return;
             }
-            RenderTweaks.setFakeBlockState(pos, state, null);
+            MinecraftClient mc = MinecraftClient.getInstance();
+            RenderTweaks.setFakeBlockState(mc.world, pos, state, null);
             ci.setReturnValue(false);
         }
     }

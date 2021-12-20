@@ -489,7 +489,7 @@ public class RenderUtils
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         startDrawingLines(buffer);
-
+       
         drawBlockBoundingBoxOutlinesBatchedLines(pos, color, expand, buffer, mc);
 
         tessellator.draw();
@@ -498,6 +498,7 @@ public class RenderUtils
     static void startDrawingLines(BufferBuilder buffer)
     {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
+      
         RenderSystem.applyModelViewMatrix();
         buffer.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
     }
@@ -695,9 +696,10 @@ public class RenderUtils
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
 
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        startDrawingLines(buffer);
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer, mc);
 

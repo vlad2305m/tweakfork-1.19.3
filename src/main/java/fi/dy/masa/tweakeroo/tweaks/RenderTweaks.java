@@ -251,7 +251,7 @@ public class RenderTweaks {
             fi.dy.masa.malilib.render.RenderUtils.setupBlend();
             RenderSystem.disableDepthTest();
             // RenderSystem.disableLighting();
-            // RenderSystem.depthMask(false);
+            RenderSystem.depthMask(false);
             RenderSystem.disableTexture();
             // RenderSystem.alphaFunc(GL11.GL_GREATER, 0.01F);
 
@@ -300,7 +300,7 @@ public class RenderTweaks {
             RenderSystem.disablePolygonOffset();
             matrices.pop();
             RenderSystem.enableTexture();
-            // RenderSystem.depthMask(true);
+            RenderSystem.depthMask(true);
 
         }
 
@@ -377,8 +377,10 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
 
         for (Entry<Long, ArrayList<Item>> entry : CACHED_OVERLAY_DATA.entrySet()) {
-            RenderUtils.renderBlockOutline(BlockPos.fromLong(entry.getKey()), expand, lineWidthBlockBox, colorSearch,
+            BlockPos pos = BlockPos.fromLong(entry.getKey());
+            RenderUtils.renderBlockOutline(pos, expand, 8, colorSearch,
                     mc);
+            RenderUtils.renderAreaSides(pos, pos, colorSearch, matrices, mc);
         }
 
     }

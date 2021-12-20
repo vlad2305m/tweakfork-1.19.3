@@ -31,23 +31,21 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.MutableWorldProperties;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.DirectBiomeAccessType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.QueryableTickScheduler;
 
 public class FakeWorld extends World
 {
     private static final RegistryKey<World> REGISTRY_KEY = RegistryKey.of(Registry.WORLD_KEY, new Identifier(Reference.MOD_ID, "fake_world"));
     public static final DimensionType DIMENSIONTYPE = DimensionType.create(OptionalLong.of(6000L), false, false, false, false, 1.0,
-    false, false, false, false, false, -64, 384, 384,
-    DirectBiomeAccessType.INSTANCE, BlockTags.INFINIBURN_END.getId(),
+    false, false, false, false, false, -64, 384, 384, BlockTags.INFINIBURN_END.getId(),
     DimensionType.OVERWORLD_ID, 0.0F);
 
     private final MinecraftClient mc;
@@ -213,14 +211,14 @@ public class FakeWorld extends World
     }
 
     @Override
-    public TickScheduler<Block> getBlockTickScheduler() {
-        // TODO Auto-generated method stub
+    public QueryableTickScheduler<Block> getBlockTickScheduler()
+    {
         return null;
     }
 
     @Override
-    public TickScheduler<Fluid> getFluidTickScheduler() {
-        // TODO Auto-generated method stub
+    public QueryableTickScheduler<Fluid> getFluidTickScheduler()
+    {
         return null;
     }
 

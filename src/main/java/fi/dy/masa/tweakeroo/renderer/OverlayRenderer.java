@@ -104,7 +104,7 @@ public class OverlayRenderer
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
-			matrixStack.method_34425(new Matrix4f(camera.getRotation()));
+			matrixStack.multiplyPositionMatrix(new Matrix4f(camera.getRotation()));
             matrixStack.scale(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
 			RenderSystem.enableTexture();
 			RenderSystem.disableDepthTest();  // visibleThroughObjects

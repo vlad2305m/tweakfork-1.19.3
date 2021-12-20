@@ -62,7 +62,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -177,9 +176,8 @@ public class RenderTweaks {
                         ShulkerBoxBlockEntity lv1 = (ShulkerBoxBlockEntity) blockEntity;
                         boolean flag;
                         if (lv1.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
-                            Direction lv2 = state.get(ShulkerBoxBlock.FACING);
                             flag = mc.world.isSpaceEmpty(ShulkerEntity
-                                    .method_33347((Direction) state.get(ShulkerBoxBlock.FACING), 0.0F, 0.5F)
+                                    .calculateBoundingBox((Direction) state.get(ShulkerBoxBlock.FACING), 0.0F, 0.5F)
                                     .offset(tempPos).contract(1.0E-6D));
                         } else {
                             flag = true;
@@ -768,7 +766,7 @@ public class RenderTweaks {
                         ChunkSection[] sections = chunk.getSectionArray();
                         for (int i = 0; i < sections.length; i++) {
                             ChunkSection section = sections[i];
-                            if (section != WorldChunk.EMPTY_SECTION) {
+                            if (section != null) {
                                 for (int x = 0; x < 16; x++) {
                                     for (int y = 0; y < 16; y++) {
                                         for (int z = 0; z < 16; z++) {

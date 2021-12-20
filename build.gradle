@@ -1,9 +1,9 @@
 plugins {
-	id 'fabric-loom' version '0.9-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	maven { url 'https://masa.dy.fi/maven' }
@@ -21,7 +21,7 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	//modCompile "net.fabricmc.fabric-api:fabric-api:" + project.fabric_version
-    modCompileOnly "carpet:fabric-carpet:${project.fabric_carpet_version}"
+    //modCompileOnly "carpet:fabric-carpet:${project.fabric_carpet_version}"
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 }
 

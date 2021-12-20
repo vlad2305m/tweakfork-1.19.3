@@ -33,8 +33,6 @@ import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -146,7 +144,7 @@ public abstract class MixinClientPlayNetworkHandler
 			ChunkSection[] sections = worldChunk.getSectionArray();
             for (int i = 0; i < sections.length; i++) {
                 ChunkSection section = sections[i];
-                if (section != WorldChunk.EMPTY_SECTION && !section.isEmpty()) {
+                if (section != null && !section.isEmpty()) {
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {

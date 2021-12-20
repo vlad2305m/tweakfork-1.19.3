@@ -15,7 +15,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BuiltinBiomes;
-import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
@@ -25,15 +24,11 @@ public class FakeChunk extends WorldChunk {
     private final int bottomY;
     private final int topY;
     private boolean isEmpty = true;
-
-    
-    private final Map<BlockPos, BlockEntity> blockEntities;
     
     public FakeChunk(FakeWorld world, ChunkPos pos) {
-        super(world, pos, new BiomeArray(world.getRegistryManager().get(Registry.BIOME_KEY), world, pos, new FixedBiomeSource(BuiltinBiomes.THE_VOID)));
+        super(world, pos);
         this.bottomY = world.getBottomY();
         this.topY = world.getTopY();
-        this.blockEntities = Maps.newHashMap();
     }
 
     @Override
@@ -50,7 +45,7 @@ public class FakeChunk extends WorldChunk {
         {
             ChunkSection chunkSection = sections[cy];
 
-            if (ChunkSection.isEmpty(chunkSection) == false)
+            if (!chunkSection.isEmpty())
             {
                 return chunkSection.getBlockState(x, y, z);
             }
@@ -79,15 +74,9 @@ public class FakeChunk extends WorldChunk {
             Block blockOld = stateOld.getBlock();
             ChunkSection section = this.getSectionArray()[cy];
 
-            if (section == EMPTY_SECTION)
+            if (section.isEmpty() && state.isAir())
             {
-                if (state.isAir())
-                {
-                    return null;
-                }
-
-                section = new ChunkSection(ChunkSectionPos.getSectionCoord(y));
-                this.getSectionArray()[cy] = section;
+                return null;
             }
 
             y &= 0xF;
@@ -125,7 +114,7 @@ public class FakeChunk extends WorldChunk {
                 //     }
                 // }
 
-                this.markDirty();
+                this.needsSaving();
                 return stateOld;
             }
         }

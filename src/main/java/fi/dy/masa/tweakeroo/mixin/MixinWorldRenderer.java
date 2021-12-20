@@ -103,7 +103,6 @@ public abstract class MixinWorldRenderer
             Camera camera,
             Frustum frustum,
             boolean hasForcedFrustum,
-            int frame,
             boolean spectator,
             CallbackInfo ci)
     {
@@ -124,7 +123,6 @@ public abstract class MixinWorldRenderer
             Camera camera,
             Frustum frustum,
             boolean hasForcedFrustum,
-            int frame,
             boolean spectator,
             CallbackInfo ci)
     {

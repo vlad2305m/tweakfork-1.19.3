@@ -1,13 +1,11 @@
 {
-    "tweakeroo.gui.button.config_gui.disable_hotkeys": "TweakNo Hotkeys",
-    "tweakeroo.gui.button.config_gui.disable_toggle": "TweakNo Toggles",
+    "tweakeroo.gui.button.config_gui.disables": "Yeets",
     "tweakeroo.gui.button.config_gui.fixes": "Fixes",
     "tweakeroo.gui.button.config_gui.generic": "Generic",
-    "tweakeroo.gui.button.config_gui.generic_hotkeys": "Generic Hotkeys",
+    "tweakeroo.gui.button.config_gui.generic_hotkeys": "Hotkeys",
     "tweakeroo.gui.button.config_gui.lists": "Lists",
     "tweakeroo.gui.button.config_gui.placement": "Placement stuff",
-    "tweakeroo.gui.button.config_gui.tweak_hotkeys": "Tweak Hotkeys",
-    "tweakeroo.gui.button.config_gui.tweak_toggles": "Tweak Toggles",
+    "tweakeroo.gui.button.config_gui.tweaks": "Tweaks",
     "tweakeroo.gui.button.item_list.clear_cache": "Clear Cache",
     "tweakeroo.gui.button.hover.item_list.write_hold_shift_for_csv": "Hold shift to write in CSV format",
     "tweakeroo.gui.button.item_list.clear_ignored": "Clear Ignored",
@@ -29,6 +27,10 @@
     "tweakeroo.hotkeys.category.disable_toggle_hotkeys": "Disable Toggle Hotkeys",
     "tweakeroo.hotkeys.category.generic_hotkeys": "Generic hotkeys",
     "tweakeroo.hotkeys.category.tweak_toggle_hotkeys": "Tweak toggle hotkeys",
+
+    "tweakeroo.label.message_output_type.none": "None",
+    "tweakeroo.label.message_output_type.actionbar": "Actionbar",
+    "tweakeroo.label.message_output_type.message": "Message",
 
     "tweakeroo.label.placement_restriction_mode.column": "Column",
     "tweakeroo.label.placement_restriction_mode.diagonal": "Diagonal",
@@ -56,6 +58,7 @@
 
 
     "tweakeroo.message.cache_cleared": "Cache cleared",
+    "tweakeroo.message.death_coordinates": "§6You died§r @ [§b%d, %d, %d§r] in §a%s",
     "tweakeroo.message.focusing_game": "§6Focusing§f the game (grabbing the cursor)",
     "tweakeroo.message.afk_detected": "§6!! WARNING§r - AFK action running in %s seconds !!§r",
     "tweakeroo.message.potion_effects_running_out": "§6!! WARNING - %s potion effect(s) about to run out in %s seconds !!§r",
@@ -95,5 +98,6 @@
     "tweakeroo.message.unfocusing_game": "§6Un-focusing§f the game (un-grabbing the cursor)",
     "tweakeroo.message.value.off": "OFF",
     "tweakeroo.message.value.on": "ON",
-    "tweakeroo.message.item_list_written_to_file": "Item list written to file"
+    "tweakeroo.message.item_list_written_to_file": "Item list written to file",
+    "tweakeroo.message.warning.block_type_break_restriction": "§6Block breaking prevented by Block Type Break Restriction tweak"
 }

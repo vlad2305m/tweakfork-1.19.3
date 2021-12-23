@@ -23,7 +23,6 @@ public abstract class MixinPlayerAbilities
             player != null && player.getAbilities().allowFlying)
         {
             cir.setReturnValue((float) Configs.getActiveFlySpeedConfig().getDoubleValue());
-            cir.cancel();
         }
     }
 }

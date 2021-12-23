@@ -3,6 +3,7 @@ package fi.dy.masa.tweakeroo.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.client.MinecraftClient;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.config.IConfigBase;
@@ -26,6 +27,7 @@ import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
 import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
+import fi.dy.masa.tweakeroo.util.MessageOutputType;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
 import fi.dy.masa.tweakeroo.util.WeatherOverrideMode;
@@ -40,15 +42,19 @@ public class Configs implements IConfigHandler
     {
         public static final ConfigInteger       AFTER_CLICKER_CLICK_COUNT           = new ConfigInteger     ("afterClickerClickCount",  1, 1, 32, "The number of right clicks to do per placed block when\ntweakAfterClicker is enabled");
         public static final ConfigDouble        BLOCK_REACH_DISTANCE                = new ConfigDouble      ("blockReachDistance", 4.5, 0, 8, "The block reach distance to use if the\noverride tweak is enabled.\nThe maximum the server allows is 8 for placing, 6 for breaking.");
+        public static final ConfigOptionList    BLOCK_TYPE_BREAK_RESTRICTION_WARN   = new ConfigOptionList  ("blockTypeBreakRestrictionWarn", MessageOutputType.MESSAGE, "Selects which type of warning message to show (if any)\nwhen the Block Type Break Restriction feature prevents breaking a block");
         public static final ConfigInteger       BREAKING_GRID_SIZE                  = new ConfigInteger     ("breakingGridSize", 3, 1, 1000, "The grid interval size for the grid breaking mode.\nTo quickly adjust the value, scroll while\nholding down the tweak toggle keybind.");
         public static final ConfigInteger       RESTRICTION_LAYER_HEIGHT            = new ConfigInteger     ("restrictionLayerHeight", 1, -1000, 1000, "The layer height for the layer restriction mode.\nTo quickly adjust the value, scroll while\nholding down the tweak toggle keybind.");
         public static final ConfigOptionList    BREAKING_RESTRICTION_MODE           = new ConfigOptionList  ("breakingRestrictionMode", PlacementRestrictionMode.LINE, "The Breaking Restriction mode to use (hotkey-selectable)");
         public static final ConfigColor         CHAT_BACKGROUND_COLOR               = new ConfigColor       ("chatBackgroundColor", "#80000000", "The background color for the chat messages,\nif 'tweakChatBackgroundColor' is enabled");
         public static final ConfigString        CHAT_TIME_FORMAT                    = new ConfigString      ("chatTimeFormat", "[HH:mm:ss]", "The time format for chat messages, if tweakChatTimestamp is enabled\nUses the Java SimpleDateFormat format specifiers.");
+        public static final ConfigBoolean       CARPET_ACCURATE_PLACEMENT_PROTOCOL  = new ConfigBoolean     ("carpetAccuratePlacementProtocol", true, "If enabled, then the Flexible Block Placement and the\nAccurate Block Placement use the protocol implemented in Carpet mod.\n§6Note: This is required for any block rotations to work, other than\n§6blocks that only care about the block side you click on (Hoppers, Logs etc.)");
         public static final ConfigBoolean       CLIENT_PLACEMENT_ROTATION           = new ConfigBoolean     ("clientPlacementRotation", true, "Enable single player and client side placement rotations,\nsuch as Accurate Placement working in single player without Carpet mod");
         public static final ConfigOptionList    ELYTRA_CAMERA_INDICATOR             = new ConfigOptionList  ("elytraCameraIndicator", ActiveMode.WITH_KEY, "Whether or not to render the real pitch angle\nindicator when the elytra camera mode is active");
         public static final ConfigInteger       FAST_BLOCK_PLACEMENT_COUNT          = new ConfigInteger     ("fastBlockPlacementCount", 2, 1, 16, "The maximum number of blocks to place per game tick\nwith the Fast Block Placement tweak");
+        public static final ConfigBoolean       FAST_LEFT_CLICK_ALLOW_TOOLS         = new ConfigBoolean     ("fastLeftClickAllowTools", false, "Allow the Fast Left Click to work in survival\nalso while holding tool items");
         public static final ConfigInteger       FAST_LEFT_CLICK_COUNT               = new ConfigInteger     ("fastLeftClickCount",  10, 1, 64, "The number of left clicks to do per game tick when\ntweakFastLeftClick is enabled and the attack button is held down");
+        public static final ConfigBoolean       FAST_PLACEMENT_REMEMBER_ALWAYS      = new ConfigBoolean     ("fastPlacementRememberOrientation", true, "If enabled, then the Fast Block Placement feature will always remember\nthe orientation of the first block you place.\nWithout this, the orientation will only be remembered\nwith the Flexible Block Placement enabled and active.");
         public static final ConfigInteger       FAST_RIGHT_CLICK_COUNT              = new ConfigInteger     ("fastRightClickCount", 10, 1, 64, "The number of right clicks to do per game tick when\ntweakFastRightClick is enabled and the use button is held down");
         public static final ConfigInteger       FILL_CLONE_LIMIT                    = new ConfigInteger     ("fillCloneLimit", 10000000, 1, 1000000000, "The new /fill and /clone block limit in single player,\nif the tweak to override them is enabled");
         public static final ConfigColor         FLEXIBLE_PLACEMENT_OVERLAY_COLOR    = new ConfigColor       ("flexibleBlockPlacementOverlayColor", "#C03030F0", "The color of the currently pointed-at\nregion in block placement the overlay");
@@ -82,6 +88,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean       PLACEMENT_RESTRICTION_TIED_TO_FAST  = new ConfigBoolean     ("placementRestrictionTiedToFast", true, "When enabled, the Placement Restriction mode will toggle\nits state of/off when you toggle the Fast Placement mode.");
         public static final ConfigBoolean       POTION_WARNING_BENEFICIAL_ONLY      = new ConfigBoolean     ("potionWarningBeneficialOnly", true, "Only warn about potion effects running out that are marked as \"beneficial\"");
         public static final ConfigInteger       POTION_WARNING_THRESHOLD            = new ConfigInteger     ("potionWarningThreshold", 600, 1, 1000000, "The remaining duration of potion effects (in ticks)\nafter which the warning will start showing");
+        public static final ConfigBoolean       REMEMBER_FLEXIBLE                   = new ConfigBoolean     ("rememberFlexibleFromClick", true, "If enabled, then the Flexible Block Placement status\nwill be remembered from the first placed block,\nas long as the use key (right click) is held down.\nBasically you don't have to keep holding all the flexible\nactivation keys to fast place all the blocks in the same orientation.");
         public static final ConfigInteger       RENDER_LIMIT_ITEM                   = new ConfigInteger     ("renderLimitItem", -1, -1, 10000, "Maximum number of item entities rendered per frame.\nUse -1 for normal behaviour, ie. to disable this limit.");
         public static final ConfigInteger       RENDER_LIMIT_XP_ORB                 = new ConfigInteger     ("renderLimitXPOrb", -1, -1, 10000, "Maximum number of XP orb entities rendered per frame.\nUse -1 for normal behaviour, ie. to disable this limit.");
         public static final ConfigInteger       SCULK_SENSOR_PULSE_LENGTH           = new ConfigInteger     ("sculkSensorPulseLength", 40, 0, 10000, "The pulse length for Sculk Sensors, if the 'tweakSculkPulseLength' tweak is enabled.");
@@ -120,7 +127,10 @@ public class Configs implements IConfigHandler
 
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+                CARPET_ACCURATE_PLACEMENT_PROTOCOL,
                 CLIENT_PLACEMENT_ROTATION,
+                FAST_LEFT_CLICK_ALLOW_TOOLS,
+                FAST_PLACEMENT_REMEMBER_ALWAYS,
                 FREE_CAMERA_PLAYER_INPUTS,
                 FREE_CAMERA_PLAYER_MOVEMENT,
                 HAND_RESTOCK_PRE,
@@ -128,6 +138,7 @@ public class Configs implements IConfigHandler
                 PERMANENT_SNEAK_ALLOW_IN_GUIS,
                 PLACEMENT_RESTRICTION_TIED_TO_FAST,
                 POTION_WARNING_BENEFICIAL_ONLY,
+                REMEMBER_FLEXIBLE,
                 SHULKER_DISPLAY_BACKGROUND_COLOR,
                 SHULKER_DISPLAY_REQUIRE_SHIFT,
                 SLOT_SYNC_WORKAROUND,
@@ -139,6 +150,7 @@ public class Configs implements IConfigHandler
 
                 AREA_SELECTION_USE_ALL,
                 RESTRICTION_LAYER_HEIGHT,
+                BLOCK_TYPE_BREAK_RESTRICTION_WARN,
                 BREAKING_RESTRICTION_MODE,
                 ELYTRA_CAMERA_INDICATOR,
                 PLACEMENT_RESTRICTION_MODE,
@@ -207,26 +219,24 @@ public class Configs implements IConfigHandler
 
     public static class Fixes
     {
-        public static final ConfigBoolean ELYTRA_FIX                        = new ConfigBoolean("elytraFix", false, "Elytra deployment/landing fix by Earthcomputer and Nessie");
+        public static final ConfigBoolean ELYTRA_FIX                        = new ConfigBoolean("elytraFix", false, "Elytra landing fix by Earthcomputer and Nessie.\nThe deployment fix is now in vanilla, so this only affects landing now.");
         public static final ConfigBoolean MAC_HORIZONTAL_SCROLL             = new ConfigBoolean("macHorizontalScroll", false, "If you are on Mac/OSX, this applies the same fix/change\nas the hscroll mod, while not breaking all the scroll handling\nin malilib-based mods.");
-        public static final ConfigBoolean PROFILER_CHART_FIX                = new ConfigBoolean("profilerChartFix", false, "Adds a fix for the debug profiler pie chart, that broke in MC 1.14.4");
         public static final ConfigBoolean RAVAGER_CLIENT_BLOCK_BREAK_FIX    = new ConfigBoolean("ravagerClientBlockBreakFix", false, "Fixes Ravagers breaking blocks on the client side,\nwhich causes annoying ghost blocks/block desyncs");
         public static final ConfigBoolean CHEST_MIRROR_FIX                  = new ConfigBoolean("chestMirrorFix", false, "Fixes chest mirroring (eg, with litematica)");
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 ELYTRA_FIX,
                 MAC_HORIZONTAL_SCROLL,
-                PROFILER_CHART_FIX,
-                RAVAGER_CLIENT_BLOCK_BREAK_FIX,
-                CHEST_MIRROR_FIX
+                CHEST_MIRROR_FIX,
+                RAVAGER_CLIENT_BLOCK_BREAK_FIX
         );
     }
 
     public static class Lists
     {
-        public static final ConfigOptionList BLOCK_BREAK_RESTRICTION_LIST_TYPE  = new ConfigOptionList("blockBreakRestrictionListType", ListType.NONE, "The restriction list type for the Block Type Break Restriction tweak");
-        public static final ConfigStringList BLOCK_BREAK_RESTRICTION_BLACKLIST  = new ConfigStringList("blockBreakRestrictionBlackList", ImmutableList.of("minecraft:budding_amethyst"), "The blocks that are NOT allowed to be broken while the Block Break Restriction tweak is enabled,\nif the blockBreakRestrictionListType is set to Black List");
-        public static final ConfigStringList BLOCK_BREAK_RESTRICTION_WHITELIST  = new ConfigStringList("blockBreakRestrictionWhiteList", ImmutableList.of(), "The only blocks that can be broken while the Block Break Restriction tweak is enabled,\nif the blockBreakRestrictionListType is set to White List");
+        public static final ConfigOptionList BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE = new ConfigOptionList("blockTypeBreakRestrictionListType", ListType.BLACKLIST, "The restriction list type for the Block Type Break Restriction tweak");
+        public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST = new ConfigStringList("blockTypeBreakRestrictionBlackList", ImmutableList.of("minecraft:budding_amethyst"), "The blocks that are NOT allowed to be broken while the Block Break Restriction tweak is enabled,\nif the blockBreakRestrictionListType is set to Black List");
+        public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST = new ConfigStringList("blockTypeBreakRestrictionWhiteList", ImmutableList.of(), "The only blocks that can be broken while the Block Break Restriction tweak is enabled,\nif the blockBreakRestrictionListType is set to White List");
         public static final ConfigStringList CREATIVE_EXTRA_ITEMS               = new ConfigStringList("creativeExtraItems", ImmutableList.of("minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block", "minecraft:dragon_egg", "minecraft:structure_void", "minecraft:structure_block", "minecraft:structure_block{BlockEntityTag:{mode:\"SAVE\"}}", "minecraft:structure_block{BlockEntityTag:{mode:\"LOAD\"}}", "minecraft:structure_block{BlockEntityTag:{mode:\"CORNER\"}}"), "Extra items that should be appended to the creative inventory.\nCurrently these will appear in the Transportation category.\nIn the future the group per added item will be customizable.");
         public static final ConfigOptionList FAST_PLACEMENT_ITEM_LIST_TYPE      = new ConfigOptionList("fastPlacementItemListType", ListType.BLACKLIST, "The item restriction type for the Fast Block Placement tweak");
         public static final ConfigStringList FAST_PLACEMENT_ITEM_BLACKLIST      = new ConfigStringList("fastPlacementItemBlackList", ImmutableList.of("minecraft:ender_chest", "minecraft:white_shulker_box"), "The items that are NOT allowed to be used for the Fast Block Placement tweak,\nif the fastPlacementItemListType is set to Black List");
@@ -254,9 +264,9 @@ public class Configs implements IConfigHandler
         public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "", "The block positions you want to blacklist");
       
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-                BLOCK_BREAK_RESTRICTION_LIST_TYPE,
-                BLOCK_BREAK_RESTRICTION_BLACKLIST,
-                BLOCK_BREAK_RESTRICTION_WHITELIST,
+                BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE,
+                BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST,
+                BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST,
                 CREATIVE_EXTRA_ITEMS,
                 FAST_PLACEMENT_ITEM_LIST_TYPE,
                 FAST_RIGHT_CLICK_BLOCK_LIST_TYPE,
@@ -289,6 +299,7 @@ public class Configs implements IConfigHandler
     {
         public static final ConfigBooleanHotkeyed       DISABLE_ARMOR_STAND_RENDERING   = new ConfigBooleanHotkeyed("disableArmorStandRendering",           false, "", "Disables all Armor Stand entity rendering");
         public static final ConfigBooleanHotkeyed       DISABLE_AXE_STRIPPING           = new ConfigBooleanHotkeyed("disableAxeStripping",                  false, "", "Disables stripping logs with an axe");
+        public static final ConfigBooleanHotkeyed       DISABLE_BAT_SPAWNING            = new ConfigBooleanClient  ("disableBatSpawning",                   false, "", "Disables Bat spawning in single player");
         public static final ConfigBooleanHotkeyed       DISABLE_BLOCK_BREAK_PARTICLES   = new ConfigBooleanHotkeyed("disableBlockBreakingParticles",        false, "", "Removes the block breaking particles.\n(This is originally from usefulmod by nessie.)");
         public static final ConfigBooleanHotkeyed       DISABLE_CLIENT_BLOCK_EVENTS     = new ConfigBooleanHotkeyed("disableClientBlockEvents",           false, "", "Disables block event rendering (eg pistons animations)");
         public static final ConfigBooleanHotkeyed       DISABLE_DOUBLE_TAP_SPRINT       = new ConfigBooleanHotkeyed("disableDoubleTapSprint",               false, "", "Disables the double-tap-forward-key sprinting");
@@ -307,6 +318,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBooleanHotkeyed       DISABLE_MOB_SPAWNER_MOB_RENDER  = new ConfigBooleanHotkeyed("disableMobSpawnerMobRendering",        false, "", "Removes the entity rendering from mob spawners");
         public static final ConfigBooleanHotkeyed       DISABLE_NAUSEA_EFFECT           = new ConfigBooleanHotkeyed("disableNauseaEffect",                  false, "", "Disables the nausea visual effects");
         public static final ConfigBooleanHotkeyed       DISABLE_NETHER_FOG              = new ConfigBooleanHotkeyed("disableNetherFog",                     false, "", "Removes the fog in the Nether");
+        public static final ConfigBooleanHotkeyed       DISABLE_NETHER_PORTAL_SOUND     = new ConfigBooleanHotkeyed("disableNetherPortalSound",             false, "", "Disables the Nether Portal sound");
         public static final ConfigBooleanHotkeyed       DISABLE_OBSERVER                = new ConfigBooleanClient  ("disableObserver",                      false, "", "Disable Observers from triggering at all");
         public static final ConfigBooleanHotkeyed       DISABLE_OFFHAND_RENDERING       = new ConfigBooleanHotkeyed("disableOffhandRendering",              false, "", "Disables the offhand item from getting rendered");
         public static final ConfigBooleanHotkeyed       DISABLE_PARTICLES               = new ConfigBooleanHotkeyed("disableParticles",                     false, "", "Disables all particles");
@@ -316,6 +328,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBooleanHotkeyed       DISABLE_RENDER_DISTANCE_FOG     = new ConfigBooleanHotkeyed("disableRenderDistanceFog",             false, "", "Disables the fog that increases around the render distance");
         public static final ConfigBooleanHotkeyed       DISABLE_SCOREBOARD_RENDERING    = new ConfigBooleanHotkeyed("disableScoreboardRendering",           false, "", "Removes the sidebar scoreboard rendering");
         public static final ConfigBooleanHotkeyed       DISABLE_SHULKER_BOX_TOOLTIP     = new ConfigBooleanHotkeyed("disableShulkerBoxTooltip",             false, "", "Disables the vanilla text tooltip for Shulker Box contents");
+        public static final ConfigBooleanHotkeyed       DISABLE_SHOVEL_PATHING          = new ConfigBooleanHotkeyed("disableShovelPathing",                 false, "", "Disables converting grass etc. to Path Blocks with a shovel");
         public static final ConfigBooleanHotkeyed       DISABLE_SIGN_GUI                = new ConfigBooleanHotkeyed("disableSignGui",                       false, "", "Prevent the Sign edit GUI from opening");
         public static final ConfigBooleanHotkeyed       DISABLE_SLIME_BLOCK_SLOWDOWN    = new ConfigBooleanHotkeyed("disableSlimeBlockSlowdown",            false, "", "Removes the slowdown from walking on Slime Blocks.\n(This is originally from usefulmod by nessie.)");
         public static final ConfigBooleanHotkeyed       DISABLE_TILE_ENTITY_RENDERING   = new ConfigBooleanHotkeyed("disableTileEntityRendering",           false, "", "Prevents all TileEntity renderers from rendering");
@@ -329,6 +342,7 @@ public class Configs implements IConfigHandler
         public static final ImmutableList<IHotkeyTogglable> OPTIONS = ImmutableList.of(
                 DISABLE_ARMOR_STAND_RENDERING,
                 DISABLE_AXE_STRIPPING,
+                DISABLE_BAT_SPAWNING,
                 DISABLE_BLOCK_BREAK_PARTICLES,
                 DISABLE_CLIENT_BLOCK_EVENTS,
                 DISABLE_DOUBLE_TAP_SPRINT,
@@ -347,6 +361,7 @@ public class Configs implements IConfigHandler
                 DISABLE_MOB_SPAWNER_MOB_RENDER,
                 DISABLE_NAUSEA_EFFECT,
                 DISABLE_NETHER_FOG,
+                DISABLE_NETHER_PORTAL_SOUND,
                 DISABLE_OBSERVER,
                 DISABLE_OFFHAND_RENDERING,
                 DISABLE_PARTICLES,
@@ -356,6 +371,7 @@ public class Configs implements IConfigHandler
                 DISABLE_RENDER_DISTANCE_FOG,
                 DISABLE_SCOREBOARD_RENDERING,
                 DISABLE_SHULKER_BOX_TOOLTIP,
+                DISABLE_SHOVEL_PATHING,
                 DISABLE_SIGN_GUI,
                 DISABLE_SLIME_BLOCK_SLOWDOWN,
                 DISABLE_TILE_ENTITY_RENDERING,
@@ -426,10 +442,10 @@ public class Configs implements IConfigHandler
         InventoryUtils.setRepairModeSlots(Lists.REPAIR_MODE_SLOTS.getStrings());
         InventoryUtils.setUnstackingItems(Lists.UNSTACKING_ITEMS.getStrings());
 
-        PlacementTweaks.BLOCK_BREAK_RESTRICTION.setListType((ListType) Lists.BLOCK_BREAK_RESTRICTION_LIST_TYPE.getOptionListValue());
-        PlacementTweaks.BLOCK_BREAK_RESTRICTION.setListContents(
-                Lists.BLOCK_BREAK_RESTRICTION_BLACKLIST.getStrings(),
-                Lists.BLOCK_BREAK_RESTRICTION_WHITELIST.getStrings());
+        PlacementTweaks.BLOCK_TYPE_BREAK_RESTRICTION.setListType((ListType) Lists.BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE.getOptionListValue());
+        PlacementTweaks.BLOCK_TYPE_BREAK_RESTRICTION.setListContents(
+                Lists.BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST.getStrings(),
+                Lists.BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST.getStrings());
 
         PlacementTweaks.FAST_RIGHT_CLICK_BLOCK_RESTRICTION.setListType((ListType) Lists.FAST_RIGHT_CLICK_BLOCK_LIST_TYPE.getOptionListValue());
         PlacementTweaks.FAST_RIGHT_CLICK_BLOCK_RESTRICTION.setListContents(
@@ -462,6 +478,13 @@ public class Configs implements IConfigHandler
                 Lists.POTION_WARNING_BLACKLIST.getStrings(),
                 Lists.POTION_WARNING_WHITELIST.getStrings());
         RenderTweaks.rebuildLists();
+
+        if (MinecraftClient.getInstance().world == null)
+        {
+            // Turn off after loading the configs, just in case it was enabled in the config somehow.
+            // But only if we are currently not in a world, since changing configs also re-loads them when closing the menu.
+            FeatureToggle.TWEAK_FREE_CAMERA.setBooleanValue(false);
+        }
     }
 
     public static void saveToFile()

@@ -86,16 +86,6 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         }
     }
 
-    @Inject(method = "tickMovement", at = @At(value = "INVOKE", ordinal = 0, shift = At.Shift.AFTER,
-            target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V"))
-    private void fixElytraDeployment(CallbackInfo ci)
-    {
-        if (Configs.Fixes.ELYTRA_FIX.getBooleanValue() && this.isSubmergedInWater() == false)
-        {
-            this.setFlag(7, true);
-        }
-    }
-
     @Inject(method = "tickMovement", at = @At(value = "FIELD",
                 target = "Lnet/minecraft/entity/player/PlayerAbilities;allowFlying:Z", ordinal = 1))
     private void overrideSprint(CallbackInfo ci)
@@ -103,7 +93,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         if (FeatureToggle.TWEAK_PERMANENT_SPRINT.getBooleanValue() &&
             ! this.isSprinting() && ! this.isUsingItem() && this.input.movementForward >= 0.8F &&
             (this.getHungerManager().getFoodLevel() > 6.0F || this.getAbilities().allowFlying) &&
-            ! this.hasStatusEffect(StatusEffects.BLINDNESS))
+            ! this.hasStatusEffect(StatusEffects.BLINDNESS) && ! this.isTouchingWater())
         {
             this.setSprinting(true);
         }

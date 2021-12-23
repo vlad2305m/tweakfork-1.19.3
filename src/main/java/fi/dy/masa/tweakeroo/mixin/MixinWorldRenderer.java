@@ -64,7 +64,7 @@ public abstract class MixinWorldRenderer
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE_STRING",
-            target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=updatechunks"))
+            target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=compilechunks"))
     private void postSetupTerrain(net.minecraft.client.util.math.MatrixStack matrixStack, float partialTicks, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer renderer, LightmapTextureManager lightmap, Matrix4f matrix4f, CallbackInfo ci)
     {
         CameraUtils.setFreeCameraSpectator(false);
@@ -100,11 +100,7 @@ public abstract class MixinWorldRenderer
             at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD,
             target = "Lnet/minecraft/client/render/WorldRenderer;lastCameraChunkUpdateX:D"))
     private void rebuildChunksAroundCamera1(
-            Camera camera,
-            Frustum frustum,
-            boolean hasForcedFrustum,
-            boolean spectator,
-            CallbackInfo ci)
+            Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean spectator, CallbackInfo ci)
     {
         if (FeatureToggle.TWEAK_FREE_CAMERA.getBooleanValue())
         {
@@ -120,11 +116,7 @@ public abstract class MixinWorldRenderer
             at = @At(value = "INVOKE", shift = At.Shift.AFTER,
             target = "Lnet/minecraft/client/render/BuiltChunkStorage;updateCameraPosition(DD)V"))
     private void rebuildChunksAroundCamera2(
-            Camera camera,
-            Frustum frustum,
-            boolean hasForcedFrustum,
-            boolean spectator,
-            CallbackInfo ci)
+            Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean spectator, CallbackInfo ci)
     {
         // Mark the chunks at the edge of the free camera's render range for rebuilding
         // when the camera moves around.

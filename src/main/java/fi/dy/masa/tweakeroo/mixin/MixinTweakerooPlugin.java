@@ -1,14 +1,11 @@
 package fi.dy.masa.tweakeroo.mixin;
 
 import org.objectweb.asm.tree.ClassNode;
-import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.util.List;
 import java.util.Set;
-
-import net.fabricmc.loader.api.FabricLoader;
 
 public class MixinTweakerooPlugin implements IMixinConfigPlugin
 {

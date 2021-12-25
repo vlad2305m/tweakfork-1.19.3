@@ -65,6 +65,7 @@
         "MixinSignEditScreen",
         "MixinSlimeBlock",
         "MixinStructureBlockBlockEntity",
+        "MixinStructureBlockBlockEntityRenderer",
         "MixinTeleportSpectatorMenu",
         "MixinTradeOffer",
         "MixinUpdateStructureBlockC2SPacket",

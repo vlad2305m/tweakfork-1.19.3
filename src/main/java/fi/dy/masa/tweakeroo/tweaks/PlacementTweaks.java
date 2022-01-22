@@ -721,7 +721,7 @@ public class PlacementTweaks
                 handleAccurate = true;
             }
 
-            if ((handleAccurate || shouldUseAccurateAfterClick) && FeatureToggle.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue())
+            if ((handleAccurate || shouldUseAccurateAfterClick) && Configs.Generic.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue())
             {
                 // Carpet-Extra mod accurate block placement protocol support
                 double relX = hitVec.x - posNew.getX();
@@ -948,13 +948,13 @@ public class PlacementTweaks
         Direction facing = sideIn;
         boolean flexible = FeatureToggle.TWEAK_FLEXIBLE_BLOCK_PLACEMENT.getBooleanValue();
         boolean rotationHeld = Hotkeys.FLEXIBLE_BLOCK_PLACEMENT_ROTATION.getKeybind().isKeybindHeld();
-        boolean rememberFlexible = FeatureToggle.REMEMBER_FLEXIBLE.getBooleanValue();
+        boolean rememberFlexible = Configs.Generic.REMEMBER_FLEXIBLE.getBooleanValue();
         boolean rotation = rotationHeld || (rememberFlexible && firstWasRotation) || directionHold != null || tempDirection != null;
         boolean accurate = FeatureToggle.TWEAK_ACCURATE_BLOCK_PLACEMENT.getBooleanValue();
         boolean keys = Hotkeys.ACCURATE_BLOCK_PLACEMENT_IN.getKeybind().isKeybindHeld() || Hotkeys.ACCURATE_BLOCK_PLACEMENT_REVERSE.getKeybind().isKeybindHeld();
         accurate = accurate && keys;
 
-        boolean shouldUseAccurateAfterClick = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue() && canUseCarpetProtocolForAfterclicker(stackOriginal);
+        boolean shouldUseAccurateAfterClick = FeatureToggle.TWEAK_AFTER_CLICKER.getBooleanValue() && Configs.Generic.CARPET_ACCURATE_PLACEMENT_PROTOCOL.getBooleanValue() && canUseCarpetProtocolForAfterclicker(stackOriginal);
 
         // Carpet-Extra mod accurate block placement protocol support
         if (flexible && rotation && accurate == false &&

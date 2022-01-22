@@ -16,7 +16,7 @@ import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 @Mixin(LightingProvider.class)
-public class MixinLightingProvider
+public abstract class MixinLightingProvider
 {
     @Shadow @Final @Nullable private ChunkLightProvider<?, ?> blockLightProvider;
 

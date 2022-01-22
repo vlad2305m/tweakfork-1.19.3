@@ -16,14 +16,15 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
 13. disableNametags -> Disables nametag rendering for unobstrusive replays
 14. disableBossBar -> Disables the boss bar rendering
 15. chestMirrorFix -> Fixes wonky chest mirroring behavior (works with litematica).
-16. tweakAfkTimeout -> Automatically disconnects you (or does command/send chat) when afk.
-17. tweakWeatherOverride -> Overrides the weather client side
-18. tweakContainerScan -> Scans containers and tells you how many items/types are in it. Useful for debugging storage tech.
+16. lavaDestroyFix -> Fixes [MC-246465](https://bugs.mojang.com/browse/MC-246465).
+17. tweakAfkTimeout -> Automatically disconnects you (or does command/send chat) when afk.
+18. tweakWeatherOverride -> Overrides the weather client side
+19. tweakContainerScan -> Scans containers and tells you how many items/types are in it. Useful for debugging storage tech.
     * Easily see which containers have items or not
     * Compile a list of all the items it found
     * Search the list and click to easily find the location of the items.
     * To use, set the `openItemList` hotkey in Hotkeys.
-19. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (Works with optifucked and sodium+iris). Selectively renders blocks depending on position based white/blacklists.
+20. Selectively Visible Blocks -> Allows you to make nice replays/vids with transparent parts (Works with optifucked and sodium+iris). Selectively renders blocks depending on position based white/blacklists.
     * Lists.selectiveBlocksWhitelist and Lists.selectiveBlocksBlacklist -> strings encoding the white/blacklists. Format: `x,y,z|x2,y2,z2|...`
     * tweakAreaSelector -> allows you to add/remove selection from list easily with areaSelectionAddToList and areaSelectionRemoveFromList hotkeys. works in replay editor. Use areaSelectionOffset hotkey to offset selection box.
     * tweakSelectiveBlocksRendering -> Turns on selective block rendering with the lists. Turn on before you render replay.
@@ -33,7 +34,7 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
     * Generic.selectiveBlocksNoHit -> When enabled, disables trace-hitting hidden blocks. (hint: can also use to build stuff in hard to reach places in survival mode)
     * Generic.selectiveBlocksHideEntities -> When enabled, selective block rendering will also hide entities.
     * Generic.selectiveBlocksHideParticles -> When enabled, selective block rendering will also hide particles.
-20. Noteblock edit -> tune noteblocks without getting carpal tunnel
+21. Noteblock edit -> tune noteblocks without getting carpal tunnel
     * While looking at noteblock, press number keys to add the amount of notes. eg, for high F note 23, press 1 two times then press 3 (1 = 10, 0 = reset)
     * Use plus key to add 1, minus key to subtract 1. 
     * Press letter keys A-G to set notes by letter name (only when Configs.Generic.noteEditLetters is set to true). Use Tab to toggle octave.

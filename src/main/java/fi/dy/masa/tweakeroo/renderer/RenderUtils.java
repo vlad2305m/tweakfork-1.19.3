@@ -38,6 +38,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
@@ -49,7 +50,7 @@ public class RenderUtils
     {
         PlayerEntity player = mc.player;
 
-        if (player != null)
+        if (player != null && mc.currentScreen == null)
         {
             final int scaledWidth = GuiUtils.getScaledWindowWidth();
             final int scaledHeight = GuiUtils.getScaledWindowHeight();
@@ -83,6 +84,7 @@ public class RenderUtils
             int y = startY;
             TextRenderer textRenderer = mc.textRenderer;
 
+            Matrix4f modelViewMatrix = RenderSystem.getModelViewMatrix().copy();
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.bindTexture(HandledScreen.BACKGROUND_TEXTURE);
             fi.dy.masa.malilib.render.RenderUtils.drawTexturedRect(x - 1, y - 1, 7, 83, 9 * 18, 3 * 18);
@@ -108,6 +110,8 @@ public class RenderUtils
                 y += 18;
                 x = startX;
             }
+
+            RenderSystem.getModelViewMatrix().load(modelViewMatrix);
         }
     }
 

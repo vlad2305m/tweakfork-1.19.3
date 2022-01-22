@@ -36,6 +36,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.MiningToolItem;
+import net.minecraft.item.ShovelItem;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Property;
@@ -48,7 +49,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import fi.dy.masa.tweakeroo.util.MessageOutputType;
+import fi.dy.masa.malilib.util.MessageOutputType;
 
 public class PlacementTweaks
 {
@@ -389,10 +390,18 @@ public class PlacementTweaks
         InventoryUtils.trySwapCurrentToolIfNearlyBroken();
 
         ItemStack stackPre = player.getStackInHand(hand);
+        BlockPos posIn = hitResult.getBlockPos();
 
         if (Configs.Disable.DISABLE_AXE_STRIPPING.getBooleanValue() &&
             stackPre.getItem() instanceof AxeItem &&
-            MiscUtils.isStrippableLog(world, hitResult.getBlockPos()))
+            MiscUtils.isStrippableLog(world, posIn))
+        {
+            return ActionResult.PASS;
+        }
+
+        if (Configs.Disable.DISABLE_SHOVEL_PATHING.getBooleanValue() &&
+            stackPre.getItem() instanceof ShovelItem &&
+            MiscUtils.isShovelPathConvertableBlock(world, posIn))
         {
             return ActionResult.PASS;
         }
@@ -400,7 +409,6 @@ public class PlacementTweaks
         stackPre = stackPre.copy();
         boolean restricted = FeatureToggle.TWEAK_PLACEMENT_RESTRICTION.getBooleanValue() || FeatureToggle.TWEAK_PLACEMENT_GRID.getBooleanValue();
         Direction sideIn = hitResult.getSide();
-        BlockPos posIn = hitResult.getBlockPos();
         Vec3d hitVec = hitResult.getPos();
         Direction playerFacingH = player.getHorizontalFacing();
         HitPart hitPart = PositionUtils.getHitPart(sideIn, playerFacingH, posIn, hitVec);
@@ -615,7 +623,7 @@ public class PlacementTweaks
 
         if (handleFlexible == false &&
             FeatureToggle.TWEAK_FAKE_SNEAK_PLACEMENT.getBooleanValue() &&
-            stack.isEmpty() == false)
+            stack.getItem() instanceof BlockItem)
         {
             BlockHitResult hitResult = new BlockHitResult(hitVec, sideIn, posIn, false);
             ItemPlacementContext ctx = new ItemPlacementContext(new ItemUsageContext(player, hand, hitResult));

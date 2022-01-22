@@ -67,7 +67,6 @@
         "MixinRavagerEntity",
         "MixinScaffoldingBlock",
         "MixinSculkSensor",
-        "MixinShovelItem",
         "MixinShulkerBoxBlock",
         "MixinSignBlockEntity",
         "MixinSignEditScreen",

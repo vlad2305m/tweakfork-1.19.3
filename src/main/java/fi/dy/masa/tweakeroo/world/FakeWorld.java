@@ -19,7 +19,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.MutableWorldProperties;
@@ -45,7 +45,7 @@ public class FakeWorld extends World
 {
     private static final RegistryKey<World> REGISTRY_KEY = RegistryKey.of(Registry.WORLD_KEY, new Identifier(Reference.MOD_ID, "fake_world"));
     public static final DimensionType DIMENSIONTYPE = DimensionType.create(OptionalLong.of(6000L), false, false, false, false, 1.0,
-    false, false, false, false, false, -64, 384, 384, BlockTags.INFINIBURN_END.getId(),
+    false, false, false, false, false, -64, 384, 384, BlockTags.INFINIBURN_END,
     DimensionType.OVERWORLD_ID, 0.0F);
 
     private final MinecraftClient mc;
@@ -55,7 +55,7 @@ public class FakeWorld extends World
 
     public FakeWorld(DynamicRegistryManager registry, MutableWorldProperties mutableWorldProperties, DimensionType dimensionType, Supplier<Profiler> supplier, int loadDistance)
     {
-        super(mutableWorldProperties, REGISTRY_KEY, dimensionType, supplier, true, true, 0L);
+        super(mutableWorldProperties, REGISTRY_KEY, RegistryEntry.of(dimensionType), supplier, true, true, 0L);
         registryManager = registry;
         this.mc = MinecraftClient.getInstance();
         this.chunkManager = new FakeChunkManager(this, loadDistance);
@@ -247,12 +247,6 @@ public class FakeWorld extends World
     }
 
     @Override
-    public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public float getBrightness(Direction direction, boolean shaded) {
         // TODO Auto-generated method stub
         return 0;
@@ -321,13 +315,13 @@ public class FakeWorld extends World
     }
 
     @Override
-    public TagManager getTagManager() {
+    protected EntityLookup<Entity> getEntityLookup() {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    protected EntityLookup<Entity> getEntityLookup() {
+    public RegistryEntry<Biome> getGeneratorStoredBiome(int var1, int var2, int var3) {
         // TODO Auto-generated method stub
         return null;
     }

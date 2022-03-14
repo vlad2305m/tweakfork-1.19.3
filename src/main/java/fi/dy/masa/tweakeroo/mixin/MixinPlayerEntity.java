@@ -38,7 +38,7 @@ public abstract class MixinPlayerEntity extends LivingEntity
               target = "Lnet/minecraft/entity/player/PlayerEntity;clipAtLedge()Z", ordinal = 0))
     private boolean fakeSneaking(PlayerEntity entity)
     {
-        if (FeatureToggle.TWEAK_FAKE_SNEAKING.getBooleanValue() && ((Object) this) instanceof ClientPlayerEntity && !MinecraftClient.getInstance().options.keyJump.isPressed())
+        if (FeatureToggle.TWEAK_FAKE_SNEAKING.getBooleanValue() && ((Object) this) instanceof ClientPlayerEntity && !MinecraftClient.getInstance().options.jumpKey.isPressed())
         {
             return true;
         }

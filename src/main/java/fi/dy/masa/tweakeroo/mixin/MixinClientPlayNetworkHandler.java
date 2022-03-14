@@ -50,7 +50,7 @@ public abstract class MixinClientPlayNetworkHandler
     private int chunkLoadDistance;
 
     @Shadow
-    private DynamicRegistryManager registryManager;
+    private DynamicRegistryManager.Immutable registryManager;
     
     @Inject(method = "onOpenScreen", at = @At("HEAD"), cancellable = true)
     private void onOpenScreenListener(OpenScreenS2CPacket packet, CallbackInfo ci) {

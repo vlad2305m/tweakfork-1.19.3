@@ -116,11 +116,11 @@ public class RenderTweaks {
         // Dumb rendundancy due to replaymod
         MinecraftClient mc = MinecraftClient.getInstance();
         if (FeatureToggle.TWEAK_AREA_SELECTOR.getBooleanValue()) {
-            if (mc.options.keyAttack.isPressed()) {
+            if (mc.options.attackKey.isPressed()) {
                 select(false);
             }
 
-            if (mc.options.keyUse.isPressed()) {
+            if (mc.options.useKey.isPressed()) {
                 select(true);
             }
         }

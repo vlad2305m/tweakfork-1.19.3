@@ -111,11 +111,6 @@ public class FakeChunkManager extends ChunkManager {
 		return Math.max(2, loadDistance) + 3;
 	}
 
-    @Override
-    public void tick(BooleanSupplier booleanSupplier) {
-        // NO-OP
-    }
-
     private final class FakeChunkMap {
         final AtomicReferenceArray<FakeChunk> chunks;
         final int radius;
@@ -168,5 +163,11 @@ public class FakeChunkManager extends ChunkManager {
             }
         }
 
+    }
+
+    @Override
+    public void tick(BooleanSupplier var1, boolean var2) {
+        // NOOP
+        
     }
 }

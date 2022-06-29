@@ -8,12 +8,6 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nullable;
 
-/*
-import fi.dy.masa.tweakeroo.gui.GuiItemList;
-import fi.dy.masa.tweakeroo.gui.Icons;
-import fi.dy.masa.tweakeroo.materials.ItemListEntry;
-import fi.dy.masa.tweakeroo.materials.ItemListSorter;
-*/
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;

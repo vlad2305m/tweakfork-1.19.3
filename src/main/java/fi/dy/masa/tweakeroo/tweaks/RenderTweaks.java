@@ -53,7 +53,6 @@ import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -1185,7 +1184,7 @@ public class RenderTweaks {
 
         endframebuffer.setClearColor(0, 0, 0, 1);
         endframebuffer.clear(false);
-        RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
+        RenderSystem.assertOnGameThreadOrInit();
         GlStateManager._viewport(x, y, width, height);
 
         Matrix4f matrix4f = Matrix4f.projectionMatrix((float) width, (float) (-height), 1000.0F, 3000.0F);

@@ -1,6 +1,5 @@
 package fi.dy.masa.tweakeroo.mixin;
 
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;

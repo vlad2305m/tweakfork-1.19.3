@@ -1,7 +1,6 @@
 package fi.dy.masa.tweakeroo.mixin;
 
 import javax.annotation.Nullable;
-import javax.xml.catalog.CatalogFeatures.Feature;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

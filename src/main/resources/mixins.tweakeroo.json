@@ -44,6 +44,7 @@
         "MixinGameRenderer",
         "MixinHeldItemRenderer",
         "MixinInGameHud",
+        "MixinInputUtil",
         "MixinItem",
         "MixinItemEntity",
         "MixinItemGroup",
@@ -79,6 +80,7 @@
         "MixinTradeOffer",
         "MixinUpdateStructureBlockC2SPacket",
         "MixinWidgetConfigOptionBase",
+        "MixinWindow",
         "MixinWorld",
         "MixinWorldRenderer"
     ],

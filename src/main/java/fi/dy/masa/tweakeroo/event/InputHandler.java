@@ -132,7 +132,7 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
                     for (int i = 0; i < offset; i++)
                     {
                         BlockHitResult context = new BlockHitResult(new Vec3d(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()),Direction.NORTH, hit.getBlockPos(), false);
-                        mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, context);
+                        mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, context);
                     }
                     return true;
                 }
@@ -164,7 +164,7 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
 
                 if (stack.isEmpty() == false && stack.getItem() instanceof BlockItem)
                 {
-                    mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, context);
+                    mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, context);
                     return true;
                 }
 
@@ -172,7 +172,7 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
 
                 if (stack.isEmpty() == false && stack.getItem() instanceof BlockItem)
                 {
-                    mc.interactionManager.interactBlock(mc.player, mc.world, Hand.OFF_HAND, context);
+                    mc.interactionManager.interactBlock(mc.player, Hand.OFF_HAND, context);
                     return true;
                 }
             }

@@ -6,7 +6,6 @@ import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.tweakeroo.config.Configs;
-import fi.dy.masa.tweakeroo.mixin.IMixinHorseBaseEntity;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.RayTraceUtils;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
@@ -28,7 +27,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -43,6 +42,13 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
+import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.tweakeroo.config.Configs;
+import fi.dy.masa.tweakeroo.mixin.IMixinAbstractHorseEntity;
+import fi.dy.masa.tweakeroo.util.MiscUtils;
+import fi.dy.masa.tweakeroo.util.RayTraceUtils;
+import fi.dy.masa.tweakeroo.util.SnapAimMode;
 
 public class RenderUtils
 {
@@ -174,9 +180,9 @@ public class RenderUtils
             {
                 inv = ((VillagerEntity) entity).getInventory();
             }
-            else if (entity instanceof HorseBaseEntity)
+            else if (entity instanceof AbstractHorseEntity)
             {
-                inv = ((IMixinHorseBaseEntity) entity).getHorseInventory();
+                inv = ((IMixinAbstractHorseEntity) entity).tweakeroo_getHorseInventory();
             }
         }
 
@@ -187,7 +193,7 @@ public class RenderUtils
 
         if (inv != null && inv.size() > 0)
         {
-            final boolean isHorse = (entityLivingBase instanceof HorseBaseEntity);
+            final boolean isHorse = (entityLivingBase instanceof AbstractHorseEntity);
             final int totalSlots = isHorse ? inv.size() - 2 : inv.size();
             final int firstSlot = isHorse ? 2 : 0;
 
@@ -697,40 +703,6 @@ public class RenderUtils
         buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
     }
 
-    public static void fillRect(Matrix4f matrix, int x1, int y1, int x2, int y2, int color) {
-		int j;
-		if (x1 < x2) {
-			j = x1;
-			x1 = x2;
-			x2 = j;
-		}
-
-		if (y1 < y2) {
-			j = y1;
-			y1 = y2;
-			y2 = j;
-		}
-
-		float f = (float)(color >> 24 & 255) / 255.0F;
-		float g = (float)(color >> 16 & 255) / 255.0F;
-		float h = (float)(color >> 8 & 255) / 255.0F;
-		float k = (float)(color & 255) / 255.0F;
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		RenderSystem.enableBlend();
-		RenderSystem.disableTexture();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0.0F).color(g, h, k, f).next();
-		bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
-		bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, k, f).next();
-		bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, k, f).next();
-		bufferBuilder.end();
-		BufferRenderer.draw(bufferBuilder);
-		RenderSystem.enableTexture();
-		RenderSystem.disableBlend();
-	}
-    
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, MatrixStack matrices, MinecraftClient mc)
     {
         RenderSystem.enableBlend();

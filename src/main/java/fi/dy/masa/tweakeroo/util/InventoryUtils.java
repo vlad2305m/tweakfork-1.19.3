@@ -39,6 +39,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -50,7 +51,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class InventoryUtils
@@ -133,7 +133,7 @@ public class InventoryUtils
         {
             try
             {
-                Item item = Registry.ITEM.get(new Identifier(name));
+                Item item = Registries.ITEM.get(new Identifier(name));
 
                 if (item != null && item != Items.AIR)
                 {
@@ -204,7 +204,7 @@ public class InventoryUtils
                 {
                     try
                     {
-                        Optional<Item> weapon = Registry.ITEM.getOrEmpty(new Identifier(itemId));
+                        Optional<Item> weapon = Registries.ITEM.getOrEmpty(new Identifier(itemId));
 
                         if (weapon.isPresent())
                         {
@@ -228,7 +228,7 @@ public class InventoryUtils
                 {
                     try
                     {
-                        Optional<EntityType<?>> entity = Registry.ENTITY_TYPE.getOrEmpty(new Identifier(entity_id));
+                        Optional<EntityType<?>> entity = Registries.ENTITY_TYPE.getOrEmpty(new Identifier(entity_id));
 
                         if (entity.isPresent())
                         {
@@ -918,7 +918,7 @@ public class InventoryUtils
 
             // Only accept regular inventory slots (no crafting, armor slots, or offhand)
             if (fi.dy.masa.malilib.util.InventoryUtils.isRegularInventorySlot(slot.id, false) &&
-                stackSlot.isItemEqualIgnoreDamage(stackReference) &&
+                stackSlot.isItemEqual(stackReference) &&
                 stackSlot.getMaxDamage() - stackSlot.getDamage() >= minDurabilityLeft &&
                 hasSameIshEnchantments(stackReference, stackSlot))
             {

@@ -32,8 +32,12 @@ public abstract class MixinClientPlayerInteractionManager {
     @Final
     private MinecraftClient client;
 
-    @Inject(method = "interactItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;syncSelectedSlot()V"), cancellable = true)
-    private void onProcessRightClickFirst(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+    @Inject(method = "interactItem", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;syncSelectedSlot()V"),
+            cancellable = true)
+    private void onProcessRightClickFirst(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir)
+    {
         if (CameraUtils.shouldPreventPlayerInputs() ||
                 PlacementTweaks.onProcessRightClickPre(player, hand)) {
             cir.setReturnValue(ActionResult.PASS);
@@ -41,8 +45,18 @@ public abstract class MixinClientPlayerInteractionManager {
         }
     }
 
-    @Inject(method = "interactItem", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;")), at = @At("RETURN"))
-    private void onProcessRightClickPost(PlayerEntity playerEntity, Hand hand, CallbackInfoReturnable<Packet> cir) {
+    @Inject(method = "method_41929",
+            slice = @Slice(from = @At(value = "INVOKE",
+                                      target = "Lnet/minecraft/item/ItemStack;use(" +
+                                               "Lnet/minecraft/world/World;" +
+                                               "Lnet/minecraft/entity/player/PlayerEntity;" +
+                                               "Lnet/minecraft/util/Hand;" +
+                                               ")Lnet/minecraft/util/TypedActionResult;")),
+            at = @At("RETURN"))
+    private void onProcessRightClickPost(Hand hand, PlayerEntity playerEntity,
+                                         MutableObject<?> mutableObject, int sequence,
+                                         CallbackInfoReturnable<Packet<?>> cir)
+    {
         PlacementTweaks.onProcessRightClickPost(playerEntity, hand);
     }
 

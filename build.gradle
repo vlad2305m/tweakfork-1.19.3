@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -21,7 +21,7 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	//modCompile "net.fabricmc.fabric-api:fabric-api:" + project.fabric_version
-    //modCompileOnly "carpet:fabric-carpet:${project.fabric_carpet_version}"
+
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 }
 

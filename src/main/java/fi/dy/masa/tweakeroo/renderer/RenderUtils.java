@@ -9,6 +9,8 @@ import fi.dy.masa.tweakeroo.config.Configs;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.RayTraceUtils;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
@@ -38,9 +40,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
@@ -92,7 +91,8 @@ public class RenderUtils
             int y = startY;
             TextRenderer textRenderer = mc.textRenderer;
 
-            Matrix4f modelViewMatrix = RenderSystem.getModelViewMatrix().copy();
+            Matrix4f modelViewMatrix = new Matrix4f();
+            modelViewMatrix.set(RenderSystem.getModelViewMatrix());
             fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
             fi.dy.masa.malilib.render.RenderUtils.bindTexture(HandledScreen.BACKGROUND_TEXTURE);
             fi.dy.masa.malilib.render.RenderUtils.drawTexturedRect(x - 1, y - 1, 7, 83, 9 * 18, 3 * 18);
@@ -119,7 +119,7 @@ public class RenderUtils
                 x = startX;
             }
 
-            RenderSystem.getModelViewMatrix().load(modelViewMatrix);
+            RenderSystem.getModelViewMatrix().set(modelViewMatrix);
         }
     }
 
@@ -310,8 +310,12 @@ public class RenderUtils
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.translate(width / 2.0, height / 2.0, zLevel);
-        matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw()));
+        float pitch = camera.getPitch();
+        float yaw = camera.getYaw();
+        Quaternionf rot = new Quaternionf().rotationXYZ(-pitch * (float) (Math.PI / 180.0), yaw * (float) (Math.PI / 180.0), 0.0F);
+        matrixStack.multiply(rot);
+        //matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+        //matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
         matrixStack.scale(-1.0F, -1.0F, -1.0F);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.renderCrosshair(10);
@@ -501,20 +505,20 @@ public class RenderUtils
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         startDrawingLines(buffer);
-       
+
         drawBlockBoundingBoxOutlinesBatchedLines(pos, color, expand, buffer, mc);
 
         tessellator.draw();
     }
-    
+
     static void startDrawingLines(BufferBuilder buffer)
     {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-      
+
         RenderSystem.applyModelViewMatrix();
         buffer.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
     }
-    
+
     public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color,
             double expand, BufferBuilder buffer, MinecraftClient mc)
     {
@@ -894,6 +898,6 @@ public class RenderUtils
     }
 
 
-   
-    
+
+
 }

@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 
 import fi.dy.masa.tweakeroo.Tweakeroo;
 import net.minecraft.block.InfestedBlock;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -21,8 +20,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
-import fi.dy.masa.tweakeroo.Tweakeroo;
 
 public class CreativeExtraItems
 {

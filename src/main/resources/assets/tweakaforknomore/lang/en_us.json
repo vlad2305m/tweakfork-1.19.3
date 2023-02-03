@@ -1,0 +1,28 @@
+{
+    "tweakeroo.gui.button.item_list.clear_cache": "Clear Cache",
+    "tweakeroo.gui.button.hover.item_list.write_hold_shift_for_csv": "Hold shift to write in CSV format",
+    "tweakeroo.gui.button.item_list.clear_ignored": "Clear Ignored",
+    "tweakeroo.gui.button.item_list.clear_selected": "Clear Selected",
+    "tweakeroo.gui.button.item_list.write_to_file": "Write to File",
+    "tweakeroo.gui.button.item_list.scan_toggle": "Scanner: %s",
+    "tweakeroo.gui.button.item_list.render_counts_toggle": "Counts Render: %s",
+    "tweakeroo.gui.button.item_list.ignore": "Ignore",
+
+    "tweakeroo.gui.title.configs": "TweakAForkNoMore Configs - %s",
+
+    "tweakeroo.label.weather_override_mode.clear": "Clear",
+    "tweakeroo.label.weather_override_mode.thunder": "Thunder",
+    "tweakeroo.label.weather_override_mode.rain": "Rain",
+    "tweakeroo.label.weather_override_mode.raining_thunder": "RainingThunder",
+
+    "tweakeroo.gui.label.item_list.abbr.shulker_box": "SB",
+    "tweakeroo.gui.label.item_list.title.item": "Item",
+    "tweakeroo.gui.label.item_list.title.total": "Total",
+    "tweakeroo.gui.label.item_list.title.boxes": "Boxes",
+    "tweakeroo.gui.label.item_list.title.containers": "Containers",
+
+
+    "tweakaforknomore.message.cache_cleared": "Cache cleared",
+    "tweakaforknomore.message.afk_detected": "§6!! WARNING§r - AFK action running in %s seconds !!§r",
+    "tweakaforknomore.message.item_list_written_to_file": "Item list written to file"
+}

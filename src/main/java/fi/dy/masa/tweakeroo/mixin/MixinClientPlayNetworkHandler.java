@@ -1,43 +1,42 @@
 package fi.dy.masa.tweakeroo.mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import fi.dy.masa.tweakeroo.config.Configs;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.tweaks.MiscTweaks;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
+import fi.dy.masa.tweakeroo.util.MiscUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientDynamicRegistryType;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
-import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
-import fi.dy.masa.tweakeroo.util.MiscUtils;
+import net.minecraft.world.dimension.DimensionType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.List;
+
+import static fi.dy.masa.tweakeroo.world.FakeWorld.DIMENSIONTYPE;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler
@@ -50,8 +49,8 @@ public abstract class MixinClientPlayNetworkHandler
     private int chunkLoadDistance;
 
     @Shadow
-    private DynamicRegistryManager.Immutable registryManager;
-    
+    private CombinedDynamicRegistries<ClientDynamicRegistryType> combinedDynamicRegistries;
+
     @Inject(method = "onOpenScreen", at = @At("HEAD"), cancellable = true)
     private void onOpenScreenListener(OpenScreenS2CPacket packet, CallbackInfo ci) {
         if (!RenderTweaks.onOpenScreen(packet.getName(),packet.getScreenHandlerType(),packet.getSyncId())) {
@@ -115,14 +114,15 @@ public abstract class MixinClientPlayNetworkHandler
     @Inject(method = "onPlayerRespawn", at=@At(value = "NEW",
     target="net/minecraft/client/world/ClientWorld"))
     private void onPlayerRespawnInject(PlayerRespawnS2CPacket packet, CallbackInfo ci) {
-        RenderTweaks.resetWorld(registryManager,chunkLoadDistance);
+        RenderTweaks.resetWorld(combinedDynamicRegistries.getCombinedRegistryManager(), chunkLoadDistance);
     }
 
     
     @Inject(method = "onGameJoin", at=@At(value = "NEW",
-    target="net/minecraft/client/world/ClientWorld"))
-    private void onGameJoinInject(GameJoinS2CPacket packet, CallbackInfo ci) {
-        RenderTweaks.resetWorld(registryManager,chunkLoadDistance);
+    target="net/minecraft/client/world/ClientWorld"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void onGameJoinInject(GameJoinS2CPacket packet, CallbackInfo ci, List<?> list, RegistryKey<World> registryKey, RegistryEntry<DimensionType> registryEntry, boolean bl, boolean bl2, ClientWorld.Properties properties) {
+        DIMENSIONTYPE = registryEntry;
+        RenderTweaks.resetWorld(combinedDynamicRegistries.getCombinedRegistryManager(), chunkLoadDistance);
     }
 
     @Inject(method = "onChunkData", at=@At("RETURN"))

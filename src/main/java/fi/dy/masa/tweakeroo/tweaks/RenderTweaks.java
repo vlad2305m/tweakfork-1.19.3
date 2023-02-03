@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.util.Color4f;
@@ -52,7 +55,6 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -69,10 +71,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -1093,8 +1092,8 @@ public class RenderTweaks {
 
         if (!valid) {
             System.out.println(CURRENT_CONTAINER + " Desync, type mismatch. Expected block with "
-                    + Registry.SCREEN_HANDLER.getId(CURRENT_SCREEN_TYPE).getPath() + " screen but found a "
-                    + Registry.BLOCK.getId(block).getPath());
+                    + Registries.SCREEN_HANDLER.getId(CURRENT_SCREEN_TYPE).getPath() + " screen but found a "
+                    + Registries.BLOCK.getId(block).getPath());
             onDesync();
             return false;
         }
@@ -1187,7 +1186,7 @@ public class RenderTweaks {
         RenderSystem.assertOnGameThreadOrInit();
         GlStateManager._viewport(x, y, width, height);
 
-        Matrix4f matrix4f = Matrix4f.projectionMatrix((float) width, (float) (-height), 1000.0F, 3000.0F);
+        Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float) width, (float) (-height), 0.0F, 1000.0F, 3000.0F);
         RenderSystem.setProjectionMatrix(matrix4f);
         float f = (float) width;
         float g = (float) height;
@@ -1200,6 +1199,6 @@ public class RenderTweaks {
         bufferBuilder.vertex((double) f, (double) g, 0.0D).texture(h, 0.0F).color(255, 255, 255, 255).next();
         bufferBuilder.vertex((double) f, 0.0D, 0.0D).texture(h, i).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(0.0D, 0.0D, 0.0D).texture(0.0F, i).color(255, 255, 255, 255).next();
-        BufferRenderer.drawWithoutShader(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end()); // TODO figure what this should be
     }
 }

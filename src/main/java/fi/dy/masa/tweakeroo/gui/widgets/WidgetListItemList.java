@@ -16,8 +16,8 @@ import fi.dy.masa.tweakeroo.gui.Icons;
 import fi.dy.masa.tweakeroo.items.ItemListEntry;
 import fi.dy.masa.tweakeroo.items.ItemListSorter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class WidgetListItemList extends WidgetListBase<ItemListEntry, WidgetItemListEntry>
 {
@@ -85,7 +85,7 @@ public class WidgetListItemList extends WidgetListBase<ItemListEntry, WidgetItem
     protected List<String> getEntryStringsForFilter(ItemListEntry entry)
     {
     
-        Identifier rl = Registry.ITEM.getId(entry.getItem());
+        Identifier rl = Registries.ITEM.getId(entry.getItem());
 
         if (rl != null)
         {

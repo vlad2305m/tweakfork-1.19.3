@@ -1,0 +1,26 @@
+{
+	"required": true,
+	"package": "fi.dy.masa.tweakaforknomore.mixin",
+	"minVersion": "0.8",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"config.CallbacksMixin",
+		"config.ConfigsMixin",
+		"config.FeatureToggleMixin",
+		"config.HotkeysMixin",
+		"config.CallbacksMixin$KeyCallbackHotkeysGenericMixin",
+		"config.ConfigsMixin$DisableMixin",
+		"config.ConfigsMixin$FixesMixin",
+		"config.ConfigsMixin$GenericMixin",
+		"config.ConfigsMixin$ListsMixin",
+		"event.ClientTickHandlerMixin",
+		"event.InputHandlerMixin",
+		"event.RenderHandlerMixin",
+		"tweaks.MiscTweaksMixin",
+		"tweaks.PlacementTweaksMixin"
+	],
+	"mixinPriority": 991,
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -34,6 +34,8 @@ Tweakfork is a fork of Masa/Maruhon's mod [Tweakeroo](https://github.com/maruoho
     * Generic.selectiveBlocksNoHit -> When enabled, disables trace-hitting hidden blocks. (hint: can also use to build stuff in hard to reach places in survival mode)
     * Generic.selectiveBlocksHideEntities -> When enabled, selective block rendering will also hide entities.
     * Generic.selectiveBlocksHideParticles -> When enabled, selective block rendering will also hide particles.
+    * tweakSelectiveBlocksRendering -> Turns on selective block types rendering with the lists. It white/blacklists block types inside your hidden area. Turn on before you render replay.
+    * Lists.selectiveBlockTypesWhitelist and Lists.selectiveBlockTypesBlacklist -> block type white/blacklist.
 21. Noteblock edit -> tune noteblocks without getting carpal tunnel
     * While looking at noteblock, press number keys to add the amount of notes. eg, for high F note 23, press 1 two times then press 3 (1 = 10, 0 = reset)
     * Use plus key to add 1, minus key to subtract 1. 

@@ -26,7 +26,6 @@ import fi.dy.masa.tweakeroo.Reference;
 import fi.dy.masa.tweakeroo.tweaks.MiscTweaks;
 import fi.dy.masa.tweakeroo.tweaks.PlacementTweaks;
 import fi.dy.masa.tweakeroo.tweaks.RenderTweaks;
-import fi.dy.masa.tweakeroo.util.CreativeExtraItems;
 import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
@@ -278,6 +277,9 @@ public class Configs implements IConfigHandler
         public static final ConfigOptionList SELECTIVE_BLOCKS_LIST_TYPE         = new ConfigOptionList("selectiveBlocksListType", ListType.NONE, "The list type for selective blocks tweak");
         public static final ConfigString SELECTIVE_BLOCKS_WHITELIST             = new ConfigString("selectiveBlocksWhitelist", "", "The block positions you want to whitelist");
         public static final ConfigString SELECTIVE_BLOCKS_BLACKLIST             = new ConfigString("selectiveBlocksBlacklist", "", "The block positions you want to blacklist");
+        public static final ConfigOptionList SELECTIVE_BLOCK_TYPES_LIST_TYPE    = new ConfigOptionList("selectiveBlockTypesListType", ListType.NONE, "The list type for selective block types tweak");
+        public static final ConfigStringList SELECTIVE_BLOCK_TYPES_WHITELIST    = new ConfigStringList("selectiveBlockTypesWhitelist", ImmutableList.of(), "The block types you want to render in blacklisted positions");
+        public static final ConfigStringList SELECTIVE_BLOCK_TYPES_BLACKLIST    = new ConfigStringList("selectiveBlockTypesBlacklist", ImmutableList.of(), "The block types you do not want to render in blacklisted positions");
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE,
@@ -311,7 +313,10 @@ public class Configs implements IConfigHandler
                 UNSTACKING_ITEMS,
                 SELECTIVE_BLOCKS_LIST_TYPE,
                 SELECTIVE_BLOCKS_WHITELIST,
-                SELECTIVE_BLOCKS_BLACKLIST
+                SELECTIVE_BLOCKS_BLACKLIST,
+                SELECTIVE_BLOCK_TYPES_LIST_TYPE,
+                SELECTIVE_BLOCK_TYPES_WHITELIST,
+                SELECTIVE_BLOCK_TYPES_BLACKLIST
         );
     }
 
@@ -438,14 +443,12 @@ public class Configs implements IConfigHandler
 
     public static ConfigDouble getActiveFlySpeedConfig()
     {
-        switch (Configs.Internal.FLY_SPEED_PRESET.getIntegerValue())
-        {
-            case 0:  return Configs.Generic.FLY_SPEED_PRESET_1;
-            case 1:  return Configs.Generic.FLY_SPEED_PRESET_2;
-            case 2:  return Configs.Generic.FLY_SPEED_PRESET_3;
-            case 3:  return Configs.Generic.FLY_SPEED_PRESET_4;
-            default: return Configs.Generic.FLY_SPEED_PRESET_1;
-        }
+        return switch (Internal.FLY_SPEED_PRESET.getIntegerValue()) {
+            case 1 -> Generic.FLY_SPEED_PRESET_2;
+            case 2 -> Generic.FLY_SPEED_PRESET_3;
+            case 3 -> Generic.FLY_SPEED_PRESET_4;
+            default -> Generic.FLY_SPEED_PRESET_1;
+        };
     }
 
     public static void loadFromFile()
@@ -520,6 +523,11 @@ public class Configs implements IConfigHandler
         MiscTweaks.ENTITY_TYPE_ATTACK_RESTRICTION.setListContents(
                 Lists.ENTITY_TYPE_ATTACK_RESTRICTION_BLACKLIST.getStrings(),
                 Lists.ENTITY_TYPE_ATTACK_RESTRICTION_WHITELIST.getStrings());
+
+        RenderTweaks.SELECTIVE_TYPE_WHITELIST.setListType((ListType) Lists.SELECTIVE_BLOCK_TYPES_LIST_TYPE.getOptionListValue());
+        RenderTweaks.SELECTIVE_TYPE_WHITELIST.setListContents(
+                Lists.SELECTIVE_BLOCK_TYPES_BLACKLIST.getStrings(),
+                Lists.SELECTIVE_BLOCK_TYPES_WHITELIST.getStrings());
 
         if (MinecraftClient.getInstance().world == null)
         {

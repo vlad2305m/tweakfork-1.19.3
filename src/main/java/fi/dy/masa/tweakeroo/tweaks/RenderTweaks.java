@@ -1,17 +1,14 @@
 package fi.dy.masa.tweakeroo.tweaks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import fi.dy.masa.malilib.util.restrictions.BlockRestriction;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import org.joml.Matrix4f;
@@ -84,6 +81,25 @@ public class RenderTweaks {
 
     private static ConcurrentHashMap<Long, ListMapEntry> CACHED_LIST = new ConcurrentHashMap<Long, ListMapEntry>();
 
+    private static boolean STWFlowingLava = false;
+    private static boolean STBFlowingLava = false;
+    private static boolean STWFlowingWater = false;
+    private static boolean STBFlowingWater = false;
+    public static BlockRestriction SELECTIVE_TYPE_WHITELIST = new BlockRestriction(){
+
+        @Override public void setValuesForList(ListType type, List<String> names){
+            if (type == ListType.WHITELIST) {
+                STWFlowingLava = names.contains("flowing_lava");
+                STWFlowingWater = names.contains("flowing_water");
+            }
+            else if (type == ListType.BLACKLIST) {
+                STBFlowingLava = names.contains("flowing_lava");
+                STBFlowingWater = names.contains("flowing_water");
+            }
+            super.setValuesForList(type, names);
+        }
+    };
+
     public static final int PASSTHROUGH = 1024;
 
     private static Color4f colorPos1 = new Color4f(1f, 0.0625f, 0.0625f);
@@ -114,6 +130,8 @@ public class RenderTweaks {
 
     private static ListType previousType = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
     private static boolean previousSelectiveToggle = FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue();
+    private static ListType previousTypesType = (ListType) Configs.Lists.SELECTIVE_BLOCK_TYPES_LIST_TYPE.getOptionListValue();
+    private static boolean previousSelectiveTypesToggle = FeatureToggle.TWEAK_SELECTIVE_BLOCK_TYPES_RENDERING.getBooleanValue();
 
     private static FakeWorld fakeWorld = null;
 
@@ -698,16 +716,33 @@ public class RenderTweaks {
             return true;
         }
 
-        switch ((ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue()) {
-            case NONE:
-                return true;
-            case WHITELIST:
-                return SELECTIVE_WHITELIST.containsKey(key);
-            case BLACKLIST:
-                return !SELECTIVE_BLACKLIST.containsKey(key);
-        }
+        return switch ((ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue()) {
+            case NONE -> true;
+            case WHITELIST -> SELECTIVE_WHITELIST.containsKey(key);
+            case BLACKLIST -> !SELECTIVE_BLACKLIST.containsKey(key);
+        };
 
-        return false;
+    }
+
+    public static boolean isBlockValidForRendering(Supplier<BlockState> blockStateSupplier) {
+        if (!FeatureToggle.TWEAK_SELECTIVE_BLOCK_TYPES_RENDERING.getBooleanValue()) return false;
+        BlockState block = blockStateSupplier.get();
+        if (block.isAir()) return false;
+        if ((STBFlowingLava || STWFlowingLava) && block.isOf(Blocks.LAVA) && !block.getFluidState().isStill()) {
+            return switch (SELECTIVE_TYPE_WHITELIST.getListType()){
+                case WHITELIST -> STWFlowingLava;
+                case BLACKLIST -> !STBFlowingLava;
+                case NONE -> false;
+            };
+        }
+        if ((STBFlowingWater || STWFlowingWater) && block.isOf(Blocks.WATER) && !block.getFluidState().isStill()) {
+            return switch (SELECTIVE_TYPE_WHITELIST.getListType()){
+                case WHITELIST -> STWFlowingWater;
+                case BLACKLIST -> !STBFlowingWater;
+                case NONE -> false;
+            };
+        }
+        return SELECTIVE_TYPE_WHITELIST.isAllowed(block.getBlock());
     }
 
     public static void rebuildLists() {
@@ -723,7 +758,7 @@ public class RenderTweaks {
     public static void updateSelectiveAtPos(BlockPos pos) {
         MinecraftClient mc = MinecraftClient.getInstance();
         BlockState state = mc.world.getBlockState(pos);
-        if (RenderTweaks.isPositionValidForRendering(pos)) {
+        if (RenderTweaks.isPositionValidForRendering(pos) || RenderTweaks.isBlockValidForRendering(()->state.isAir() ? fakeWorld.getBlockState(pos) : state)) {
             if (state.isAir()) {
                 BlockState originalState = fakeWorld.getBlockState(pos);
                 if (!originalState.isAir()) {
@@ -746,9 +781,7 @@ public class RenderTweaks {
     }
 
     public static void reloadSelective() {
-        MinecraftClient.getInstance().execute(() -> {
-            reloadSelectiveInternal();
-        });
+        MinecraftClient.getInstance().execute(RenderTweaks::reloadSelectiveInternal);
     }
 
     public static void reloadSelectiveInternal() {
@@ -756,6 +789,8 @@ public class RenderTweaks {
         MinecraftClient mc = MinecraftClient.getInstance();
         ListType listtype = (ListType) Configs.Lists.SELECTIVE_BLOCKS_LIST_TYPE.getOptionListValue();
         boolean toggle = FeatureToggle.TWEAK_SELECTIVE_BLOCKS_RENDERING.getBooleanValue();
+        ListType typelisttype = (ListType) Configs.Lists.SELECTIVE_BLOCK_TYPES_LIST_TYPE.getOptionListValue();
+        boolean typetoggle = FeatureToggle.TWEAK_SELECTIVE_BLOCK_TYPES_RENDERING.getBooleanValue();
         if (mc.world == null) {
             CACHED_LIST.clear();
             if (listtype != ListType.NONE) {
@@ -770,9 +805,11 @@ public class RenderTweaks {
 
             previousSelectiveToggle = toggle;
             previousType = listtype;
+            previousSelectiveTypesToggle = typetoggle;
+            previousTypesType = typelisttype;
             return;
         }
-        if (listtype != previousType || toggle != previousSelectiveToggle) {
+        if (listtype != previousType || toggle != previousSelectiveToggle || typelisttype != previousTypesType || typetoggle != previousSelectiveTypesToggle) {
             ChunkPos center = fakeWorld.getChunkManager().getChunkMapCenter();
             int radius = fakeWorld.getChunkManager().getRadius();
 
@@ -810,9 +847,7 @@ public class RenderTweaks {
             if (listtype != ListType.NONE) {
                 ConcurrentHashMap<Long, ListMapEntry> list = (listtype == ListType.WHITELIST) ? SELECTIVE_WHITELIST
                         : SELECTIVE_BLACKLIST;
-                Iterator<ListMapEntry> iterator = list.values().iterator();
-                while (iterator.hasNext()) {
-                    ListMapEntry entry = iterator.next();
+                for (ListMapEntry entry : list.values()) {
                     CACHED_LIST.put(entry.currentPosition.asLong(), entry);
                 }
             }
@@ -840,6 +875,8 @@ public class RenderTweaks {
 
         previousSelectiveToggle = toggle;
         previousType = listtype;
+        previousSelectiveTypesToggle = typetoggle;
+        previousTypesType = typelisttype;
     }
 
     public static void onLightUpdateEvent(int chunkX, int chunkZ, CallbackInfo ci) {

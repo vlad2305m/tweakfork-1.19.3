@@ -147,7 +147,7 @@ public abstract class MixinClientPlayNetworkHandler
                             for (int z = 0; z < 16; z++) {
                                 pos.set(x+worldChunk.getPos().getStartX(),y+section.getYOffset(),z+worldChunk.getPos().getStartZ());
 
-                                if (!RenderTweaks.isPositionValidForRendering(pos)) {
+                                if (!RenderTweaks.isPositionValidForRendering(pos) && !RenderTweaks.isBlockValidForRendering(()->section.getBlockState(pos.getX(), pos.getY(), pos.getZ()))) {
                                     BlockEntity be = worldChunk.getBlockEntity(pos);
                                     BlockState state = section.getBlockState(x, y, z);
                                     worldChunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false);
@@ -156,7 +156,6 @@ public abstract class MixinClientPlayNetworkHandler
                             }
                         }
                     }
-                  
                 }
             }
 		}

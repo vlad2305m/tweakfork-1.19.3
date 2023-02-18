@@ -1,4 +1,4 @@
-package fi.dy.masa.tweakaforknomore.mixin;
+package fi.dy.masa.tweakeroo.mixin;
 
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import net.minecraft.client.gui.screen.ingame.AbstractSignEditScreen;

@@ -103,6 +103,7 @@ public enum FeatureToggle implements IHotkeyTogglable, IConfigNotifiable<IConfig
     TWEAK_ZOOM                      ("tweakZoom",                           false, "",    KeybindSettings.INGAME_BOTH, "Enables using the zoom hotkey to, well, zoom in"),
     TWEAK_SELECTIVE_BLOCKS_RENDERING ("tweakSelectiveBlocksRendering",      false, "",    "Enables selectively visible blocks rendering"),
     TWEAK_SELECTIVE_BLOCKS_RENDER_OUTLINE   ("tweakSelectiveBlocksRenderOutline", false, "",    "Renders an outline over listed blocks"),
+    TWEAK_SELECTIVE_BLOCK_TYPES_RENDERING ("tweakSelectiveBlockTypesRendering",      false, "",    "Enables filtering blacklisted blocks for type to enhance selective rendering experience in some cases."),
     TWEAK_AREA_SELECTOR             ("tweakAreaSelector",                   false, "",    "Enables the area selector"),
     TWEAK_DAY_CYCLE_OVERRIDE        ("tweakDayCycleOverride",               false, "",    "Overrides the time of day on the client only"),
     TWEAK_WEATHER_OVERRIDE          ("tweakWeatherOverride",                false, "",    "Overrides the weather on the client only"),
